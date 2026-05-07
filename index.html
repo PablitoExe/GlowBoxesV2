@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLOW BOXES — Estética Vehicular de Alto Rendimiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo+Black&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/preloading.css">
+<link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+
+<!-- PRELOADER OVERLAY -->
+<div class="preloader" id="preloader">
+  <span class="corner tl"></span>
+  <span class="corner tr"></span>
+  <span class="corner bl"></span>
+  <span class="corner br"></span>
+  <div class="pl-top">
+    <div class="left">
+      <span>SYS // GLOWBOXES.AR</span>
+      <span class="dash"></span>
+      <span>v 2.6.1</span>
+    </div>
+    <div class="right">
+      <span>BUENOS AIRES</span>
+      <span class="dash"></span>
+      <span class="live">ONLINE</span>
+    </div>
+  </div>
+  <div class="pl-center">
+    <div class="stage">
+      <div class="rings">
+        <div class="ring-glow"></div>
+        <div class="ring r3"></div>
+        <div class="ring r2"></div>
+        <div class="ring r1"></div>
+        <div class="ring r4"></div>
+        <div class="arc"></div>
+      </div>
+      <div class="labels-row labels-top">
+        <span class="data-label dl-1"><span class="line"></span>INIT <span class="val">CORE</span></span>
+        <span class="data-label dl-2">CACHE <span class="val">OK</span><span class="line"></span></span>
+      </div>
+      <div class="labels-row labels-bot">
+        <span class="data-label dl-3"><span class="line"></span>STOCK <span class="val">SYNC</span></span>
+        <span class="data-label dl-4">RENDER <span class="val">GPU</span><span class="line"></span></span>
+      </div>
+      <img src="img/logo.png" alt="Glow Boxes" class="pl-logo">
+    </div>
+  </div>
+  <div class="pl-bottom">
+    <div class="pl-meta">
+      <span class="label">// Cargando</span>
+      <span class="value" id="status">Iniciando<span class="cursor"></span></span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-top">
+        <span>PROGRESO DEL SISTEMA</span>
+        <span class="right-tag">ESTÉTICA VEHICULAR · ALTO RENDIMIENTO</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="fill"></div>
+      </div>
+      <div class="progress-segments" id="segments"></div>
+    </div>
+    <div class="pl-percent">
+      <span class="num" id="percent">00</span><span class="sym">%</span>
+    </div>
+  </div>
+</div>
+
+<!-- Top ticker -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span><span class="dot"></span>ENVÍOS A TODO EL PAÍS</span>
+    <span>★ DETAILING PROFESIONAL</span>
+    <span>● AUDIO CAR / WRAP / PPF</span>
+    <span><span class="dot"></span>NUEVO STOCK SEMANAL</span>
+    <span>★ HERRAMIENTAS PRO</span>
+    <span>● ESTÉTICA VEHICULAR DE ALTO RENDIMIENTO</span>
+    <!-- duplicate for loop -->
+    <span><span class="dot"></span>ENVÍOS A TODO EL PAÍS</span>
+    <span>★ DETAILING PROFESIONAL</span>
+    <span>● AUDIO CAR / WRAP / PPF</span>
+    <span><span class="dot"></span>NUEVO STOCK SEMANAL</span>
+    <span>★ HERRAMIENTAS PRO</span>
+    <span>● ESTÉTICA VEHICULAR DE ALTO RENDIMIENTO</span>
+  </div>
+</div>
+
+<!-- Navigation -->
+<nav>
+  <div class="logo-wrap">
+    <img src="img/logo.png" alt="Glow Boxes">
+  </div>
+  <div class="nav-links">
+    <a href="#" class="active">Productos</a>
+    <a href="#">Quiénes Somos</a>
+    <a href="#">Categorías</a>
+    <a href="#">Marcas</a>
+    <a href="#">Contacto</a>
+  </div>
+  <div class="nav-actions">
+    <button class="icon-btn" aria-label="Buscar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    </button>
+    <button class="icon-btn" aria-label="Favoritos">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg>
+    </button>
+    <button class="icon-btn" aria-label="Carrito">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span class="badge">02</span>
+    </button>
+    <a href="login.html" class="btn-login-nav">Login</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="breadcrumb">
+      <span>SHOP</span><span class="dash"></span>
+      <span>SHAMPOO</span><span class="dash"></span>
+      <span class="live">EN STOCK</span>
+    </div>
+
+    <span class="category-tag">SHAMPOO PH NEUTRO · SNOW FOAM</span>
+
+    <h1 class="product-title">
+      <span class="accent">FOAM</span><br>
+      <span class="outline">BEAST</span> <span style="font-size:.55em;color:var(--violet-glow);font-family:'Space Mono',monospace;letter-spacing:.05em">/banana</span>
+    </h1>
+
+    <p class="product-desc">
+      Shampoo de pH neutro de altísima espuma. Formulado para snow foam y lavado a mano con resultado glass-finish. Activos cítricos que arrastran suciedad sin atacar ceras ni sellantes. <strong style="color:var(--ink)">Espuma extrema, limpieza total.</strong>
+    </p>
+
+    <div class="specs">
+      <div class="spec">
+        <div class="spec-label">Volumen</div>
+        <div class="spec-value">500 <span class="unit">ML</span></div>
+      </div>
+      <div class="spec">
+        <div class="spec-label">Dilución</div>
+        <div class="spec-value">1:400</div>
+      </div>
+      <div class="spec">
+        <div class="spec-label">PH</div>
+        <div class="spec-value">7.0</div>
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <div class="price-block">
+        <span class="price-label">Precio</span>
+        <div class="price"><span class="currency">$</span>11.999</div>
+      </div>
+      <button class="btn-buy">
+        Comprar Ahora
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="arrow-btns-center">
+    <button class="nav-btn" aria-label="Anterior">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button class="nav-btn next" aria-label="Siguiente">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </div>
+
+  <div class="hero-right">
+    <div class="product-stage">
+      <div class="rings">
+        <div class="ring-glow"></div>
+        <div class="ring r3"></div>
+        <div class="ring r1"></div>
+        <div class="ring r2"></div>
+      </div>
+      <img src="img/producto1.png" alt="Foam Beast Banana 500ml" class="product-img">
+    </div>
+    <div class="pagination">
+      <span class="current">04</span>
+      <span class="sep">/</span>
+      <span class="total">04</span>
+    </div>
+  </div>
+
+</section>
+
+<!-- Category Strip -->
+<section class="cat-strip">
+  <div class="cat">
+    <span class="cat-num">[01]</span>
+    <span class="cat-name">Detailing</span>
+    <svg class="cat-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+  </div>
+  <div class="cat">
+    <span class="cat-num">[02]</span>
+    <span class="cat-name">Audio Car</span>
+    <svg class="cat-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+  </div>
+  <div class="cat">
+    <span class="cat-num">[03]</span>
+    <span class="cat-name">Wrap</span>
+    <svg class="cat-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+  </div>
+  <div class="cat">
+    <span class="cat-num">[04]</span>
+    <span class="cat-name">PPF</span>
+    <svg class="cat-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+  </div>
+  <div class="cat">
+    <span class="cat-num">[05]</span>
+    <span class="cat-name">Herramientas</span>
+    <svg class="cat-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+  </div>
+</section>
+
+<script src="js/preloader.js"></script>
+<script type="module" src="js/nav.js"></script>
+
+</body>
+</html>
