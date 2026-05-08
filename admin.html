@@ -16,10 +16,10 @@
   <!-- ====== SIDEBAR ====== -->
   <aside class="sidebar">
     <div class="sidebar-head">
-      <div class="sidebar-logo">
+      <a class="sidebar-logo" href="index.html" aria-label="Ir al home">
         <img src="img/logo.png" alt="Glow Boxes">
         <span class="badge-admin">Admin</span>
-      </div>
+      </a>
       <button class="toggle-sidebar" id="toggleSidebar" aria-label="Colapsar sidebar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
       </button>
@@ -91,7 +91,7 @@
         <div class="name"></div>
         <div class="role"></div>
       </div>
-      <button class="logout" aria-label="Cerrar sesión">
+      <button class="logout" id="logoutButton" type="button" aria-label="Cerrar sesión">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       </button>
     </div>
@@ -111,7 +111,7 @@
       </div>
       <div class="topbar-actions">
         <span class="top-pill live">Sistema Activo</span>
-        <span class="top-pill">07 MAY 2026 · 14:32</span>
+        <time class="top-pill" id="adminClock" datetime="">Cargando horario...</time>
         <button class="icon-btn" aria-label="Notificaciones">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
           <span class="dot"></span>
@@ -152,11 +152,6 @@
             <span class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>+18.4%</span>
             <span>vs mes anterior</span>
           </div>
-          <svg class="spark" viewBox="0 0 80 30" preserveAspectRatio="none">
-            <defs><linearGradient id="g1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#a86bff" stop-opacity=".5"/><stop offset="1" stop-color="#a86bff" stop-opacity="0"/></linearGradient></defs>
-            <path d="M0 22 L10 18 L20 20 L30 14 L40 16 L50 10 L60 12 L70 6 L80 8 L80 30 L0 30 Z" fill="url(#g1)"/>
-            <path d="M0 22 L10 18 L20 20 L30 14 L40 16 L50 10 L60 12 L70 6 L80 8" stroke="#a86bff" stroke-width="1.5" fill="none"/>
-          </svg>
         </div>
 
         <div class="kpi">
@@ -169,9 +164,6 @@
             <span class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="18 15 12 9 6 15"/></svg>+9.1%</span>
             <span>347 nuevos</span>
           </div>
-          <svg class="spark" viewBox="0 0 80 30" preserveAspectRatio="none">
-            <path d="M0 18 L10 20 L20 14 L30 16 L40 12 L50 14 L60 8 L70 10 L80 6" stroke="#ff2bd6" stroke-width="1.5" fill="none"/>
-          </svg>
         </div>
 
         <div class="kpi">
@@ -420,34 +412,33 @@
         </div>
         <div class="page-actions">
           <button class="btn btn-ghost">Exportar CSV</button>
-          <button class="btn btn-primary">
+          <button class="btn btn-primary" onclick="openNewOrderModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
             Nuevo Pedido
           </button>
         </div>
       </div>
 
-      <!-- Mini stats -->
       <div class="kpi-grid">
         <div class="kpi">
           <div class="kpi-head"><span class="kpi-label">Pendientes</span><span class="kpi-icon" style="color:var(--warn)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span></div>
-          <div class="kpi-value">12</div>
+          <div class="kpi-value" id="kpi-ord-pendiente">—</div>
           <div class="kpi-foot"><span style="color:var(--warn)">// requieren acción</span></div>
         </div>
         <div class="kpi">
           <div class="kpi-head"><span class="kpi-label">En Tránsito</span><span class="kpi-icon" style="color:var(--info)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M14 10l7-7M8 21H3v-5M10 14l-7 7"/></svg></span></div>
-          <div class="kpi-value">38</div>
-          <div class="kpi-foot"><span>// 7 entregan hoy</span></div>
+          <div class="kpi-value" id="kpi-ord-enviado">—</div>
+          <div class="kpi-foot"><span>// en camino</span></div>
         </div>
         <div class="kpi">
-          <div class="kpi-head"><span class="kpi-label">Completados (mes)</span><span class="kpi-icon" style="color:var(--acid)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></span></div>
-          <div class="kpi-value">789</div>
-          <div class="kpi-foot"><span class="delta up">+9.1%</span></div>
+          <div class="kpi-head"><span class="kpi-label">Completados</span><span class="kpi-icon" style="color:var(--acid)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></span></div>
+          <div class="kpi-value" id="kpi-ord-completado">—</div>
+          <div class="kpi-foot"><span class="delta up" id="kpi-ord-total-label">// total</span></div>
         </div>
         <div class="kpi">
           <div class="kpi-head"><span class="kpi-label">Cancelados</span><span class="kpi-icon" style="color:var(--danger)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span></div>
-          <div class="kpi-value">8</div>
-          <div class="kpi-foot"><span>// 0.9% del total</span></div>
+          <div class="kpi-value" id="kpi-ord-cancelado">—</div>
+          <div class="kpi-foot"><span>// cancelados</span></div>
         </div>
       </div>
 
@@ -481,20 +472,12 @@
                 <th class="right">Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              <tr><td><input type="checkbox"></td><td class="mono">#GB-8472</td><td><div class="product-cell"><div class="product-thumb" style="background:linear-gradient(135deg,var(--violet),var(--magenta));color:#fff;font-family:'Archivo Black',sans-serif;font-size:12px">LR</div><div class="product-info"><div class="name">Lucas Romero</div><div class="sku">lucas@detailpro.ar</div></div></div></td><td>3</td><td><span class="pill ok">Pagado</span></td><td><span class="pill ok">Completado</span></td><td class="right"><span class="price"><span class="currency">$</span>34.900</span></td><td class="right mono">07 MAY 14:12</td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button></div></td></tr>
-              <tr><td><input type="checkbox"></td><td class="mono">#GB-8471</td><td><div class="product-cell"><div class="product-thumb" style="background:linear-gradient(135deg,#3a8dff,#8b3df5);color:#fff;font-family:'Archivo Black',sans-serif;font-size:12px">DT</div><div class="product-info"><div class="name">Detalle Total SRL</div><div class="sku">contacto@detalletotal.ar</div></div></div></td><td>12</td><td><span class="pill ok">Pagado</span></td><td><span class="pill shipped">Enviado</span></td><td class="right"><span class="price"><span class="currency">$</span>187.450</span></td><td class="right mono">07 MAY 13:48</td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button></div></td></tr>
-              <tr><td><input type="checkbox"></td><td class="mono">#GB-8470</td><td><div class="product-cell"><div class="product-thumb" style="background:linear-gradient(135deg,#ff6b35,#f7c73a);color:#fff;font-family:'Archivo Black',sans-serif;font-size:12px">MC</div><div class="product-info"><div class="name">Martín Caballero</div><div class="sku">m.caballero@gmail.com</div></div></div></td><td>1</td><td><span class="pill pending">Procesando</span></td><td><span class="pill pending">Pendiente</span></td><td class="right"><span class="price"><span class="currency">$</span>11.999</span></td><td class="right mono">07 MAY 13:22</td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button></div></td></tr>
-              <tr><td><input type="checkbox"></td><td class="mono">#GB-8469</td><td><div class="product-cell"><div class="product-thumb" style="background:linear-gradient(135deg,#c8ff00,#3aff8b);color:#000;font-family:'Archivo Black',sans-serif;font-size:12px">WS</div><div class="product-info"><div class="name">Wrap Studio</div><div class="sku">hola@wrapstudio.com</div></div></div></td><td>5</td><td><span class="pill ok">Pagado</span></td><td><span class="pill ok">Completado</span></td><td class="right"><span class="price"><span class="currency">$</span>92.300</span></td><td class="right mono">07 MAY 12:55</td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button></div></td></tr>
-              <tr><td><input type="checkbox"></td><td class="mono">#GB-8468</td><td><div class="product-cell"><div class="product-thumb" style="background:linear-gradient(135deg,#ff2bd6,#a86bff);color:#fff;font-family:'Archivo Black',sans-serif;font-size:12px">SP</div><div class="product-info"><div class="name">Sound Pro Audio</div><div class="sku">ventas@soundpro.ar</div></div></div></td><td>8</td><td><span class="pill cancel">Reembolsado</span></td><td><span class="pill cancel">Cancelado</span></td><td class="right"><span class="price"><span class="currency">$</span>54.700</span></td><td class="right mono">07 MAY 11:30</td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button></div></td></tr>
-              <tr><td><input type="checkbox"></td><td class="mono">#GB-8467</td><td><div class="product-cell"><div class="product-thumb" style="background:linear-gradient(135deg,#8b3df5,#3a8dff);color:#fff;font-family:'Archivo Black',sans-serif;font-size:12px">EP</div><div class="product-info"><div class="name">Estación Polish</div><div class="sku">info@estacionpolish.ar</div></div></div></td><td>4</td><td><span class="pill ok">Pagado</span></td><td><span class="pill shipped">Enviado</span></td><td class="right"><span class="price"><span class="currency">$</span>76.890</span></td><td class="right mono">07 MAY 10:14</td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button></div></td></tr>
-              <tr><td><input type="checkbox"></td><td class="mono">#GB-8466</td><td><div class="product-cell"><div class="product-thumb" style="background:linear-gradient(135deg,#ffa726,#ff2bd6);color:#fff;font-family:'Archivo Black',sans-serif;font-size:12px">FK</div><div class="product-info"><div class="name">Federico Klein</div><div class="sku">f.klein@hotmail.com</div></div></div></td><td>2</td><td><span class="pill ok">Pagado</span></td><td><span class="pill ok">Completado</span></td><td class="right"><span class="price"><span class="currency">$</span>23.450</span></td><td class="right mono">06 MAY 19:42</td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button></div></td></tr>
-            </tbody>
+            <tbody id="orders-tbody"></tbody>
           </table>
         </div>
 
         <div class="table-foot">
-          <span>Mostrando 1â€“7 de 847</span>
+          <span id=”orders-count”>// cargando...</span>
           <div class="pager">
             <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
             <button class="active">1</button>
@@ -519,7 +502,7 @@
         </div>
         <div class="page-actions">
           <button class="btn btn-ghost">Importar CSV</button>
-          <button class="btn btn-primary">
+          <button class="btn btn-primary" onclick="openProductModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
             Nuevo Producto
           </button>
@@ -529,23 +512,23 @@
       <div class="kpi-grid">
         <div class="kpi">
           <div class="kpi-head"><span class="kpi-label">Total Productos</span><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/></svg></span></div>
-          <div class="kpi-value">247</div>
-          <div class="kpi-foot"><span>// 13 inactivos</span></div>
+          <div class="kpi-value" id="kpi-total-prod">—</div>
+          <div class="kpi-foot"><span id="kpi-prod-note">// cargando...</span></div>
         </div>
         <div class="kpi">
           <div class="kpi-head"><span class="kpi-label">Stock Bajo</span><span class="kpi-icon" style="color:var(--warn)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span></div>
-          <div class="kpi-value" style="color:var(--warn)">18</div>
+          <div class="kpi-value" id="kpi-low-stock" style="color:var(--warn)">—</div>
           <div class="kpi-foot"><span>// reabastecer</span></div>
         </div>
         <div class="kpi">
           <div class="kpi-head"><span class="kpi-label">Sin Stock</span><span class="kpi-icon" style="color:var(--danger)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></span></div>
-          <div class="kpi-value" style="color:var(--danger)">5</div>
+          <div class="kpi-value" id="kpi-no-stock" style="color:var(--danger)">—</div>
           <div class="kpi-foot"><span>// urgente</span></div>
         </div>
         <div class="kpi">
           <div class="kpi-head"><span class="kpi-label">Valor Inventario</span><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span></div>
-          <div class="kpi-value"><span class="currency">$</span>12.4M</div>
-          <div class="kpi-foot"><span class="delta up">+5.8%</span></div>
+          <div class="kpi-value" id="kpi-valor-inv">—</div>
+          <div class="kpi-foot"><span>// inventario</span></div>
         </div>
       </div>
 
@@ -580,62 +563,7 @@
                 <th class="right">Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td><div class="product-cell"><div class="product-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg></div><div class="product-info"><div class="name">Foam Beast Banana 500ml</div><div class="sku">SKU: FB-500-BN</div></div></div></td>
-                <td>Detailing</td><td>Glow Boxes</td>
-                <td><div class="stock-bar"><span style="width:78%"></span></div><div class="stock-text">187 unid</div></td>
-                <td class="right"><span class="price"><span class="currency">$</span>11.999</span></td>
-                <td><span class="pill ok">Activo</span></td>
-                <td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td><div class="product-cell"><div class="product-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg></div><div class="product-info"><div class="name">Cleaner Strong APC 600ml</div><div class="sku">SKU: CS-600-APC</div></div></div></td>
-                <td>Detailing</td><td>Drop</td>
-                <td><div class="stock-bar"><span style="width:62%"></span></div><div class="stock-text">94 unid</div></td>
-                <td class="right"><span class="price"><span class="currency">$</span>11.999</span></td>
-                <td><span class="pill ok">Activo</span></td>
-                <td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td><div class="product-cell"><div class="product-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg></div><div class="product-info"><div class="name">PPF Premium 1.52m × 15m</div><div class="sku">SKU: PPF-152-15</div></div></div></td>
-                <td>PPF</td><td>3M</td>
-                <td><div class="stock-bar low"><span style="width:18%"></span></div><div class="stock-text" style="color:var(--warn)">8 rollos · BAJO</div></td>
-                <td class="right"><span class="price"><span class="currency">$</span>184.500</span></td>
-                <td><span class="pill ok">Activo</span></td>
-                <td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td><div class="product-cell"><div class="product-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div><div class="product-info"><div class="name">Subwoofer 12" 1500W RMS</div><div class="sku">SKU: AC-SUB-12</div></div></div></td>
-                <td>Audio Car</td><td>Pioneer</td>
-                <td><div class="stock-bar"><span style="width:88%"></span></div><div class="stock-text">42 unid</div></td>
-                <td class="right"><span class="price"><span class="currency">$</span>289.900</span></td>
-                <td><span class="pill ok">Activo</span></td>
-                <td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td><div class="product-cell"><div class="product-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94L7.5 19.5a2.12 2.12 0 1 1-3-3l5.97-5.97a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg></div><div class="product-info"><div class="name">Espátula Wrap Pro Carbon</div><div class="sku">SKU: TL-WRP-001</div></div></div></td>
-                <td>Herramientas</td><td>Glow Boxes</td>
-                <td><div class="stock-bar"><span style="width:95%"></span></div><div class="stock-text">238 unid</div></td>
-                <td class="right"><span class="price"><span class="currency">$</span>4.290</span></td>
-                <td><span class="pill ok">Activo</span></td>
-                <td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td>
-              </tr>
-              <tr>
-                <td><input type="checkbox"></td>
-                <td><div class="product-cell"><div class="product-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></div><div class="product-info"><div class="name">Vinilo Wrap Negro Mate 1.52×30m</div><div class="sku">SKU: WR-NM-152</div></div></div></td>
-                <td>Wrap</td><td>3M</td>
-                <td><div class="stock-bar low"><span style="width:8%"></span></div><div class="stock-text" style="color:var(--danger)">2 rollos · CRÍTICO</div></td>
-                <td class="right"><span class="price"><span class="currency">$</span>320.000</span></td>
-                <td><span class="pill draft">Borrador</span></td>
-                <td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td>
-              </tr>
-            </tbody>
+            <tbody id="products-tbody"></tbody>
           </table>
         </div>
 
@@ -760,9 +688,13 @@
           <p class="page-sub">Organización del catálogo</p>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary">
+          <button class="btn btn-ghost" onclick="openCatModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
-            Nueva
+            Nueva Categoría
+          </button>
+          <button class="btn btn-primary" onclick="openBrandModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
+            Nueva Marca
           </button>
         </div>
       </div>
@@ -772,58 +704,23 @@
         <div class="card">
           <div class="card-head">
             <span class="card-title">Categorías</span>
-            <span class="card-meta">// 5 principales</span>
+            <span class="card-meta" id="cats-meta">// cargando...</span>
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Categoría</th><th>Productos</th><th>Ventas</th><th class="right">Acciones</th></tr></thead>
-              <tbody>
-                <tr><td><div class="product-cell"><div class="product-thumb" style="color:var(--violet-glow)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg></div><div class="product-info"><div class="name">Detailing</div><div class="sku">/detailing</div></div></div></td><td>112</td><td><span class="price"><span class="currency">$</span>1.840.300</span></td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td></tr>
-                <tr><td><div class="product-cell"><div class="product-thumb" style="color:var(--magenta)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div><div class="product-info"><div class="name">Audio Car</div><div class="sku">/audio-car</div></div></div></td><td>58</td><td><span class="price"><span class="currency">$</span>1.290.800</span></td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td></tr>
-                <tr><td><div class="product-cell"><div class="product-thumb" style="color:var(--acid)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18"/></svg></div><div class="product-info"><div class="name">Wrap</div><div class="sku">/wrap</div></div></div></td><td>34</td><td><span class="price"><span class="currency">$</span>980.500</span></td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td></tr>
-                <tr><td><div class="product-cell"><div class="product-thumb" style="color:var(--info)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></div><div class="product-info"><div class="name">PPF</div><div class="sku">/ppf</div></div></div></td><td>22</td><td><span class="price"><span class="currency">$</span>520.700</span></td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td></tr>
-                <tr><td><div class="product-cell"><div class="product-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94L7.5 19.5a2.12 2.12 0 1 1-3-3l5.97-5.97a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg></div><div class="product-info"><div class="name">Herramientas</div><div class="sku">/herramientas</div></div></div></td><td>21</td><td><span class="price"><span class="currency">$</span>260.000</span></td><td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td></tr>
-              </tbody>
+              <thead><tr><th>Categoría</th><th>Slug</th><th>Orden</th><th class="right">Acciones</th></tr></thead>
+              <tbody id="cats-tbody"></tbody>
             </table>
           </div>
         </div>
 
-        <!-- Brands grid -->
+        <!-- Brands -->
         <div class="card">
-          <div class="card-head"><span class="card-title">Marcas</span><span class="card-meta">// 12 activas</span></div>
-          <div style="padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div class="admin-hover-card" style="padding:14px;background:var(--bg-2)">
-              <div style="font-family:'Archivo Black',sans-serif;font-size:14px;color:var(--ink);text-transform:uppercase">Glow Boxes</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--violet-glow);letter-spacing:.16em;margin-top:4px">42 PRODUCTOS</div>
-            </div>
-            <div class="admin-hover-card" style="padding:14px;background:var(--bg-2)">
-              <div style="font-family:'Archivo Black',sans-serif;font-size:14px;color:var(--ink);text-transform:uppercase">Drop</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--violet-glow);letter-spacing:.16em;margin-top:4px">28 PRODUCTOS</div>
-            </div>
-            <div class="admin-hover-card" style="padding:14px;background:var(--bg-2)">
-              <div style="font-family:'Archivo Black',sans-serif;font-size:14px;color:var(--ink);text-transform:uppercase">3M</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--violet-glow);letter-spacing:.16em;margin-top:4px">35 PRODUCTOS</div>
-            </div>
-            <div class="admin-hover-card" style="padding:14px;background:var(--bg-2)">
-              <div style="font-family:'Archivo Black',sans-serif;font-size:14px;color:var(--ink);text-transform:uppercase">Chemical Guys</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--violet-glow);letter-spacing:.16em;margin-top:4px">31 PRODUCTOS</div>
-            </div>
-            <div class="admin-hover-card" style="padding:14px;background:var(--bg-2)">
-              <div style="font-family:'Archivo Black',sans-serif;font-size:14px;color:var(--ink);text-transform:uppercase">Pioneer</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--violet-glow);letter-spacing:.16em;margin-top:4px">24 PRODUCTOS</div>
-            </div>
-            <div class="admin-hover-card" style="padding:14px;background:var(--bg-2)">
-              <div style="font-family:'Archivo Black',sans-serif;font-size:14px;color:var(--ink);text-transform:uppercase">Meguiar's</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--violet-glow);letter-spacing:.16em;margin-top:4px">19 PRODUCTOS</div>
-            </div>
-            <div class="admin-hover-card" style="padding:14px;background:var(--bg-2)">
-              <div style="font-family:'Archivo Black',sans-serif;font-size:14px;color:var(--ink);text-transform:uppercase">XPel</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--violet-glow);letter-spacing:.16em;margin-top:4px">14 PRODUCTOS</div>
-            </div>
-            <div class="admin-hover-card admin-add-card" style="padding:14px;background:transparent;display:grid;place-items:center;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em">
-              + AGREGAR
-            </div>
+          <div class="card-head">
+            <span class="card-title">Marcas</span>
+            <span class="card-meta" id="brands-meta">// cargando...</span>
           </div>
+          <div id="brands-grid" style="padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
         </div>
       </div>
     </div>
@@ -838,7 +735,7 @@
           <p class="page-sub">Promociones activas y descuentos</p>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary">
+          <button class="btn btn-primary" onclick="openCouponModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg>
             Nuevo Cupón
           </button>
@@ -846,10 +743,10 @@
       </div>
 
       <div class="kpi-grid">
-        <div class="kpi"><div class="kpi-head"><span class="kpi-label">Activos</span><span class="kpi-icon" style="color:var(--acid)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-value">3</div><div class="kpi-foot">// disponibles</div></div>
-        <div class="kpi"><div class="kpi-head"><span class="kpi-label">Usados (mes)</span><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/></svg></span></div><div class="kpi-value">487</div><div class="kpi-foot"><span class="delta up">+22%</span></div></div>
-        <div class="kpi"><div class="kpi-head"><span class="kpi-label">Descuento Total</span><span class="kpi-icon" style="color:var(--magenta)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span></div><div class="kpi-value"><span class="currency">$</span>184K</div><div class="kpi-foot">// otorgados</div></div>
-        <div class="kpi"><div class="kpi-head"><span class="kpi-label">Conversión Cupón</span><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span></div><div class="kpi-value">12.4<span class="small">%</span></div><div class="kpi-foot"><span class="delta up">+1.8%</span></div></div>
+        <div class="kpi"><div class="kpi-head"><span class="kpi-label">Activos</span><span class="kpi-icon" style="color:var(--acid)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></span></div><div class="kpi-value" id="kpi-cupones-activos">—</div><div class="kpi-foot">// disponibles</div></div>
+        <div class="kpi"><div class="kpi-head"><span class="kpi-label">Usados (total)</span><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/></svg></span></div><div class="kpi-value" id="kpi-cupones-usos">—</div><div class="kpi-foot">// usos acumulados</div></div>
+        <div class="kpi"><div class="kpi-head"><span class="kpi-label">Descuento Total</span><span class="kpi-icon" style="color:var(--magenta)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span></div><div class="kpi-value"><span class="currency">$</span>—</div><div class="kpi-foot">// otorgados</div></div>
+        <div class="kpi"><div class="kpi-head"><span class="kpi-label">Conversión Cupón</span><span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span></div><div class="kpi-value">—<span class="small">%</span></div><div class="kpi-foot">// próximamente</div></div>
       </div>
 
       <div class="card">
@@ -857,48 +754,7 @@
         <div class="table-wrap">
           <table>
             <thead><tr><th>Código</th><th>Descripción</th><th>Tipo</th><th>Descuento</th><th>Usos</th><th>Vence</th><th>Estado</th><th class="right">Acciones</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><div class="product-cell"><div class="product-thumb" style="color:var(--acid);background:rgba(200,255,0,.06);border-color:rgba(200,255,0,.3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg></div><div class="product-info"><div class="name" style="font-family:'Space Mono',monospace;letter-spacing:.1em">DETAIL20</div><div class="sku">CREADO 01 MAY</div></div></div></td>
-                <td>20% OFF en categoría Detailing</td>
-                <td><span class="pill violet">Categoría</span></td>
-                <td><span style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--acid)">-20%</span></td>
-                <td>184 / 500</td>
-                <td class="mono">31 MAY 2026</td>
-                <td><span class="pill ok">Activo</span></td>
-                <td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td>
-              </tr>
-              <tr>
-                <td><div class="product-cell"><div class="product-thumb" style="color:var(--magenta);background:rgba(255,43,214,.06);border-color:rgba(255,43,214,.3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/></svg></div><div class="product-info"><div class="name" style="font-family:'Space Mono',monospace;letter-spacing:.1em">PROCAR15</div><div class="sku">CREADO 22 ABR</div></div></div></td>
-                <td>15% OFF para detailers y talleres</td>
-                <td><span class="pill shipped">Cliente VIP</span></td>
-                <td><span style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--acid)">-15%</span></td>
-                <td>241 / âˆž</td>
-                <td class="mono">30 JUN 2026</td>
-                <td><span class="pill ok">Activo</span></td>
-                <td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td>
-              </tr>
-              <tr>
-                <td><div class="product-cell"><div class="product-thumb" style="color:var(--violet-glow);background:rgba(168,107,255,.06);border-color:rgba(168,107,255,.3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="product-info"><div class="name" style="font-family:'Space Mono',monospace;letter-spacing:.1em">FLASH50</div><div class="sku">CREADO 05 MAY</div></div></div></td>
-                <td>$5.000 OFF en compras +$30K</td>
-                <td><span class="pill violet">Monto Fijo</span></td>
-                <td><span style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--acid)"><span style="font-size:11px;color:var(--violet-glow)">$</span>5.000</span></td>
-                <td>62 / 200</td>
-                <td class="mono">10 MAY 2026</td>
-                <td><span class="pill ok">Activo</span></td>
-                <td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td>
-              </tr>
-              <tr style="opacity:.6">
-                <td><div class="product-cell"><div class="product-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/></svg></div><div class="product-info"><div class="name" style="font-family:'Space Mono',monospace;letter-spacing:.1em">VERANO24</div><div class="sku">CREADO 15 DIC</div></div></div></td>
-                <td>10% OFF temporada verano</td>
-                <td><span class="pill draft">General</span></td>
-                <td><span style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--ink-mute)">-10%</span></td>
-                <td>1.247 / 2.000</td>
-                <td class="mono">31 MAR 2026</td>
-                <td><span class="pill cancel">Vencido</span></td>
-                <td class="right"><div class="row-actions"><button class="row-act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg></button><button class="row-act danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/></svg></button></div></td>
-              </tr>
-            </tbody>
+            <tbody id="coupons-tbody"></tbody>
           </table>
         </div>
       </div>
@@ -1024,7 +880,423 @@
   </main>
 </div>
 
+<!-- ====== MODAL: PRODUCTO ====== -->
+<div class="modal-overlay" id="modal-product" onclick="if(event.target===this)closeProductModal()">
+  <div class="modal modal--wide">
+    <div class="modal-head">
+      <span class="modal-title" id="modal-product-title">Nuevo Producto</span>
+      <button class="modal-close" onclick="closeProductModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="form-product" onsubmit="event.preventDefault()">
+      <div class="modal-body">
+
+        <!-- Imagen -->
+        <div class="prod-upload-zone">
+          <div class="prod-img-preview" id="prod-img-preview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          </div>
+          <div class="upload-zone-text">
+            <span class="upload-zone-title">Imagen del producto</span>
+            <span class="upload-hint">PNG · JPG · WEBP — máx. 5 MB</span>
+            <label class="btn btn-ghost" style="cursor:pointer;margin-top:6px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Seleccionar archivo
+              <input type="file" id="prod-imagen" accept="image/*" style="display:none" onchange="previewImage(this)">
+            </label>
+          </div>
+        </div>
+
+        <!-- Nombre + SKU -->
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="field-label">Nombre *</label>
+            <input class="field-input" id="prod-nombre" placeholder="Nombre del producto" required>
+          </div>
+          <div class="modal-field" style="flex:0 0 130px">
+            <label class="field-label">SKU</label>
+            <input class="field-input mono-input" id="prod-sku" placeholder="GB-001">
+          </div>
+        </div>
+
+        <!-- Categoría + Marca -->
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="field-label">Categoría</label>
+            <select class="field-input" id="prod-categoria"></select>
+          </div>
+          <div class="modal-field">
+            <label class="field-label">Marca</label>
+            <select class="field-input" id="prod-marca"></select>
+          </div>
+        </div>
+
+        <!-- Precio + Oferta + Stock -->
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="field-label">Precio *</label>
+            <input class="field-input" id="prod-precio" type="number" min="0" step="1" placeholder="11999" required>
+          </div>
+          <div class="modal-field">
+            <label class="field-label">Precio oferta</label>
+            <input class="field-input" id="prod-oferta" type="number" min="0" step="1" placeholder="9999">
+          </div>
+          <div class="modal-field" style="flex:0 0 110px">
+            <label class="field-label">Stock</label>
+            <input class="field-input" id="prod-stock" type="number" min="0" step="1" placeholder="0">
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="modal-field">
+          <label class="field-label">Descripción</label>
+          <textarea class="field-input" id="prod-descripcion" rows="2" placeholder="Descripción del producto..."></textarea>
+        </div>
+
+        <!-- Estado -->
+        <div class="modal-checks">
+          <label class="check-label">
+            <input type="checkbox" id="prod-activo">
+            <span>Activo</span>
+          </label>
+          <label class="check-label">
+            <input type="checkbox" id="prod-destacado">
+            <span>Destacado</span>
+          </label>
+        </div>
+
+      </div>
+
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" onclick="closeProductModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn-save-product" onclick="saveProduct()">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ====== MODAL: CUPÓN ====== -->
+<div class="modal-overlay" id="modal-coupon" onclick="if(event.target===this)closeCouponModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title" id="modal-coupon-title">Nuevo Cupón</span>
+      <button class="modal-close" onclick="closeCouponModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="form-coupon" onsubmit="event.preventDefault()">
+      <div class="modal-body">
+
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="field-label">Código *</label>
+            <input class="field-input mono-input" id="coup-codigo" placeholder="DETAIL20" required style="text-transform:uppercase;letter-spacing:.1em">
+          </div>
+          <div class="modal-field">
+            <label class="field-label">Tipo</label>
+            <select class="field-input" id="coup-tipo">
+              <option value="porcentaje">Porcentaje (%)</option>
+              <option value="monto">Monto Fijo ($)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label class="field-label">Descripción</label>
+          <input class="field-input" id="coup-descripcion" placeholder="20% OFF en categoría Detailing">
+        </div>
+
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="field-label">Descuento *</label>
+            <input class="field-input" id="coup-descuento" type="number" min="0" step="0.01" placeholder="20" required>
+          </div>
+          <div class="modal-field">
+            <label class="field-label">Compra mínima ($)</label>
+            <input class="field-input" id="coup-min" type="number" min="0" step="1" placeholder="Sin mínimo">
+          </div>
+        </div>
+
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="field-label">Usos máximos</label>
+            <input class="field-input" id="coup-max-usos" type="number" min="1" step="1" placeholder="Ilimitado">
+          </div>
+          <div class="modal-field">
+            <label class="field-label">Vence el</label>
+            <input class="field-input" id="coup-vence" type="date">
+          </div>
+        </div>
+
+        <div class="modal-checks">
+          <label class="check-label">
+            <input type="checkbox" id="coup-activo">
+            <span>Activo</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" onclick="closeCouponModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn-save-coupon" onclick="saveCoupon()">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ====== MODAL: CONFIRM ====== -->
+<!-- Quick status floating popup -->
+<div id="quick-status-popup" class="quick-status-popup"></div>
+
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-head">
+      <span class="modal-title" id="confirm-title">Confirmar acción</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" width="18" height="18"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <div class="modal-body" style="padding:22px 24px">
+      <p id="confirm-msg" style="font-size:14px;color:var(--ink-dim);line-height:1.6;margin:0"></p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="confirm-cancel">Cancelar</button>
+      <button class="btn btn-danger" id="confirm-ok">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MODAL: CATEGORÍA ====== -->
+<div class="modal-overlay" id="modal-cat" onclick="if(event.target===this)closeCatModal()">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <span class="modal-title" id="modal-cat-title">Nueva Categoría</span>
+      <button class="modal-close" onclick="closeCatModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="form-cat" onsubmit="event.preventDefault()">
+      <div class="modal-body">
+        <div class="modal-field">
+          <label class="field-label">Nombre *</label>
+          <input class="field-input" id="cat-nombre" placeholder="Detailing" required>
+        </div>
+        <div class="modal-field">
+          <label class="field-label">Slug</label>
+          <input class="field-input mono-input" id="cat-slug" placeholder="detailing">
+        </div>
+        <div class="modal-field">
+          <label class="field-label">Descripción</label>
+          <input class="field-input" id="cat-descripcion" placeholder="Productos de detailing profesional">
+        </div>
+        <div class="modal-field">
+          <label class="field-label">Orden</label>
+          <input class="field-input" id="cat-orden" type="number" min="0" step="1" placeholder="1">
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" onclick="closeCatModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn-save-cat" onclick="saveCat()">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ====== MODAL: MARCA ====== -->
+<div class="modal-overlay" id="modal-brand" onclick="if(event.target===this)closeBrandModal()">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <span class="modal-title" id="modal-brand-title">Nueva Marca</span>
+      <button class="modal-close" onclick="closeBrandModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="form-brand" onsubmit="event.preventDefault()">
+      <div class="modal-body">
+        <div class="modal-img-wrap">
+          <div class="modal-img-preview" id="brand-img-preview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          </div>
+          <label class="btn btn-ghost" style="cursor:pointer">
+            Logo (opcional)
+            <input type="file" id="brand-logo" accept="image/*" style="display:none" onchange="previewBrandLogo(this)">
+          </label>
+        </div>
+        <div class="modal-field">
+          <label class="field-label">Nombre *</label>
+          <input class="field-input" id="brand-nombre" placeholder="Glow Boxes" required>
+        </div>
+        <div class="modal-checks">
+          <label class="check-label">
+            <input type="checkbox" id="brand-activo">
+            <span>Activa</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" onclick="closeBrandModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn-save-brand" onclick="saveBrand()">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ====== MODAL: NUEVO PEDIDO ====== -->
+<div class="modal-overlay" id="modal-new-order" onclick="if(event.target===this)closeNewOrderModal()">
+  <div class="modal modal--wide">
+    <div class="modal-head">
+      <span class="modal-title">Nuevo Pedido</span>
+      <button class="modal-close" onclick="closeNewOrderModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="form-new-order" onsubmit="event.preventDefault()">
+      <div class="modal-body">
+
+        <div class="modal-section-title">// Cliente</div>
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="field-label">Nombre *</label>
+            <input class="field-input" id="ord-cliente-nombre" placeholder="Juan García" required>
+          </div>
+          <div class="modal-field">
+            <label class="field-label">Email</label>
+            <input class="field-input" id="ord-cliente-email" type="email" placeholder="juan@email.com">
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label class="field-label">Dirección de envío</label>
+          <input class="field-input" id="ord-direccion" placeholder="Av. Corrientes 1234, CABA">
+        </div>
+
+        <div class="modal-section-title">// Productos</div>
+        <div id="order-items-list"></div>
+        <button type="button" class="btn btn-ghost" style="width:100%;margin-top:4px" onclick="addOrderItem()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14m-7-7h14"/></svg>
+          Agregar producto
+        </button>
+
+        <div class="order-total-row">
+          <span class="field-label">TOTAL DEL PEDIDO</span>
+          <span class="order-total-val">$<span id="ord-total-display">0</span></span>
+        </div>
+
+        <div class="modal-section-title">// Estado</div>
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="field-label">Estado</label>
+            <select class="field-input" id="ord-estado">
+              <option value="pendiente">Pendiente</option>
+              <option value="pagado">Pagado</option>
+              <option value="enviado">Enviado</option>
+              <option value="completado">Completado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </div>
+          <div class="modal-field">
+            <label class="field-label">Pago</label>
+            <select class="field-input" id="ord-pago-estado">
+              <option value="pendiente">Pendiente</option>
+              <option value="pagado">Pagado</option>
+              <option value="reembolsado">Reembolsado</option>
+            </select>
+          </div>
+          <div class="modal-field">
+            <label class="field-label">Método de pago</label>
+            <select class="field-input" id="ord-pago-metodo">
+              <option value="efectivo">Efectivo</option>
+              <option value="transferencia">Transferencia</option>
+              <option value="mercado_pago">Mercado Pago</option>
+              <option value="tarjeta">Tarjeta</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" onclick="closeNewOrderModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn-save-new-order" onclick="saveNewOrder()">Crear Pedido</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ====== MODAL: EDITAR PEDIDO ====== -->
+<div class="modal-overlay" id="modal-edit-order" onclick="if(event.target===this)closeEditOrderModal()">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-head">
+      <div>
+        <span class="modal-title" id="edit-order-num">#GB-0000</span>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-mute);letter-spacing:.1em;margin-top:3px" id="edit-order-meta"></div>
+      </div>
+      <button class="modal-close" onclick="closeEditOrderModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="form-edit-order" onsubmit="event.preventDefault()">
+      <div class="modal-body">
+
+        <div class="modal-section-title">// Estado del pedido</div>
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="field-label">Estado</label>
+            <select class="field-input" id="edit-ord-estado">
+              <option value="pendiente">Pendiente</option>
+              <option value="pagado">Pagado</option>
+              <option value="enviado">Enviado</option>
+              <option value="completado">Completado</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </div>
+          <div class="modal-field">
+            <label class="field-label">Pago</label>
+            <select class="field-input" id="edit-ord-pago-estado">
+              <option value="pendiente">Pendiente</option>
+              <option value="pagado">Pagado</option>
+              <option value="reembolsado">Reembolsado</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-row">
+          <div class="modal-field">
+            <label class="field-label">Método de pago</label>
+            <select class="field-input" id="edit-ord-pago-metodo">
+              <option value="efectivo">Efectivo</option>
+              <option value="transferencia">Transferencia</option>
+              <option value="mercado_pago">Mercado Pago</option>
+              <option value="tarjeta">Tarjeta</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="modal-field">
+            <label class="field-label">N° seguimiento</label>
+            <input class="field-input mono-input" id="edit-ord-seguimiento" placeholder="OCA-123456">
+          </div>
+        </div>
+
+        <div class="modal-field">
+          <label class="field-label">Notas internas</label>
+          <textarea class="field-input" id="edit-ord-notas" rows="2" placeholder="Notas del pedido..."></textarea>
+        </div>
+
+        <div class="modal-section-title">// Items del pedido</div>
+        <div id="edit-order-items" style="display:flex;flex-direction:column;gap:6px"></div>
+
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn-danger" onclick="deleteCurrentOrder()">Eliminar pedido</button>
+        <div style="display:flex;gap:8px;margin-left:auto">
+          <button type="button" class="btn btn-ghost" onclick="closeEditOrderModal()">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btn-save-edit-order" onclick="saveOrderStatus()">Guardar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script type="module" src="js/admin-guard.js"></script>
+<script type="module" src="js/admin-data.js"></script>
 <script src="js/admin.js"></script>
 </body>
 </html>

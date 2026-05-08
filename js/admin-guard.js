@@ -1,5 +1,22 @@
 import { supabase } from './supabase.js'
 
+const logoutButton = document.getElementById('logoutButton')
+
+if (logoutButton) {
+  logoutButton.addEventListener('click', async () => {
+    logoutButton.disabled = true
+    logoutButton.setAttribute('aria-busy', 'true')
+
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.warn('No se pudo cerrar la sesion global. Se limpiara la sesion local.', error)
+      await supabase.auth.signOut({ scope: 'local' })
+    }
+
+    window.location.replace('login.html')
+  })
+}
+
 async function checkAdmin() {
   const { data: { session } } = await supabase.auth.getSession()
 

@@ -20,7 +20,7 @@
   <span class="corner br"></span>
   <div class="pl-top">
     <div class="left">
-      <span>SYS // GLOWBOXES.AR</span>
+      <span>SYS // GLOWBOXES.COM.AR</span>
       <span class="dash"></span>
       <span>v 2.6.1</span>
     </div>
@@ -91,20 +91,34 @@
   </div>
 </div>
 
+<!-- Search overlay -->
+<div class="search-overlay" id="search-overlay">
+  <div class="search-bar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" id="search-input" placeholder="Buscar productos, marcas, categorías..." autocomplete="off">
+    <button class="search-close" id="search-close" aria-label="Cerrar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- Mobile nav overlay -->
+<div class="nav-overlay" id="nav-overlay"></div>
+
 <!-- Navigation -->
-<nav>
+<nav id="main-nav">
   <div class="logo-wrap">
     <img src="img/logo.png" alt="Glow Boxes">
   </div>
-  <div class="nav-links">
-    <a href="#" class="active">Productos</a>
-    <a href="#">Quiénes Somos</a>
-    <a href="#">Categorías</a>
-    <a href="#">Marcas</a>
-    <a href="#">Contacto</a>
+  <div class="nav-links" id="nav-links">
+    <a href="#productos" class="nav-link active">Productos</a>
+    <a href="#categorias" class="nav-link">Categorías</a>
+    <a href="#marcas" class="nav-link">Marcas</a>
+    <a href="quienes-somos.html" class="nav-link">Quiénes Somos</a>
+    <a href="contacto.html" class="nav-link">Contacto</a>
   </div>
   <div class="nav-actions">
-    <button class="icon-btn" aria-label="Buscar">
+    <button class="icon-btn" id="btn-search" aria-label="Buscar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
     </button>
     <button class="icon-btn" aria-label="Favoritos">
@@ -112,14 +126,17 @@
     </button>
     <button class="icon-btn" aria-label="Carrito">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-      <span class="badge">02</span>
+      <span class="badge" id="cart-badge" style="display:none">0</span>
     </button>
-    <a href="login.html" class="btn-login-nav">Login</a>
+    <a href="login.html" class="btn-login-nav" id="nav-login-btn">Login</a>
+    <button class="hamburger" id="hamburger" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero" id="productos">
   <div class="hero-left">
     <div class="breadcrumb">
       <span>SHOP</span><span class="dash"></span>
@@ -131,7 +148,7 @@
 
     <h1 class="product-title">
       <span class="accent">FOAM</span><br>
-      <span class="outline">BEAST</span> <span style="font-size:.55em;color:var(--violet-glow);font-family:'Space Mono',monospace;letter-spacing:.05em">/banana</span>
+      <span class="outline">BEAST</span> <span style="font-size:.55em;color:var(--violet-glow);font-family:'Space Mono',monospace;letter-spacing:.05em">|banana</span>
     </h1>
 
     <p class="product-desc">
@@ -158,7 +175,11 @@
         <span class="price-label">Precio</span>
         <div class="price"><span class="currency">$</span>11.999</div>
       </div>
-      <button class="btn-buy">
+      <button class="btn-buy" id="btn-add-cart"
+        data-id="foam-beast-banana-500ml"
+        data-nombre="Foam Beast | Banana 500ml"
+        data-precio="11999"
+        data-imagen="img/producto1.png">
         Comprar Ahora
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
       </button>
@@ -185,7 +206,7 @@
       <img src="img/producto1.png" alt="Foam Beast Banana 500ml" class="product-img">
     </div>
     <div class="pagination">
-      <span class="current">04</span>
+      <span class="current">01</span>
       <span class="sep">/</span>
       <span class="total">04</span>
     </div>
@@ -194,7 +215,7 @@
 </section>
 
 <!-- Category Strip -->
-<section class="cat-strip">
+<section class="cat-strip" id="categorias">
   <div class="cat">
     <span class="cat-num">[01]</span>
     <span class="cat-name">Detailing</span>
@@ -222,7 +243,55 @@
   </div>
 </section>
 
+<!-- Brand Strip -->
+<section class="brand-strip" id="marcas">
+  <div class="brand-head">
+    <span class="brand-kicker">// Marcas</span>
+    <h2>Aliados del taller</h2>
+  </div>
+  <div class="brand-grid">
+    <span>Glow Boxes</span>
+    <span>Drop</span>
+    <span>Chemical Guys</span>
+    <span>3M</span>
+    <span>Pioneer</span>
+    <span>Meguiar's</span>
+    <span>XPel</span>
+  </div>
+</section>
+
+<!-- ====== CARRITO DRAWER ====== -->
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-drawer-overlay" id="cart-drawer-overlay"></div>
+  <div class="cart-panel">
+    <div class="cart-head">
+      <div>
+        <span class="cart-title">CARRITO</span>
+        <span class="cart-count-label" id="cart-count-label">0 items</span>
+      </div>
+      <button class="cart-close" id="cart-close" aria-label="Cerrar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="cart-items" id="cart-items"></div>
+
+    <div class="cart-foot">
+      <div class="cart-subtotal">
+        <span class="cart-sub-label">TOTAL</span>
+        <span class="cart-sub-val" id="cart-total">$0</span>
+      </div>
+      <button class="cart-checkout-btn" onclick="window.location.href='checkout.html'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Finalizar Compra
+      </button>
+      <button class="cart-continue-btn" id="cart-continue">Seguir comprando</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/preloader.js"></script>
+<script type="module" src="js/cart.js"></script>
 <script type="module" src="js/nav.js"></script>
 
 </body>

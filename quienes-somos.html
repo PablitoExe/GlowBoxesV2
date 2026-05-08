@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLOW BOXES — Quiénes Somos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#0a0a0f;--bg-1:#101018;--bg-2:#16161f;--bg-3:#1c1c26;
+    --ink:#f4f4f6;--ink-dim:#9a9aa6;--ink-mute:#5a5a66;
+    --violet:#8b3df5;--violet-deep:#5b1fb8;--violet-glow:#a86bff;
+    --magenta:#ff2bd6;--acid:#c8ff00;
+    --line:rgba(255,255,255,.08);--line-strong:rgba(255,255,255,.16);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{
+    background:var(--bg-0);color:var(--ink);
+    font-family:'Barlow Condensed',sans-serif;overflow-x:hidden;
+  }
+  body{
+    background:
+      radial-gradient(1200px 600px at 85% 10%, rgba(139,61,245,.15), transparent 60%),
+      radial-gradient(900px 500px at -10% 60%, rgba(255,43,214,.06), transparent 55%),
+      var(--bg-0);
+  }
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  img{display:block;max-width:100%}
+
+  /* Grain */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.04;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    mix-blend-mode:overlay;
+  }
+
+  /* ====== TOP NAV (mini, igual al home) ====== */
+  nav{
+    position:relative;z-index:10;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 48px;
+    border-bottom:1px solid var(--line);
+    background:rgba(10,10,15,.7);backdrop-filter:blur(12px);
+  }
+  .logo-wrap img{height:42px;filter:drop-shadow(0 0 12px rgba(168,107,255,.4))}
+  .nav-links{display:flex;gap:4px}
+  .nav-links a{
+    font-family:'Barlow Condensed',sans-serif;font-weight:600;
+    font-size:13px;letter-spacing:.18em;text-transform:uppercase;
+    padding:10px 18px;color:var(--ink-dim);
+    border:1px solid transparent;transition:all .25s;
+  }
+  .nav-links a:hover{color:var(--ink);border-color:var(--line-strong)}
+  .nav-links a.active{
+    color:var(--ink);
+    background:linear-gradient(180deg,rgba(139,61,245,.18),rgba(139,61,245,.04));
+    border:1px solid rgba(168,107,255,.35);
+  }
+
+  /* ====== SECTION SHELL ====== */
+  .section{
+    position:relative;z-index:2;
+    padding:80px 48px;
+    max-width:1400px;margin:0 auto;
+  }
+
+  /* Big background number */
+  .bg-num{
+    position:absolute;font-family:'Archivo Black',sans-serif;
+    line-height:.8;color:transparent;
+    -webkit-text-stroke:1px rgba(255,255,255,.04);
+    pointer-events:none;user-select:none;z-index:0;
+  }
+
+  /* Grid lines container */
+  .grid-bg{
+    position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:80px 80px;
+    mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
+  }
+
+  /* ====== HERO INTRO ====== */
+  .intro{
+    position:relative;
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:60px;align-items:center;
+    min-height:80vh;
+  }
+  .intro .bg-num{font-size:480px;left:-40px;bottom:-160px}
+
+  .intro-left{position:relative;z-index:3}
+
+  .breadcrumb{
+    display:flex;align-items:center;gap:14px;margin-bottom:34px;
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;
+    color:var(--ink-mute);text-transform:uppercase;
+  }
+  .breadcrumb .dash{width:24px;height:1px;background:var(--ink-mute)}
+  .breadcrumb .live{color:var(--acid);display:inline-flex;align-items:center;gap:8px}
+  .breadcrumb .live::before{
+    content:"";width:6px;height:6px;background:var(--acid);border-radius:50%;
+    box-shadow:0 0 10px var(--acid);animation:pulse 1.6s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  .tag{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:8px 16px;
+    border:1px solid rgba(168,107,255,.4);
+    background:rgba(139,61,245,.08);
+    font-family:'Space Mono',monospace;
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--violet-glow);margin-bottom:28px;
+  }
+  .tag::before{content:"//";color:var(--magenta)}
+
+  h1.hero-title{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(48px,7vw,108px);
+    line-height:.88;letter-spacing:-.02em;text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  h1.hero-title .accent{
+    color:var(--ink);
+  }
+  h1.hero-title .outline{
+    -webkit-text-stroke:2px var(--ink);color:transparent;
+  }
+
+  .lead{
+    margin-top:32px;max-width:520px;
+    font-size:18px;line-height:1.6;color:var(--ink-dim);font-weight:400;
+  }
+  .lead strong{color:var(--ink);font-weight:600}
+
+  .signature{
+    margin-top:36px;
+    display:flex;align-items:center;gap:16px;
+    padding-top:24px;border-top:1px solid var(--line);
+    max-width:480px;
+  }
+  .sig-avatar{
+    width:48px;height:48px;
+    background:linear-gradient(135deg,var(--violet),var(--magenta));
+    display:grid;place-items:center;
+    font-family:'Archivo Black',sans-serif;font-size:14px;color:#fff;
+    flex-shrink:0;
+  }
+  .sig-info .name{
+    font-family:'Archivo Black',sans-serif;font-size:14px;
+    text-transform:uppercase;letter-spacing:.05em;color:var(--ink);
+  }
+  .sig-info .role{
+    font-family:'Space Mono',monospace;font-size:10px;
+    letter-spacing:.18em;color:var(--violet-glow);text-transform:uppercase;margin-top:2px;
+  }
+
+  /* Right visual */
+  .intro-right{
+    position:relative;z-index:2;
+    display:grid;place-items:center;
+    min-height:520px;
+  }
+  .visual-stage{
+    position:relative;
+    width:100%;max-width:480px;aspect-ratio:1;
+    display:grid;place-items:center;
+  }
+  .ring{
+    position:absolute;border-radius:50%;
+    border:1px solid rgba(168,107,255,.18);
+  }
+  .ring.r1{width:100%;height:100%;animation:rot 40s linear infinite}
+  .ring.r2{width:78%;height:78%;border-style:dashed;border-color:rgba(168,107,255,.14);animation:rot 60s linear infinite reverse}
+  .ring.r3{width:55%;height:55%}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  .core-glow{
+    position:absolute;width:60%;height:60%;border-radius:50%;
+    background:radial-gradient(circle,rgba(139,61,245,.5),rgba(255,43,214,.2) 40%,transparent 70%);
+    filter:blur(40px);
+    animation:breathe 4s ease-in-out infinite;
+  }
+  @keyframes breathe{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.08);opacity:1}}
+
+  .visual-logo{
+    position:relative;z-index:3;
+    width:55%;
+    filter:drop-shadow(0 0 30px rgba(168,107,255,.4));
+    animation:float 6s ease-in-out infinite;
+  }
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+  /* Floating data labels */
+  .data{
+    position:absolute;z-index:4;
+    font-family:'Space Mono',monospace;font-size:10px;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--ink-dim);
+    display:flex;align-items:center;gap:10px;
+  }
+  .data .line{width:36px;height:1px;background:var(--violet-glow)}
+  .data .val{color:var(--ink);font-weight:700}
+  .data.d1{top:8%;left:0}
+  .data.d2{top:32%;right:-2%}
+  .data.d3{bottom:30%;left:-2%}
+  .data.d4{bottom:8%;right:2%}
+
+  /* ====== SECTION DIVIDER ====== */
+  .divider-strip{
+    position:relative;z-index:5;
+    background:linear-gradient(90deg,var(--violet-deep),var(--violet),var(--magenta),var(--violet));
+    background-size:300% 100%;
+    animation:slide 18s linear infinite;
+    overflow:hidden;
+    border-top:1px solid rgba(0,0,0,.4);
+    border-bottom:1px solid rgba(0,0,0,.4);
+  }
+  @keyframes slide{0%{background-position:0% 0}100%{background-position:300% 0}}
+  .strip-track{
+    display:flex;gap:50px;padding:10px 0;white-space:nowrap;
+    animation:tick 50s linear infinite;
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;
+    color:#fff;text-transform:uppercase;font-weight:700;
+  }
+  @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .strip-track span{display:inline-flex;align-items:center;gap:14px}
+  .strip-track .star{color:#fff}
+
+  /* ====== STATS BAR ====== */
+  .stats-section{
+    position:relative;
+    padding:60px 48px;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    background:var(--bg-1);
+  }
+  .stats-grid{
+    max-width:1400px;margin:0 auto;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+  }
+  .stat{
+    padding:24px 36px;
+    border-right:1px solid var(--line);
+    position:relative;
+  }
+  .stat:last-child{border-right:none}
+  .stat-num{
+    font-family:'Archivo Black',sans-serif;
+    font-size:64px;line-height:1;color:var(--ink);
+    letter-spacing:-.02em;
+    display:flex;align-items:baseline;gap:4px;
+  }
+  .stat-num .plus,
+  .stat-num .pct{
+    color:var(--violet-glow);
+    font-size:38px;
+  }
+  .stat-label{
+    font-family:'Space Mono',monospace;font-size:11px;
+    letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase;
+    margin-top:14px;
+  }
+  .stat-desc{font-size:13px;color:var(--ink-dim);margin-top:6px;line-height:1.5}
+
+  /* ====== STORY (3 cols) ====== */
+  .story-section{
+    position:relative;padding:100px 48px;
+    max-width:1400px;margin:0 auto;
+  }
+  .story-section .bg-num{font-size:380px;right:-40px;top:-80px}
+
+  .section-head{
+    margin-bottom:60px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;
+  }
+  .section-title{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(36px,5vw,72px);
+    line-height:.95;letter-spacing:-.01em;text-transform:uppercase;
+  }
+  .section-title .outline{
+    -webkit-text-stroke:1.5px var(--ink);color:transparent;
+  }
+  .section-title .accent{
+    color:var(--ink);
+  }
+  .section-sub{
+    max-width:380px;font-size:15px;line-height:1.55;color:var(--ink-dim);
+  }
+
+  .story-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+    position:relative;z-index:2;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .story{
+    position:relative;
+    padding:42px 36px;
+    border-right:1px solid var(--line);
+    transition:background .3s;
+    overflow:hidden;
+  }
+  .story:last-child{border-right:none}
+  .story:hover{background:rgba(139,61,245,.04)}
+  .story::before{
+    content:"";position:absolute;left:0;top:0;width:100%;height:2px;
+    background:linear-gradient(90deg,var(--violet),var(--magenta));
+    transform:scaleX(0);transform-origin:left;transition:transform .35s;
+  }
+  .story:hover::before{transform:scaleX(1)}
+
+  .story-num{
+    font-family:'Space Mono',monospace;font-size:11px;
+    letter-spacing:.2em;color:var(--violet-glow);text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  .story-icon{
+    width:54px;height:54px;
+    background:var(--bg-2);border:1px solid var(--line-strong);
+    display:grid;place-items:center;color:var(--violet-glow);
+    margin-bottom:24px;transition:all .3s;
+  }
+  .story:hover .story-icon{
+    background:linear-gradient(135deg,rgba(139,61,245,.2),rgba(255,43,214,.1));
+    border-color:rgba(168,107,255,.5);
+  }
+  .story-icon svg{width:24px;height:24px}
+  .story-title{
+    font-family:'Archivo Black',sans-serif;font-size:22px;
+    text-transform:uppercase;letter-spacing:.02em;color:var(--ink);
+    margin-bottom:14px;line-height:1.1;
+  }
+  .story-text{font-size:15px;line-height:1.6;color:var(--ink-dim)}
+
+  /* ====== MISSION SPLIT ====== */
+  .mission{
+    position:relative;
+    padding:100px 48px;
+    max-width:1400px;margin:0 auto;
+    display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+  }
+  .mission-img{
+    position:relative;aspect-ratio:1/.85;
+    border:1px solid var(--line);
+    background:
+      radial-gradient(circle at 30% 30%, rgba(139,61,245,.3), transparent 60%),
+      radial-gradient(circle at 70% 70%, rgba(255,43,214,.2), transparent 60%),
+      var(--bg-1);
+    overflow:hidden;
+    display:grid;place-items:center;
+  }
+  .mission-img::before{
+    content:"";position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+    background-size:40px 40px;
+  }
+  .mission-corner{
+    position:absolute;width:24px;height:24px;
+    border:1px solid var(--violet-glow);
+  }
+  .mission-corner.tl{top:14px;left:14px;border-right:none;border-bottom:none}
+  .mission-corner.tr{top:14px;right:14px;border-left:none;border-bottom:none}
+  .mission-corner.bl{bottom:14px;left:14px;border-right:none;border-top:none}
+  .mission-corner.br{bottom:14px;right:14px;border-left:none;border-top:none}
+
+  .mission-quote{
+    position:relative;z-index:2;
+    text-align:center;padding:40px;
+  }
+  .mission-quote .mark{
+    font-family:'Archivo Black',sans-serif;font-size:120px;line-height:.6;
+    color:var(--violet-glow);opacity:.4;
+  }
+  .mission-quote .text{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(22px,2.5vw,32px);
+    line-height:1.2;letter-spacing:-.01em;text-transform:uppercase;
+    color:var(--ink);margin-top:14px;
+  }
+  .mission-quote .text em{
+    color:var(--ink);
+    font-style:normal;
+  }
+
+  .mission-content .tag{margin-bottom:24px}
+  .mission-content h2{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(36px,4.5vw,60px);
+    line-height:.95;letter-spacing:-.01em;text-transform:uppercase;
+    margin-bottom:28px;
+  }
+  .mission-content h2 .accent{
+    color:var(--ink);
+  }
+  .mission-content p{
+    font-size:16px;line-height:1.6;color:var(--ink-dim);margin-bottom:18px;
+  }
+  .mission-content p strong{color:var(--ink);font-weight:600}
+
+  .check-list{
+    display:flex;flex-direction:column;gap:14px;margin-top:24px;
+  }
+  .check-item{
+    display:flex;align-items:flex-start;gap:14px;
+    font-size:15px;color:var(--ink);
+  }
+  .check-item .ic{
+    width:28px;height:28px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--violet),var(--magenta));
+    display:grid;place-items:center;
+    box-shadow:0 0 14px rgba(168,107,255,.3);
+  }
+  .check-item .ic svg{width:14px;height:14px;color:#fff}
+  .check-item .body{padding-top:3px}
+  .check-item .ttl{font-weight:600;color:var(--ink);margin-bottom:2px}
+  .check-item .desc{font-size:13px;color:var(--ink-dim);line-height:1.5}
+
+  /* ====== RUBROS GRID ====== */
+  .rubros-section{
+    position:relative;padding:100px 48px;
+    max-width:1400px;margin:0 auto;
+  }
+  .rubros-section .bg-num{font-size:340px;left:-30px;top:-40px}
+
+  .rubros{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:0;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    position:relative;z-index:2;
+  }
+  .rubro{
+    position:relative;
+    padding:36px 28px 36px;
+    border-right:1px solid var(--line);
+    cursor:pointer;transition:all .3s;
+    overflow:hidden;
+  }
+  .rubro:last-child{border-right:none}
+  .rubro::before{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(139,61,245,.08),transparent);
+    opacity:0;transition:opacity .3s;
+  }
+  .rubro:hover::before{opacity:1}
+  .rubro::after{
+    content:"";position:absolute;left:0;top:0;width:100%;height:2px;
+    background:linear-gradient(90deg,var(--violet),var(--magenta));
+    transform:scaleX(0);transform-origin:left;transition:transform .35s;
+  }
+  .rubro:hover::after{transform:scaleX(1)}
+  .rubro > *{position:relative;z-index:1}
+
+  .rubro-num{
+    font-family:'Space Mono',monospace;font-size:10px;
+    letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase;
+    margin-bottom:20px;display:flex;justify-content:space-between;
+  }
+  .rubro-num .arrow{color:var(--ink-mute);transition:all .25s}
+  .rubro:hover .rubro-num .arrow{color:var(--violet-glow);transform:translateX(4px)}
+
+  .rubro-icon{
+    width:56px;height:56px;color:var(--violet-glow);margin-bottom:20px;
+    display:grid;place-items:center;
+  }
+  .rubro-icon svg{width:38px;height:38px}
+  .rubro-name{
+    font-family:'Archivo Black',sans-serif;font-size:18px;
+    text-transform:uppercase;letter-spacing:.02em;color:var(--ink);
+    margin-bottom:10px;
+  }
+  .rubro-desc{
+    font-family:'Space Mono',monospace;font-size:10px;
+    letter-spacing:.1em;color:var(--ink-dim);
+    line-height:1.6;margin-bottom:18px;
+  }
+  .rubro-count{
+    font-family:'Bebas Neue',sans-serif;font-size:18px;
+    color:var(--violet-glow);letter-spacing:.04em;
+  }
+  .rubro-count .unit{font-size:11px;color:var(--ink-mute);margin-left:4px}
+
+  /* ====== TIMELINE ====== */
+  .timeline-section{
+    position:relative;padding:100px 48px 60px;
+    max-width:1400px;margin:0 auto;
+  }
+  .timeline{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+    position:relative;
+    margin-top:24px;
+  }
+  .timeline::before{
+    content:"";position:absolute;left:36px;right:36px;top:38px;height:2px;
+    background:linear-gradient(90deg,var(--violet),var(--magenta));
+    z-index:1;
+  }
+  .tl-item{position:relative;padding:0 28px 0 0;z-index:2}
+  .tl-dot{
+    width:18px;height:18px;border-radius:50%;
+    background:var(--bg-0);
+    border:2px solid var(--violet-glow);
+    margin-bottom:20px;margin-left:28px;
+    box-shadow:0 0 8px rgba(168,107,255,.5);
+    position:relative;
+  }
+  .tl-dot::after{
+    content:"";position:absolute;inset:3px;border-radius:50%;
+    background:linear-gradient(135deg,var(--violet),var(--magenta));
+  }
+  .tl-year{
+    font-family:'Archivo Black',sans-serif;font-size:36px;
+    color:var(--violet-glow);line-height:1;margin-bottom:8px;letter-spacing:-.01em;
+  }
+  .tl-title{
+    font-family:'Archivo Black',sans-serif;font-size:14px;
+    text-transform:uppercase;letter-spacing:.06em;color:var(--ink);margin-bottom:8px;
+  }
+  .tl-text{font-size:13px;color:var(--ink-dim);line-height:1.5}
+
+  /* ====== TEAM ====== */
+  .team-section{
+    position:relative;padding:80px 48px 100px;
+    max-width:1400px;margin:0 auto;
+  }
+  .team-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+    margin-top:40px;
+  }
+  .team-card{
+    position:relative;
+    background:var(--bg-1);border:1px solid var(--line);
+    padding:24px;
+    transition:all .3s;
+    overflow:hidden;
+  }
+  .team-card:hover{border-color:var(--line-strong)}
+  .team-card::before{
+    content:"";position:absolute;left:0;top:0;width:3px;height:0;
+    background:linear-gradient(180deg,var(--violet),var(--magenta));
+    transition:height .35s;
+  }
+  .team-card:hover::before{height:100%}
+
+  .team-avatar{
+    width:84px;height:84px;
+    background:linear-gradient(135deg,var(--violet),var(--magenta));
+    display:grid;place-items:center;
+    font-family:'Archivo Black',sans-serif;font-size:30px;color:#fff;
+    margin-bottom:18px;
+    box-shadow:0 0 20px rgba(168,107,255,.3);
+  }
+  .team-card.t-orange .team-avatar{background:linear-gradient(135deg,#ff6b35,#f7c73a)}
+  .team-card.t-blue .team-avatar{background:linear-gradient(135deg,#3a8dff,#8b3df5)}
+  .team-card.t-acid .team-avatar{background:linear-gradient(135deg,#c8ff00,#3aff8b);color:#000}
+
+  .team-name{
+    font-family:'Archivo Black',sans-serif;font-size:16px;
+    text-transform:uppercase;letter-spacing:.04em;color:var(--ink);
+    margin-bottom:4px;
+  }
+  .team-role{
+    font-family:'Space Mono',monospace;font-size:10px;
+    letter-spacing:.18em;color:var(--violet-glow);text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .team-bio{font-size:13px;color:var(--ink-dim);line-height:1.55;margin-bottom:16px}
+  .team-tags{display:flex;flex-wrap:wrap;gap:6px}
+  .team-tag{
+    padding:4px 9px;
+    background:var(--bg-2);border:1px solid var(--line);
+    font-family:'Space Mono',monospace;font-size:9px;
+    letter-spacing:.14em;color:var(--ink-dim);text-transform:uppercase;
+  }
+
+  /* ====== CTA FINAL ====== */
+  .cta-section{
+    position:relative;padding:80px 48px 100px;
+    max-width:1400px;margin:0 auto;
+  }
+  .cta-card{
+    position:relative;
+    padding:64px 48px;
+    background:
+      radial-gradient(800px 400px at 80% 50%, rgba(139,61,245,.25), transparent 60%),
+      radial-gradient(600px 300px at 20% 50%, rgba(255,43,214,.15), transparent 55%),
+      var(--bg-1);
+    border:1px solid var(--line-strong);
+    overflow:hidden;
+    display:grid;grid-template-columns:1fr auto;align-items:center;gap:32px;
+  }
+  .cta-card::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:60px 60px;
+    mask-image:radial-gradient(ellipse at center,#000,transparent 80%);
+  }
+  .cta-corner{
+    position:absolute;width:24px;height:24px;
+    border:1px solid var(--violet-glow);
+  }
+  .cta-corner.tl{top:14px;left:14px;border-right:none;border-bottom:none}
+  .cta-corner.tr{top:14px;right:14px;border-left:none;border-bottom:none}
+  .cta-corner.bl{bottom:14px;left:14px;border-right:none;border-top:none}
+  .cta-corner.br{bottom:14px;right:14px;border-left:none;border-top:none}
+
+  .cta-content{position:relative;z-index:2}
+  .cta-content .tag{margin-bottom:20px}
+  .cta-content h2{
+    font-family:'Archivo Black',sans-serif;
+    font-size:clamp(32px,4.5vw,56px);
+    line-height:.95;letter-spacing:-.01em;text-transform:uppercase;
+    margin-bottom:16px;
+  }
+  .cta-content h2 .accent{
+    color:var(--ink);
+  }
+  .cta-content p{font-size:16px;color:var(--ink-dim);max-width:520px;line-height:1.6}
+
+  .cta-actions{
+    position:relative;z-index:2;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .btn{
+    padding:18px 28px;
+    font-family:'Archivo Black',sans-serif;font-size:13px;
+    letter-spacing:.16em;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:14px;
+    transition:all .25s;cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn svg{width:16px;height:16px}
+  .btn-primary{
+    background:var(--ink);color:#0a0a0f;
+    clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);
+  }
+  .btn-primary:hover{background:var(--acid);transform:translateX(4px)}
+  .btn-ghost{
+    background:transparent;color:var(--ink);border:1px solid var(--line-strong);
+    font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;padding:17px 22px;
+  }
+  .btn-ghost:hover{border-color:var(--violet-glow);background:rgba(139,61,245,.06)}
+
+  /* ====== Responsive ====== */
+  @media (max-width:1024px){
+    nav{padding:18px 24px;flex-wrap:wrap;gap:14px}
+    .nav-links{order:3;width:100%;overflow-x:auto;padding-bottom:4px}
+    .section{padding:60px 24px}
+    .stats-section{padding:48px 24px}
+    .story-section,.mission,.rubros-section,.timeline-section,.team-section,.cta-section{padding:60px 24px}
+    .intro{grid-template-columns:1fr;gap:40px}
+    .intro-right{min-height:380px}
+    .stats-grid{grid-template-columns:1fr 1fr}
+    .stat:nth-child(2){border-right:none}
+    .stat{border-bottom:1px solid var(--line)}
+    .story-grid{grid-template-columns:1fr}
+    .story{border-right:none;border-bottom:1px solid var(--line)}
+    .mission{grid-template-columns:1fr}
+    .rubros{grid-template-columns:1fr 1fr}
+    .rubro{border-bottom:1px solid var(--line)}
+    .rubro:nth-child(2){border-right:none}
+    .timeline{grid-template-columns:1fr 1fr;gap:40px 0}
+    .timeline::before{display:none}
+    .team-grid{grid-template-columns:1fr 1fr}
+    .cta-card{grid-template-columns:1fr;padding:40px 24px}
+    .cta-actions{flex-direction:row;flex-wrap:wrap}
+  }
+  @media (max-width:560px){
+    .stats-grid{grid-template-columns:1fr}
+    .stat{border-right:none;border-bottom:1px solid var(--line)}
+    .stat-num{font-size:48px}
+    .stat-num .plus,.stat-num .pct{font-size:30px}
+    .rubros{grid-template-columns:1fr}
+    .rubro{border-right:none}
+    .timeline{grid-template-columns:1fr}
+    .team-grid{grid-template-columns:1fr}
+    h1.hero-title{font-size:54px}
+    .data{font-size:9px}
+    .data .line{width:20px}
+  }
+</style>
+</head>
+<body>
+
+<!-- Mini nav -->
+<nav>
+  <a href="index.html" class="logo-wrap"><img src="img/logo.png" alt="Glow Boxes"></a>
+  <div class="nav-links">
+    <a href="index.html">Productos</a>
+    <a href="index.html#categorias">Categorías</a>
+    <a href="index.html#marcas">Marcas</a>
+    <a href="quienes-somos.html" class="active">Quiénes Somos</a>
+    <a href="contacto.html">Contacto</a>
+  </div>
+  <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--violet-glow);text-transform:uppercase;display:flex;align-items:center;gap:8px">
+    <span style="width:6px;height:6px;background:var(--acid);border-radius:50%;box-shadow:0 0 8px var(--acid);animation:pulse 1.6s infinite"></span>
+    DESDE 2018
+  </div>
+</nav>
+
+<!-- ====== INTRO ====== -->
+<section class="section intro">
+  <span class="bg-num">02</span>
+  <div class="grid-bg"></div>
+
+  <div class="intro-left">
+    <div class="breadcrumb">
+      <span>HOME</span><span class="dash"></span>
+      <span>NOSOTROS</span><span class="dash"></span>
+      <span class="live">DESDE 2018</span>
+    </div>
+
+    <span class="tag">QUIÉNES SOMOS · GLOW BOXES</span>
+
+    <h1 class="hero-title">
+      <span class="accent">PASIÓN</span><br>
+      <span class="outline">POR EL DETAIL</span>
+    </h1>
+
+    <p class="lead">
+      Somos un equipo obsesionado con la <strong>estética vehicular de alto rendimiento</strong>. Nacimos en un garage de Buenos Aires en 2018, lavando autos con pasión, y hoy somos referentes en detailing, audio car, wrap, PPF y herramientas profesionales en toda Argentina.
+    </p>
+
+    <div class="signature">
+      <div class="sig-avatar">JM</div>
+      <div class="sig-info">
+        <div class="name">Juan Méndez</div>
+        <div class="role">Founder & CEO · Glow Boxes</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="intro-right">
+    <div class="visual-stage">
+      <div class="ring r1"></div>
+      <div class="ring r2"></div>
+      <div class="ring r3"></div>
+      <div class="core-glow"></div>
+
+      <span class="data d1"><span class="line"></span>FUNDADO <span class="val">2018</span></span>
+      <span class="data d2">CLIENTES <span class="val">+10K</span><span class="line"></span></span>
+      <span class="data d3"><span class="line"></span>RUBROS <span class="val">5</span></span>
+      <span class="data d4">MARCAS <span class="val">12+</span><span class="line"></span></span>
+
+      <img src="logo.png" alt="Glow Boxes" class="visual-logo">
+    </div>
+  </div>
+</section>
+
+<!-- ====== TICKER STRIP ====== -->
+<div class="divider-strip">
+  <div class="strip-track">
+    <span><span class="star">★</span> ESTÉTICA VEHICULAR</span>
+    <span>● DETAILING PROFESIONAL</span>
+    <span><span class="star">★</span> AUDIO CAR / WRAP / PPF</span>
+    <span>● HERRAMIENTAS PRO</span>
+    <span><span class="star">★</span> +10K CLIENTES FELICES</span>
+    <span>● ENVÍOS A TODO EL PAÍS</span>
+    <span><span class="star">★</span> ESTÉTICA VEHICULAR</span>
+    <span>● DETAILING PROFESIONAL</span>
+    <span><span class="star">★</span> AUDIO CAR / WRAP / PPF</span>
+    <span>● HERRAMIENTAS PRO</span>
+    <span><span class="star">★</span> +10K CLIENTES FELICES</span>
+    <span>● ENVÍOS A TODO EL PAÍS</span>
+  </div>
+</div>
+
+<!-- ====== STATS ====== -->
+<section class="stats-section">
+  <div class="stats-grid">
+    <div class="stat">
+      <div class="stat-num">7<span class="plus">+</span></div>
+      <div class="stat-label">// Años en el rubro</div>
+      <div class="stat-desc">Desde 2018 perfeccionando la estética vehicular en Argentina.</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">10K<span class="plus">+</span></div>
+      <div class="stat-label">// Clientes activos</div>
+      <div class="stat-desc">Detailers, talleres, wrappers y particulares que confían en nosotros.</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">247</div>
+      <div class="stat-label">// Productos en catálogo</div>
+      <div class="stat-desc">Curados uno por uno. Solo lo que realmente funciona.</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">98<span class="pct">%</span></div>
+      <div class="stat-label">// Recompra</div>
+      <div class="stat-desc">9 de cada 10 clientes vuelven. Esa es nuestra mejor métrica.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== STORY (3 valores) ====== -->
+<section class="story-section">
+  <span class="bg-num">03</span>
+  <div class="grid-bg"></div>
+
+  <div class="section-head">
+    <h2 class="section-title">
+      <span class="outline">LO QUE</span><br>
+      <span class="accent">NOS MUEVE</span>
+    </h2>
+    <p class="section-sub">No vendemos productos. Vendemos resultados que se ven en cada superficie. Tres principios que no negociamos.</p>
+  </div>
+
+  <div class="story-grid">
+    <div class="story">
+      <div class="story-num">[01] · CALIDAD</div>
+      <div class="story-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <h3 class="story-title">Solo Lo Mejor</h3>
+      <p class="story-text">Probamos cada producto en nuestro propio taller antes de subirlo al catálogo. Si no rinde, no entra. Punto.</p>
+    </div>
+    <div class="story">
+      <div class="story-num">[02] · KNOW-HOW</div>
+      <div class="story-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94L7.5 19.5a2.12 2.12 0 1 1-3-3l5.97-5.97a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg>
+      </div>
+      <h3 class="story-title">Asesoría Real</h3>
+      <p class="story-text">Detrás del catálogo hay detailers, wrappers e instaladores PPF que viven el rubro. Te asesoramos en serio, no leemos un folleto.</p>
+    </div>
+    <div class="story">
+      <div class="story-num">[03] · COMUNIDAD</div>
+      <div class="story-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3 class="story-title">Hacemos Equipo</h3>
+      <p class="story-text">Capacitaciones, descuentos a profesionales y stock priorizado para nuestra red. Crecemos cuando crecés vos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== MISIÓN / VISIÓN ====== -->
+<section class="mission">
+  <div class="mission-img">
+    <span class="mission-corner tl"></span>
+    <span class="mission-corner tr"></span>
+    <span class="mission-corner bl"></span>
+    <span class="mission-corner br"></span>
+    <div class="mission-quote">
+      <div class="mark">"</div>
+      <div class="text">
+        Que cada vehículo<br>
+        que toque <em>Glow Boxes</em><br>
+        salga como<br>
+        un <em>concept car.</em>
+      </div>
+    </div>
+  </div>
+
+  <div class="mission-content">
+    <span class="tag">NUESTRA MISIÓN</span>
+    <h2><span class="accent">Estética</span><br>sin compromiso</h2>
+    <p>Equipamos a profesionales y entusiastas con productos, herramientas y conocimiento para llevar cualquier vehículo al siguiente nivel. <strong>Sin atajos. Sin compromisos.</strong></p>
+    <p>Lo que empezó como una obsesión personal por el detalle hoy es un ecosistema completo que mueve a la industria automotriz argentina hacia un estándar más alto.</p>
+
+    <ul class="check-list">
+      <li class="check-item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body">
+          <div class="ttl">Stock real, no de catálogo</div>
+          <div class="desc">Lo que ves disponible está acá, listo para despachar.</div>
+        </div>
+      </li>
+      <li class="check-item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body">
+          <div class="ttl">Precio justo, sin vueltas</div>
+          <div class="desc">Importamos directo. Sin intermediarios infladores.</div>
+        </div>
+      </li>
+      <li class="check-item">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body">
+          <div class="ttl">Soporte de verdad</div>
+          <div class="desc">Te respondemos en horas, no en días. Vía WhatsApp, mail o presencial.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ====== RUBROS ====== -->
+<section class="rubros-section">
+  <span class="bg-num">04</span>
+  <div class="grid-bg"></div>
+
+  <div class="section-head">
+    <h2 class="section-title">
+      <span class="outline">TODO EL</span><br>
+      <span class="accent">RUBRO</span>
+    </h2>
+    <p class="section-sub">Cubrimos cinco verticales clave de la estética vehicular profesional. Un solo proveedor para todo.</p>
+  </div>
+
+  <div class="rubros">
+    <div class="rubro">
+      <div class="rubro-num">[01]<span class="arrow">→</span></div>
+      <div class="rubro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg></div>
+      <div class="rubro-name">Detailing</div>
+      <div class="rubro-desc">// Shampoos · ceras · selladores · APCs · descontaminantes</div>
+      <div class="rubro-count">112<span class="unit">PRODUCTOS</span></div>
+    </div>
+    <div class="rubro">
+      <div class="rubro-num">[02]<span class="arrow">→</span></div>
+      <div class="rubro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+      <div class="rubro-name">Audio Car</div>
+      <div class="rubro-desc">// Subwoofers · parlantes · amplificadores · cableado pro</div>
+      <div class="rubro-count">58<span class="unit">PRODUCTOS</span></div>
+    </div>
+    <div class="rubro">
+      <div class="rubro-num">[03]<span class="arrow">→</span></div>
+      <div class="rubro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></div>
+      <div class="rubro-name">Wrap</div>
+      <div class="rubro-desc">// Vinilos premium · color change · texturas · accesorios</div>
+      <div class="rubro-count">34<span class="unit">PRODUCTOS</span></div>
+    </div>
+    <div class="rubro">
+      <div class="rubro-num">[04]<span class="arrow">→</span></div>
+      <div class="rubro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></div>
+      <div class="rubro-name">PPF</div>
+      <div class="rubro-desc">// Películas de protección · self-healing · mate · cerámico</div>
+      <div class="rubro-count">22<span class="unit">PRODUCTOS</span></div>
+    </div>
+    <div class="rubro">
+      <div class="rubro-num">[05]<span class="arrow">→</span></div>
+      <div class="rubro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94L7.5 19.5a2.12 2.12 0 1 1-3-3l5.97-5.97a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg></div>
+      <div class="rubro-name">Herramientas</div>
+      <div class="rubro-desc">// Espátulas · pulidoras · pads · microfibras · accesorios</div>
+      <div class="rubro-count">21<span class="unit">PRODUCTOS</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== TIMELINE ====== -->
+<section class="timeline-section">
+  <div class="section-head">
+    <h2 class="section-title">
+      <span class="accent">NUESTRO</span><br>
+      <span class="outline">CAMINO</span>
+    </h2>
+    <p class="section-sub">De un garage en Belgrano a abastecer talleres en todo el país. Esto es Glow Boxes en cuatro hitos.</p>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">2018</div>
+      <div class="tl-title">El Garage</div>
+      <div class="tl-text">Juan empieza a vender productos de detailing por Instagram desde su garage en Belgrano. Primer cliente: un Renault Sandero.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">2020</div>
+      <div class="tl-title">El Local</div>
+      <div class="tl-text">Abrimos el primer local físico en Av. Corrientes. Sumamos audio car y herramientas. El equipo crece a 4 personas.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">2023</div>
+      <div class="tl-title">El Ecommerce</div>
+      <div class="tl-text">Lanzamos la tienda online y la red de distribuidores. Sumamos wrap y PPF al catálogo. +5K clientes activos.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">2026</div>
+      <div class="tl-title">El Estándar</div>
+      <div class="tl-text">Hoy somos referencia en estética vehicular argentina. Capacitamos detailers y wrappers en todo el país.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== TEAM ====== -->
+<section class="team-section">
+  <div class="section-head">
+    <h2 class="section-title">
+      <span class="outline">EL</span> <span class="accent">EQUIPO</span>
+    </h2>
+    <p class="section-sub">Las personas que viven el rubro. Detrás del catálogo no hay un call center: hay detailers reales con horas de garage.</p>
+  </div>
+
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-avatar">PC</div>
+      <div class="team-name">Pablo Cuenca</div>
+      <div class="team-role">Fundador y CEO</div>
+      <div class="team-bio">Fundador y CEO de Glow Boxes. También realiza instalaciones de ploteo: wrap, PPF y polarizado.</div>
+      <div class="team-tags">
+        <span class="team-tag">Wrap</span>
+        <span class="team-tag">PPF</span>
+        <span class="team-tag">Polarizado</span>
+      </div>
+    </div>
+
+    <div class="team-card t-orange">
+      <div class="team-avatar">AR</div>
+      <div class="team-name">Andrés Rousser</div>
+      <div class="team-role">Logística</div>
+      <div class="team-bio">Coordina preparación, despacho y seguimiento para que cada pedido salga ordenado y llegue como corresponde.</div>
+      <div class="team-tags">
+        <span class="team-tag">Logística</span>
+        <span class="team-tag">Despachos</span>
+      </div>
+    </div>
+
+    <div class="team-card t-blue">
+      <div class="team-avatar">EF</div>
+      <div class="team-name">Enzo Franko</div>
+      <div class="team-role">Detailer profesional</div>
+      <div class="team-bio">Detailer profesional especializado en pulido, corrección y terminaciones finas. Aporta criterio real de taller.</div>
+      <div class="team-tags">
+        <span class="team-tag">Detailing</span>
+        <span class="team-tag">Asesoría</span>
+      </div>
+    </div>
+
+    <div class="team-card t-acid">
+      <div class="team-avatar">BE</div>
+      <div class="team-name">Braian Escalante</div>
+      <div class="team-role">Instalador Audio Car y diseñador de cajas</div>
+      <div class="team-bio">Instalador de audio car y diseñador de cajas a medida. Trabaja setups pensados para sonar bien y bancarse el uso real.</div>
+      <div class="team-tags">
+        <span class="team-tag">Audio Car</span>
+        <span class="team-tag">Cajas</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== CTA FINAL ====== -->
+<section class="cta-section">
+  <div class="cta-card">
+    <span class="cta-corner tl"></span>
+    <span class="cta-corner tr"></span>
+    <span class="cta-corner bl"></span>
+    <span class="cta-corner br"></span>
+
+    <div class="cta-content">
+      <span class="tag">UNITE AL CLUB</span>
+      <h2>¿Sos <span class="accent">profesional</span><br>del rubro?</h2>
+      <p>Detailers, talleres, wrappers e instaladores PPF: tenemos descuentos exclusivos, stock priorizado y capacitación gratuita. Sumate a la red Glow Boxes.</p>
+    </div>
+
+    <div class="cta-actions">
+      <a href="#" class="btn btn-primary">
+        Aplicar al Programa
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </a>
+      <a href="#" class="btn btn-ghost">
+        Hablanos por WhatsApp
+      </a>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
