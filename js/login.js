@@ -90,7 +90,7 @@ async function handleLogin() {
 
   btnSuccess(btn, 'Listo')
   setTimeout(() => {
-    window.location.href = role === 'admin' ? 'admin.html' : 'index.html'
+    window.location.href = role === 'admin' ? 'admin.html' : 'cliente.html'
   }, 700)
 }
 
@@ -121,7 +121,7 @@ async function handleRegister() {
   }
 
   btnSuccess(btn, 'Cuenta creada')
-  setTimeout(() => { window.location.href = 'index.html' }, 700)
+  setTimeout(() => { window.location.href = 'cliente.html' }, 700)
 }
 
 // ── Dispatcher desde HTML (onsubmit) ──────────────────────

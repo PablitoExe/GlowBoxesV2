@@ -1,3 +1,5 @@
+import { supabase } from './supabase.js'
+
 // ===== Cart desde localStorage =====
 const CART_KEY = 'gb_cart';
 function getCart() {
@@ -126,38 +128,85 @@ renderSummary();
   }
   window.copyText = copyText;
 
-  // ===== Finalize =====
-  function finalizePay(){
-    // Generate fake order number
-    const num = 'GB-' + Math.floor(8473 + Math.random()*100);
-    document.getElementById('orderNumber').textContent = '// #'+num;
+  // ===== Finalize — guarda pedido en Supabase =====
+  async function finalizePay(){
+    const btn = document.querySelector('[onclick="finalizePay()"]');
+    if(btn){ btn.disabled = true; btn.textContent = 'Procesando...' }
+
+    const cart     = getCart();
+    const subtotal = cart.reduce((s,i) => s + i.precio * i.cantidad, 0);
+    const ship     = shipPrices[currentShip];
+    let   total    = subtotal + ship;
+    let   descuento = 0;
+    if(currentPay === 'transfer'){ descuento = Math.round(total * 0.10); total -= descuento; }
+
+    const num = 'GB-' + Date.now().toString().slice(-6);
+
+    // Guardar en Supabase si hay sesión
+    const { data: { session } } = await supabase.auth.getSession();
+    if(session){
+      try {
+        const { data: pedido, error: pedidoErr } = await supabase
+          .from('pedidos')
+          .insert({
+            numero:       num,
+            user_id:      session.user.id,
+            estado:       currentPay === 'transfer' ? 'pendiente' : 'confirmado',
+            metodo_pago:  currentPay,
+            metodo_envio: currentShip,
+            subtotal,
+            descuento,
+            costo_envio:  ship,
+            total,
+          })
+          .select('id')
+          .single();
+
+        if(!pedidoErr && pedido){
+          const items = cart.map(i => ({
+            pedido_id:       pedido.id,
+            producto_id:     i.id || null,
+            nombre_producto: i.nombre,
+            sku:             i.sku || null,
+            cantidad:        i.cantidad,
+            precio_unitario: i.precio,
+          }));
+          await supabase.from('pedido_items').insert(items);
+        }
+      } catch(e){ console.warn('Supabase order save failed', e) }
+    }
+
+    // Limpiar carrito
+    localStorage.removeItem(CART_KEY);
+
+    // UI confirmación
+    document.getElementById('orderNumber').textContent    = '// #'+num;
     document.getElementById('orderNumberBig').textContent = '#'+num;
 
-    // Update confirmation based on payment method
-    const paymentStatus = document.getElementById('paymentStatus');
+    const paymentStatus     = document.getElementById('paymentStatus');
     const paymentStatusDesc = document.getElementById('paymentStatusDesc');
-    const stepWhen = document.getElementById('step-payment-when');
-    const stepTitle = document.getElementById('step-payment-title');
-    const stepDesc = document.getElementById('step-payment-desc');
+    const stepWhen          = document.getElementById('step-payment-when');
+    const stepTitle         = document.getElementById('step-payment-title');
+    const stepDesc          = document.getElementById('step-payment-desc');
 
     if(currentPay === 'transfer'){
       paymentStatus.textContent = 'Pendiente';
       paymentStatus.style.color = 'var(--warn)';
       paymentStatusDesc.textContent = 'Esperando comprobante de transferencia';
-      stepWhen.textContent = 'PRÓXIMO PASO';
+      stepWhen.textContent  = 'PRÓXIMO PASO';
       stepTitle.textContent = 'Realizar transferencia';
-      stepDesc.textContent = 'Transferí a la cuenta de Glow Boxes y subí el comprobante en tu cuenta.';
+      stepDesc.textContent  = 'Transferí a la cuenta de Glow Boxes y subí el comprobante en tu cuenta.';
     } else {
       paymentStatus.textContent = 'Acreditado';
       paymentStatus.style.color = 'var(--acid)';
       paymentStatusDesc.textContent = 'Pago confirmado por Mercado Pago';
-      stepWhen.textContent = 'COMPLETADO';
+      stepWhen.textContent  = 'COMPLETADO';
       stepTitle.textContent = 'Pago confirmado';
-      stepDesc.textContent = 'Tu pago se acreditó correctamente vía Mercado Pago.';
+      stepDesc.textContent  = 'Tu pago se acreditó correctamente vía Mercado Pago.';
     }
 
-    document.getElementById('confirmShip').textContent = shipLabels[currentShip];
-    document.getElementById('confirmTotal').innerHTML = document.getElementById('grandTotal').innerHTML;
+    document.getElementById('confirmShip').textContent  = shipLabels[currentShip];
+    document.getElementById('confirmTotal').innerHTML   = document.getElementById('grandTotal').innerHTML;
 
     goStep(3);
   }

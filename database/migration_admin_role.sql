@@ -1,50 +1,49 @@
--- Ejecutar en Supabase → SQL Editor DESPUES del schema.sql
+-- ============================================================
+-- GLOW BOXES — Migración: Admin role
+-- Ejecutar DESPUÉS de schema.sql
+-- ============================================================
 
--- 1. Agregar columna role a perfiles
-alter table public.perfiles
-  add column if not exists role text
-  check (role in ('user','admin'))
-  default 'user';
-
--- 2. Política: admins ven TODO en catálogo (incluso inactivos)
+-- Políticas para admin: acceso total a catálogo e inactivos
 create policy "Admin lee todo productos"
   on public.productos for select
   using (
-    exists (
-      select 1 from public.perfiles
-      where id = auth.uid() and role = 'admin'
-    )
+    exists (select 1 from public.perfiles where id = auth.uid() and role = 'admin')
   );
 
 create policy "Admin escribe productos"
   on public.productos for all
   using (
-    exists (
-      select 1 from public.perfiles
-      where id = auth.uid() and role = 'admin'
-    )
+    exists (select 1 from public.perfiles where id = auth.uid() and role = 'admin')
   );
 
 create policy "Admin lee pedidos"
   on public.pedidos for select
   using (
-    exists (
-      select 1 from public.perfiles
-      where id = auth.uid() and role = 'admin'
-    )
+    exists (select 1 from public.perfiles where id = auth.uid() and role = 'admin')
+  );
+
+create policy "Admin actualiza pedidos"
+  on public.pedidos for update
+  using (
+    exists (select 1 from public.perfiles where id = auth.uid() and role = 'admin')
   );
 
 create policy "Admin gestiona cupones"
   on public.cupones for all
   using (
-    exists (
-      select 1 from public.perfiles
-      where id = auth.uid() and role = 'admin'
-    )
+    exists (select 1 from public.perfiles where id = auth.uid() and role = 'admin')
   );
 
--- 3. ⚠️  IMPORTANTE: reemplazá el UUID por el tuyo
---    Lo encontrás en Supabase → Authentication → Users
---    Después de registrarte en la web, corré esto:
---
+create policy "Admin lee perfiles"
+  on public.perfiles for select
+  using (
+    exists (select 1 from public.perfiles where id = auth.uid() and role = 'admin')
+  );
+
+-- ============================================================
+-- ⚠️  PASO FINAL: Asignar tu usuario como admin
+-- 1. Registrate en la web (login.html)
+-- 2. Buscá tu UUID en Supabase → Authentication → Users
+-- 3. Ejecutá esto reemplazando el UUID:
+-- ============================================================
 -- update public.perfiles set role = 'admin' where id = 'TU-UUID-AQUI';

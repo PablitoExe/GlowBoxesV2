@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLOW BOXES — Mi Cuenta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/cliente.css">
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav>
+  <a href="#" class="logo-wrap"><img src="img/logo.png" alt="Glow Boxes"></a>
+  <div class="nav-center">
+    <span>MI CUENTA</span>
+    <span class="sep"></span>
+    <span class="live">SESIÓN ACTIVA</span>
+  </div>
+  <div class="nav-right">
+    <button class="icon-btn" aria-label="Notificaciones">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      <span class="dot"></span>
+    </button>
+    <button class="icon-btn" aria-label="Favoritos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg>
+    </button>
+    <button class="icon-btn" aria-label="Carrito">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    </button>
+    <div class="nav-avatar">
+      <div class="av">LR</div>
+      <span class="name">Lucas R.</span>
+    </div>
+  </div>
+</nav>
+
+<!-- APP -->
+<div class="app">
+
+  <!-- ====== SIDEBAR ====== -->
+  <aside class="sidebar">
+
+    <!-- User card -->
+    <div class="user-card">
+      <div class="uc-content">
+        <div class="uc-avatar">LR</div>
+        <div class="uc-name">Lucas Romero</div>
+        <div class="uc-email">lucas@detailpro.ar</div>
+        <span class="uc-tier">CLIENTE · DETAILER</span>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="side-nav">
+      <div class="label">// Mi Cuenta</div>
+      <a class="active" data-page="overview">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+        <span class="lbl">Resumen</span>
+      </a>
+      <a data-page="orders">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/></svg></span>
+        <span class="lbl">Mis Pedidos</span>
+        <span class="badge">4</span>
+      </a>
+      <a data-page="rewards">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7Z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z"/></svg></span>
+        <span class="lbl">Mystery Box</span>
+        <span class="badge acid">3/5</span>
+      </a>
+      <a data-page="favorites">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></span>
+        <span class="lbl">Favoritos</span>
+      </a>
+      <a data-page="addresses">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+        <span class="lbl">Direcciones</span>
+      </a>
+      <a data-page="profile">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+        <span class="lbl">Mi Perfil</span>
+      </a>
+
+      <div class="side-foot">
+        <a>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg></span>
+          <span class="lbl">Soporte</span>
+        </a>
+        <a class="danger-link">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+          <span class="lbl">Cerrar Sesión</span>
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ====== MAIN ====== -->
+  <main class="main">
+
+    <!-- ============ OVERVIEW ============ -->
+    <div class="page active" data-page="overview">
+      <div class="page-head">
+        <div class="breadcrumb">
+          <span>HOME</span><span class="sep">/</span>
+          <span class="current">RESUMEN</span>
+        </div>
+        <h1 class="page-title">Hola, <span class="accent">Lucas</span> 👋</h1>
+        <p class="page-sub">Te falta <strong class="text-acid">solo 2 compras más</strong> para desbloquear tu Mystery Box.</p>
+      </div>
+
+      <!-- MYSTERY BOX BANNER -->
+      <div class="mystery">
+        <span class="mystery-corner tl"></span>
+        <span class="mystery-corner tr"></span>
+        <span class="mystery-corner bl"></span>
+        <span class="mystery-corner br"></span>
+
+        <div class="myst-content">
+          <span class="myst-tag">PROGRAMA MYSTERY BOX · NIVEL 1</span>
+          <h2 class="myst-title">
+            <span class="accent">5 COMPRAS</span> =<br>
+            UNA BOX SORPRESA<br>
+            CON +$30K EN PRODUCTOS
+          </h2>
+          <p class="myst-desc">Por cada 5 compras te enviamos <strong>GRATIS</strong> una caja con productos seleccionados por nuestros detailers pro. Stickers, microfibras, samples y al menos un producto sorpresa de las marcas top.</p>
+
+          <div class="myst-progress">
+            <div class="myst-dot done">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="myst-line done"></div>
+            <div class="myst-dot done">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="myst-line done"></div>
+            <div class="myst-dot done">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="myst-line current progress-30"></div>
+            <div class="myst-dot current">04</div>
+            <div class="myst-line"></div>
+            <div class="myst-dot">05</div>
+          </div>
+
+          <div class="myst-progress-label">
+            <span class="count"><span class="big">3</span> / 5 COMPRAS</span>
+            <span>// FALTAN 2 PARA TU BOX</span>
+          </div>
+        </div>
+
+        <!-- Mystery box visual -->
+        <div class="myst-box">
+          <div class="myst-glow"></div>
+          <svg class="box-svg" viewBox="0 0 200 200">
+            <defs>
+              <linearGradient id="boxGrad" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#a86bff"/>
+                <stop offset="1" stop-color="#ff2bd6"/>
+              </linearGradient>
+              <linearGradient id="ribbon" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#c8ff00"/>
+                <stop offset="1" stop-color="#3aff8b"/>
+              </linearGradient>
+            </defs>
+            <!-- Box body -->
+            <polygon points="40,75 100,55 160,75 160,165 100,185 40,165" fill="url(#boxGrad)" opacity=".95"/>
+            <!-- Top -->
+            <polygon points="40,75 100,55 160,75 100,95" fill="#a86bff" opacity=".8"/>
+            <!-- Side shading -->
+            <polygon points="40,75 100,95 100,185 40,165" fill="rgba(0,0,0,.25)"/>
+            <!-- Ribbon vertical -->
+            <rect x="92" y="55" width="16" height="130" fill="url(#ribbon)"/>
+            <!-- Ribbon horizontal -->
+            <polygon points="40,118 100,138 160,118 160,128 100,148 40,128" fill="url(#ribbon)"/>
+            <!-- Bow -->
+            <circle cx="100" cy="55" r="14" fill="url(#ribbon)"/>
+            <ellipse cx="86" cy="50" rx="14" ry="9" fill="url(#ribbon)" transform="rotate(-25 86 50)"/>
+            <ellipse cx="114" cy="50" rx="14" ry="9" fill="url(#ribbon)" transform="rotate(25 114 50)"/>
+            <!-- Question mark -->
+            <text x="100" y="135" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="40" fill="#fff" opacity=".9">?</text>
+            <!-- Sparkles -->
+            <circle cx="30" cy="60" r="3" fill="#c8ff00"/>
+            <circle cx="170" cy="50" r="2" fill="#fff"/>
+            <circle cx="175" cy="170" r="3" fill="#c8ff00"/>
+            <circle cx="25" cy="180" r="2" fill="#fff"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-head">
+            <span class="kpi-label">Pedidos Totales</span>
+            <span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/></svg></span>
+          </div>
+          <div class="kpi-value" data-kpi="count">—</div>
+          <div class="kpi-foot" data-kpi="count-foot">// CARGANDO...</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head">
+            <span class="kpi-label">Total Gastado</span>
+            <span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+          </div>
+          <div class="kpi-value" data-kpi="gastado">—</div>
+          <div class="kpi-foot">// TOTAL ACUMULADO</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-head">
+            <span class="kpi-label">Ahorrado</span>
+            <span class="kpi-icon text-acid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+          </div>
+          <div class="kpi-value text-acid" data-kpi="ahorrado">—</div>
+          <div class="kpi-foot">// EN DESCUENTOS</div>
+        </div>
+      </div>
+
+      <!-- Pedido activo -->
+      <div class="card" data-card="activo">
+        <div class="card-head">
+          <span class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            Pedido en Curso
+          </span>
+          <span class="card-meta" data-field="numero">// —</span>
+        </div>
+        <div class="tracking">
+          <div class="tline-header">
+            <div class="tline-eta">
+              <div class="lbl">// Entrega Estimada</div>
+              <div class="date" data-field="eta">—</div>
+              <div class="when">Entrega estimada</div>
+            </div>
+            <div class="tline-code">
+              <div class="lbl">// Código de Seguimiento</div>
+              <div class="code" data-field="tracking">—</div>
+            </div>
+          </div>
+
+          <div class="tline">
+            <div class="tl-step done">
+              <div class="tl-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="tl-info">
+                <div class="when">07 MAY · 14:32 — COMPLETADO</div>
+                <div class="title">Pedido recibido</div>
+                <div class="desc">Confirmamos tu compra y enviamos email con el detalle.</div>
+              </div>
+            </div>
+            <div class="tl-step done">
+              <div class="tl-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="tl-info">
+                <div class="when">07 MAY · 14:35 — COMPLETADO</div>
+                <div class="title">Pago acreditado</div>
+                <div class="desc">Tu pago se procesó correctamente vía Mercado Pago.</div>
+              </div>
+            </div>
+            <div class="tl-step done">
+              <div class="tl-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="tl-info">
+                <div class="when">07 MAY · 18:20 — COMPLETADO</div>
+                <div class="title">Pedido preparado</div>
+                <div class="desc">Productos empaquetados y listos para despacho.</div>
+              </div>
+            </div>
+            <div class="tl-step current">
+              <div class="tl-dot"></div>
+              <div class="tl-info">
+                <div class="when">08 MAY · 09:14 — EN CAMINO AHORA</div>
+                <div class="title">En camino a tu domicilio</div>
+                <div class="desc">El repartidor lleva tu pedido. Vas a recibir una llamada antes de la entrega.</div>
+              </div>
+            </div>
+            <div class="tl-step">
+              <div class="tl-dot"></div>
+              <div class="tl-info">
+                <div class="when">09 MAY · ESTIMADO</div>
+                <div class="title">Entregado</div>
+                <div class="desc">El pedido se entregará en Av. Cabildo 2547, 4° B.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <button class="btn btn-primary">Ver Detalle Completo <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+            <button class="btn btn-ghost">Contactar Soporte</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Últimos pedidos -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Historial Reciente
+          </span>
+          <a class="card-meta card-link" onclick="navigate('orders')">VER TODOS →</a>
+        </div>
+        <div class="orders" data-list="historial">
+          <div class="order">
+            <span class="order-num">#GB-<br>8472</span>
+            <div class="order-info">
+              <div class="order-head">
+                <span class="order-id">3 productos</span>
+                <span class="pill shipped">EN CAMINO</span>
+              </div>
+              <div class="order-products">Foam Beast · Cleaner Strong · Espátula Wrap</div>
+              <div class="order-meta">07 MAY 2026 · 14:32</div>
+            </div>
+            <div class="order-right">
+              <div class="order-total"><span class="currency">$</span>34.900</div>
+              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+            </div>
+          </div>
+          <div class="order">
+            <span class="order-num">#GB-<br>8201</span>
+            <div class="order-info">
+              <div class="order-head">
+                <span class="order-id">5 productos</span>
+                <span class="pill ok">ENTREGADO</span>
+              </div>
+              <div class="order-products">PPF Premium · Microfibras · Pad pulido</div>
+              <div class="order-meta">22 ABR 2026 · 11:08</div>
+            </div>
+            <div class="order-right">
+              <div class="order-total"><span class="currency">$</span>92.300</div>
+              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+            </div>
+          </div>
+          <div class="order">
+            <span class="order-num">#GB-<br>7843</span>
+            <div class="order-info">
+              <div class="order-head">
+                <span class="order-id">2 productos</span>
+                <span class="pill ok">ENTREGADO</span>
+              </div>
+              <div class="order-products">Cera Carnauba · Aplicador foam</div>
+              <div class="order-meta">04 ABR 2026 · 16:45</div>
+            </div>
+            <div class="order-right">
+              <div class="order-total"><span class="currency">$</span>37.600</div>
+              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ ORDERS ============ -->
+    <div class="page" data-page="orders">
+      <div class="page-head">
+        <div class="breadcrumb">
+          <span>HOME</span><span class="sep">/</span><span>MI CUENTA</span><span class="sep">/</span>
+          <span class="current">MIS PEDIDOS</span>
+        </div>
+        <h1 class="page-title">Mis <span class="accent">Pedidos</span></h1>
+        <p class="page-sub">Historial completo de tus compras y su estado actual.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/></svg> Todos los pedidos</span>
+          <span class="card-meta">// 4 PEDIDOS</span>
+        </div>
+        <div class="orders" data-list="all-pedidos">
+          <div class="order">
+            <span class="order-num">#GB-<br>8472</span>
+            <div class="order-info">
+              <div class="order-head"><span class="order-id">3 productos</span><span class="pill shipped">EN CAMINO</span></div>
+              <div class="order-products">Foam Beast Banana 500ml + 2 más</div>
+              <div class="order-meta">07 MAY 2026</div>
+            </div>
+            <div class="order-right">
+              <div class="order-total"><span class="currency">$</span>34.900</div>
+              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+            </div>
+          </div>
+          <div class="order">
+            <span class="order-num">#GB-<br>8201</span>
+            <div class="order-info">
+              <div class="order-head"><span class="order-id">5 productos</span><span class="pill ok">ENTREGADO</span></div>
+              <div class="order-products">PPF Premium 1.52×15m + 4 más</div>
+              <div class="order-meta">22 ABR 2026</div>
+            </div>
+            <div class="order-right">
+              <div class="order-total"><span class="currency">$</span>92.300</div>
+              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+            </div>
+          </div>
+          <div class="order">
+            <span class="order-num">#GB-<br>7843</span>
+            <div class="order-info">
+              <div class="order-head"><span class="order-id">2 productos</span><span class="pill ok">ENTREGADO</span></div>
+              <div class="order-products">Cera Carnauba + Aplicador foam</div>
+              <div class="order-meta">04 ABR 2026</div>
+            </div>
+            <div class="order-right">
+              <div class="order-total"><span class="currency">$</span>37.600</div>
+              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+            </div>
+          </div>
+          <div class="order">
+            <span class="order-num">#GB-<br>7102</span>
+            <div class="order-info">
+              <div class="order-head"><span class="order-id">1 producto</span><span class="pill cancel">CANCELADO</span></div>
+              <div class="order-products">Subwoofer 12" 1500W</div>
+              <div class="order-meta">15 MAR 2026</div>
+            </div>
+            <div class="order-right">
+              <div class="order-total"><span class="currency">$</span>289.900</div>
+              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ REWARDS / MYSTERY BOX ============ -->
+    <div class="page" data-page="rewards">
+      <div class="page-head">
+        <div class="breadcrumb">
+          <span>HOME</span><span class="sep">/</span><span>MI CUENTA</span><span class="sep">/</span>
+          <span class="current">MYSTERY BOX</span>
+        </div>
+        <h1 class="page-title">Programa <span class="accent">Mystery Box</span> 🎁</h1>
+        <p class="page-sub">Cada 5 compras te enviamos GRATIS una caja sorpresa con productos exclusivos.</p>
+      </div>
+
+      <!-- Mystery banner (same as overview but expanded) -->
+      <div class="mystery">
+        <span class="mystery-corner tl"></span>
+        <span class="mystery-corner tr"></span>
+        <span class="mystery-corner bl"></span>
+        <span class="mystery-corner br"></span>
+
+        <div class="myst-content">
+          <span class="myst-tag">PROGRESO ACTUAL · NIVEL 1</span>
+          <h2 class="myst-title">
+            <span class="accent">2 COMPRAS</span> MÁS<br>
+            Y TU BOX ES TUYA
+          </h2>
+          <p class="myst-desc">Estás a <strong>solo 2 pedidos</strong> de recibir tu primera Mystery Box. Te llegará automáticamente al confirmar tu 5ta compra. <strong>Sin costo extra. Sin trampa.</strong></p>
+
+          <div class="myst-progress">
+            <div class="myst-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="myst-line done"></div>
+            <div class="myst-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="myst-line done"></div>
+            <div class="myst-dot done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="myst-line current progress-30"></div>
+            <div class="myst-dot current">04</div>
+            <div class="myst-line"></div>
+            <div class="myst-dot">05</div>
+          </div>
+
+          <div class="myst-progress-label">
+            <span class="count"><span class="big">3</span> / 5 COMPRAS</span>
+            <span>// PRÓXIMA BOX: +$30K EN PRODUCTOS</span>
+          </div>
+        </div>
+
+        <div class="myst-box">
+          <div class="myst-glow"></div>
+          <svg class="box-svg" viewBox="0 0 200 200">
+            <defs>
+              <linearGradient id="boxGrad2" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#a86bff"/>
+                <stop offset="1" stop-color="#ff2bd6"/>
+              </linearGradient>
+              <linearGradient id="ribbon2" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#c8ff00"/>
+                <stop offset="1" stop-color="#3aff8b"/>
+              </linearGradient>
+            </defs>
+            <polygon points="40,75 100,55 160,75 160,165 100,185 40,165" fill="url(#boxGrad2)" opacity=".95"/>
+            <polygon points="40,75 100,55 160,75 100,95" fill="#a86bff" opacity=".8"/>
+            <polygon points="40,75 100,95 100,185 40,165" fill="rgba(0,0,0,.25)"/>
+            <rect x="92" y="55" width="16" height="130" fill="url(#ribbon2)"/>
+            <polygon points="40,118 100,138 160,118 160,128 100,148 40,128" fill="url(#ribbon2)"/>
+            <circle cx="100" cy="55" r="14" fill="url(#ribbon2)"/>
+            <ellipse cx="86" cy="50" rx="14" ry="9" fill="url(#ribbon2)" transform="rotate(-25 86 50)"/>
+            <ellipse cx="114" cy="50" rx="14" ry="9" fill="url(#ribbon2)" transform="rotate(25 114 50)"/>
+            <text x="100" y="135" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="40" fill="#fff" opacity=".9">?</text>
+            <circle cx="30" cy="60" r="3" fill="#c8ff00"/>
+            <circle cx="170" cy="50" r="2" fill="#fff"/>
+            <circle cx="175" cy="170" r="3" fill="#c8ff00"/>
+            <circle cx="25" cy="180" r="2" fill="#fff"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Qué incluye -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/></svg> ¿Qué viene en la box?</span>
+          <span class="card-meta">// VALOR +$30K</span>
+        </div>
+        <div class="card-body">
+          <div class="box-includes-grid">
+            <div class="box-include">
+              <div class="box-include-head">
+                <div class="box-include-icon premium"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg></div>
+                <span class="box-include-title">Producto Premium</span>
+              </div>
+              <p class="box-include-text">Un producto sorpresa de las marcas top del catálogo. Valor mínimo $15.000.</p>
+            </div>
+            <div class="box-include">
+              <div class="box-include-head">
+                <div class="box-include-icon samples"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18"/></svg></div>
+                <span class="box-include-title">Samples & Microfibras</span>
+              </div>
+              <p class="box-include-text">3-4 samples de productos nuevos + 2 microfibras premium 40×40cm.</p>
+            </div>
+            <div class="box-include">
+              <div class="box-include-head">
+                <div class="box-include-icon merch"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+                <span class="box-include-title">Stickers & Merch</span>
+              </div>
+              <p class="box-include-text">Pack de stickers Glow Boxes, parche bordado y a veces alguna gorra o remera.</p>
+            </div>
+            <div class="box-include">
+              <div class="box-include-head">
+                <div class="box-include-icon coupon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg></div>
+                <span class="box-include-title">Cupón Sorpresa</span>
+              </div>
+              <p class="box-include-text">Un cupón exclusivo para tu próxima compra (entre 15% y 30% OFF).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historial de boxes -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Historial de Recompensas</span>
+          <span class="card-meta">// PRIMERA BOX PENDIENTE</span>
+        </div>
+        <div class="reward-history">
+          <div class="reward-row is-muted">
+            <div class="reward-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/></svg></div>
+            <div class="reward-info">
+              <div class="ttl">Mystery Box · Nivel 1</div>
+              <div class="meta">SE DESBLOQUEA AL 5to PEDIDO</div>
+            </div>
+            <div class="reward-value text-muted">+$30K</div>
+          </div>
+          <div class="reward-row">
+            <div class="reward-icon acid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="reward-info">
+              <div class="ttl">Descuento Detailer aplicado</div>
+              <div class="meta">PEDIDO #GB-8472 · 07 MAY 2026</div>
+            </div>
+            <div class="reward-value">-<span class="currency">$</span>5.316</div>
+          </div>
+          <div class="reward-row">
+            <div class="reward-icon magenta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/></svg></div>
+            <div class="reward-info">
+              <div class="ttl">Cupón DETAIL20 usado</div>
+              <div class="meta">PEDIDO #GB-8201 · 22 ABR 2026</div>
+            </div>
+            <div class="reward-value">-<span class="currency">$</span>12.842</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ FAVORITES ============ -->
+    <div class="page" data-page="favorites">
+      <div class="page-head">
+        <div class="breadcrumb">
+          <span>HOME</span><span class="sep">/</span><span>MI CUENTA</span><span class="sep">/</span>
+          <span class="current">FAVORITOS</span>
+        </div>
+        <h1 class="page-title">Mis <span class="accent">Favoritos</span></h1>
+        <p class="page-sub">Productos guardados para comprar después.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg> <span data-fav="count">—</span></span>
+        </div>
+        <div class="card-body">
+          <div class="fav-grid" data-list="favoritos">
+            <div class="fav">
+              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
+              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg></div>
+              <div class="fav-cat">// DETAILING</div>
+              <div class="fav-name">Cera Carnauba Premium 250ml</div>
+              <div class="fav-price">
+                <span class="val"><span class="currency">$</span>18.500</span>
+                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
+              </div>
+            </div>
+            <div class="fav">
+              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
+              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+              <div class="fav-cat">// AUDIO CAR</div>
+              <div class="fav-name">Subwoofer 12" 1500W RMS</div>
+              <div class="fav-price">
+                <span class="val"><span class="currency">$</span>289.900</span>
+                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
+              </div>
+            </div>
+            <div class="fav">
+              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
+              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18"/></svg></div>
+              <div class="fav-cat">// WRAP</div>
+              <div class="fav-name">Vinilo Negro Mate 1.52×30m</div>
+              <div class="fav-price">
+                <span class="val"><span class="currency">$</span>320.000</span>
+                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
+              </div>
+            </div>
+            <div class="fav">
+              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
+              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94L7.5 19.5a2.12 2.12 0 1 1-3-3l5.97-5.97a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg></div>
+              <div class="fav-cat">// HERRAMIENTAS</div>
+              <div class="fav-name">Pulidora Rotorbital DA</div>
+              <div class="fav-price">
+                <span class="val"><span class="currency">$</span>148.500</span>
+                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
+              </div>
+            </div>
+            <div class="fav">
+              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
+              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></div>
+              <div class="fav-cat">// PPF</div>
+              <div class="fav-name">PPF Premium 1.52×15m</div>
+              <div class="fav-price">
+                <span class="val"><span class="currency">$</span>184.500</span>
+                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
+              </div>
+            </div>
+            <div class="fav">
+              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
+              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg></div>
+              <div class="fav-cat">// DETAILING</div>
+              <div class="fav-name">Cleaner Strong APC 600ml</div>
+              <div class="fav-price">
+                <span class="val"><span class="currency">$</span>11.999</span>
+                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ ADDRESSES ============ -->
+    <div class="page" data-page="addresses">
+      <div class="page-head">
+        <div class="breadcrumb">
+          <span>HOME</span><span class="sep">/</span><span>MI CUENTA</span><span class="sep">/</span>
+          <span class="current">DIRECCIONES</span>
+        </div>
+        <h1 class="page-title">Mis <span class="accent">Direcciones</span></h1>
+        <p class="page-sub">Gestioná las direcciones donde recibís tus pedidos.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="addr-grid" data-list="direcciones">
+            <div class="addr-card default">
+              <span class="tag-default">PREDETERMINADA</span>
+              <div class="addr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+              <div class="addr-name">Casa</div>
+              <div class="addr-text">Av. Cabildo 2547, 4° B<br>C1428 · Belgrano, CABA<br>Tocar timbre 4B</div>
+              <div class="addr-actions">
+                <button class="addr-act">Editar</button>
+                <button class="addr-act">Eliminar</button>
+              </div>
+            </div>
+
+            <div class="addr-card">
+              <div class="addr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 21V9h6v12"/></svg></div>
+              <div class="addr-name">Taller</div>
+              <div class="addr-text">Murguiondo 1234<br>C1407 · Mataderos, CABA<br>Lun-Vie 9 a 18hs</div>
+              <div class="addr-actions">
+                <button class="addr-act">Editar</button>
+                <button class="addr-act">Marcar predeterminada</button>
+              </div>
+            </div>
+
+            <div class="addr-card add">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14m-7-7h14"/></svg>
+              <span>Agregar Dirección</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PROFILE ============ -->
+    <div class="page" data-page="profile">
+      <div class="page-head">
+        <div class="breadcrumb">
+          <span>HOME</span><span class="sep">/</span><span>MI CUENTA</span><span class="sep">/</span>
+          <span class="current">MI PERFIL</span>
+        </div>
+        <h1 class="page-title">Mi <span class="accent">Perfil</span></h1>
+        <p class="page-sub">Datos personales y preferencias.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Datos Personales</span>
+        </div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="field">
+              <label class="field-label">Nombre</label>
+              <div class="input-wrap"><input id="prof-nombre" class="input" placeholder="Tu nombre"></div>
+            </div>
+            <div class="field">
+              <label class="field-label">Apellido</label>
+              <div class="input-wrap"><input id="prof-apellido" class="input" placeholder="Tu apellido"></div>
+            </div>
+            <div class="field full">
+              <label class="field-label">Email</label>
+              <div class="input-wrap">
+                <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg></span>
+                <input id="prof-email" class="input is-readonly" readonly>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Teléfono</label>
+              <div class="input-wrap">
+                <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg></span>
+                <input id="prof-tel" class="input" placeholder="+54 9 11 ...">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">DNI / CUIT</label>
+              <div class="input-wrap"><input id="prof-dni" class="input" placeholder="DNI o CUIT"></div>
+            </div>
+            <div class="field">
+              <label class="field-label">Tipo de Cliente</label>
+              <div class="input-wrap">
+                <select id="prof-tipo" class="input" style="cursor:pointer">
+                  <option value="particular">Particular</option>
+                  <option value="detailer">Detailer</option>
+                  <option value="taller">Taller</option>
+                  <option value="wrapper">Wrapper</option>
+                  <option value="instalador">Instalador PPF</option>
+                  <option value="revendedor">Revendedor</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Fecha de nacimiento</label>
+              <div class="input-wrap"><input id="prof-fecha" class="input" type="date"></div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button id="btn-save-perfil" class="btn btn-primary" onclick="savePerfil()">Guardar Cambios <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="btn btn-ghost">Cambiar Contraseña</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/></svg> Preferencias de Comunicación</span>
+        </div>
+        <div class="card-body">
+          <div class="pref-list">
+            <label class="pref-option">
+              <div>
+                <div class="pref-title">Newsletter semanal</div>
+                <div class="pref-meta">DROPS Y NOVEDADES TODOS LOS JUEVES</div>
+              </div>
+              <input class="pref-check" type="checkbox" checked>
+            </label>
+            <label class="pref-option">
+              <div>
+                <div class="pref-title">Notificaciones de pedido</div>
+                <div class="pref-meta">EMAIL + SMS DEL ESTADO DE TU COMPRA</div>
+              </div>
+              <input class="pref-check" type="checkbox" checked>
+            </label>
+            <label class="pref-option">
+              <div>
+                <div class="pref-title">Ofertas exclusivas para detailers</div>
+                <div class="pref-meta">DESCUENTOS B2B Y STOCK PRIORITARIO</div>
+              </div>
+              <input class="pref-check" type="checkbox" checked>
+            </label>
+            <label class="pref-option">
+              <div>
+                <div class="pref-title">WhatsApp</div>
+                <div class="pref-meta">RECIBIR PROMOCIONES POR WHATSAPP</div>
+              </div>
+              <input class="pref-check" type="checkbox">
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script type="module" src="js/cliente.js"></script>
+
+</body>
+</html>

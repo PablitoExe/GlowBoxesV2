@@ -145,8 +145,7 @@
     font-size:42px;line-height:1;letter-spacing:-.01em;text-transform:uppercase;
   }
   .page-title .accent{
-    background:linear-gradient(180deg,#fff 0%,#fff 50%,var(--violet-glow) 50%,var(--magenta) 100%);
-    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    color:var(--ink);
   }
   .page-sub{
     margin-top:8px;font-size:14px;color:var(--ink-dim);
