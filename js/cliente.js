@@ -134,23 +134,18 @@ function updateKPIs(pedidos) {
   const totalGastado = pedidos.reduce((s, p) => s + Number(p.total), 0)
   const totalAhorrado = pedidos.reduce((s, p) => s + Number(p.descuento || 0), 0)
 
-  const kpiCount    = document.querySelector('[data-kpi="count"]')
-  const kpiGastado  = document.querySelector('[data-kpi="gastado"]')
-  const kpiAhorrado = document.querySelector('[data-kpi="ahorrado"]')
-  const kpiCountFoot = document.querySelector('[data-kpi="count-foot"]')
-
-  if (kpiCount)    kpiCount.textContent    = pedidos.length
-  if (kpiGastado)  kpiGastado.innerHTML    = `<span class="currency">$</span>${fmt(totalGastado)}`
-  if (kpiAhorrado) kpiAhorrado.innerHTML   = `<span class="kpi-currency-alt">$</span>${fmt(totalAhorrado)}`
+  document.querySelectorAll('[data-kpi="count"]').forEach(el => el.textContent = pedidos.length)
+  document.querySelectorAll('[data-kpi="gastado"]').forEach(el => el.innerHTML = `<span class="currency">$</span>${fmt(totalGastado)}`)
+  document.querySelectorAll('[data-kpi="ahorrado"]').forEach(el => el.innerHTML = `<span class="kpi-currency-alt">$</span>${fmt(totalAhorrado)}`)
 
   const enCamino   = pedidos.filter(p => p.estado === 'en_transito').length
   const entregados = pedidos.filter(p => p.estado === 'entregado').length
-  if (kpiCountFoot) kpiCountFoot.textContent = `// ${enCamino} EN CAMINO · ${entregados} ENTREGADOS`
+  document.querySelectorAll('[data-kpi="count-foot"]').forEach(el => el.textContent = `// ${enCamino} EN CAMINO · ${entregados} ENTREGADOS`)
 }
 
 // ── Pedido activo (en_transito o confirmado) ──────────────
 function renderPedidoActivo(pedidos) {
-  const activo = pedidos.find(p => ['en_transito','en_preparacion','confirmado'].includes(p.estado))
+  const activo = pedidos.find(p => ['pendiente','confirmado','en_preparacion','en_transito'].includes(p.estado))
   const card   = document.querySelector('.card[data-card="activo"]')
   if (!card) return
 
@@ -259,16 +254,18 @@ function updateMysteryProgress(pedidos) {
   const badge = document.querySelector('.side-nav a[data-page="rewards"] .badge')
   if (badge) badge.textContent = `${ciclo}/5`
 
-  // Dots del progress
-  document.querySelectorAll('.myst-dot').forEach((dot, i) => {
-    dot.classList.remove('done','current')
-    if (i < ciclo)      dot.classList.add('done')
-    else if (i === ciclo && ciclo < 5) dot.classList.add('current')
-  })
-  document.querySelectorAll('.myst-line').forEach((line, i) => {
-    line.classList.remove('done','current')
-    if (i < ciclo - 1) line.classList.add('done')
-    else if (i === ciclo - 1) line.classList.add('current')
+  // Actualizar dots y lines por cada bloque .mystery independientemente
+  document.querySelectorAll('.mystery').forEach(myst => {
+    myst.querySelectorAll('.myst-dot').forEach((dot, i) => {
+      dot.classList.remove('done','current')
+      if (i < ciclo)      dot.classList.add('done')
+      else if (i === ciclo && ciclo < 5) dot.classList.add('current')
+    })
+    myst.querySelectorAll('.myst-line').forEach((line, i) => {
+      line.classList.remove('done','current')
+      if (i < ciclo - 1) line.classList.add('done')
+      else if (i === ciclo - 1) line.classList.add('current')
+    })
   })
 }
 

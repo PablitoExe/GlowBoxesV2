@@ -31,8 +31,8 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     </button>
     <div class="nav-avatar">
-      <div class="av">LR</div>
-      <span class="name">Lucas R.</span>
+      <div class="av">—</div>
+      <span class="name">—</span>
     </div>
   </div>
 </nav>
@@ -46,10 +46,10 @@
     <!-- User card -->
     <div class="user-card">
       <div class="uc-content">
-        <div class="uc-avatar">LR</div>
-        <div class="uc-name">Lucas Romero</div>
-        <div class="uc-email">lucas@detailpro.ar</div>
-        <span class="uc-tier">CLIENTE · DETAILER</span>
+        <div class="uc-avatar">—</div>
+        <div class="uc-name">—</div>
+        <div class="uc-email">—</div>
+        <span class="uc-tier">CLIENTE · —</span>
       </div>
     </div>
 
@@ -106,8 +106,8 @@
           <span>HOME</span><span class="sep">/</span>
           <span class="current">RESUMEN</span>
         </div>
-        <h1 class="page-title">Hola, <span class="accent">Lucas</span> 👋</h1>
-        <p class="page-sub">Te falta <strong class="text-acid">solo 2 compras más</strong> para desbloquear tu Mystery Box.</p>
+        <h1 class="page-title">Hola, <span class="accent">—</span> 👋</h1>
+        <p class="page-sub">Te falta <strong class="text-acid">solo <span data-myst="faltan">—</span> compras más</strong> para desbloquear tu Mystery Box.</p>
       </div>
 
       <!-- MYSTERY BOX BANNER -->
@@ -145,8 +145,8 @@
           </div>
 
           <div class="myst-progress-label">
-            <span class="count"><span class="big">3</span> / 5 COMPRAS</span>
-            <span>// FALTAN 2 PARA TU BOX</span>
+            <span class="count"><span class="big" data-myst="count">—</span> / 5 COMPRAS</span>
+            <span>// FALTAN <span data-myst="faltan">—</span> PARA TU BOX</span>
           </div>
         </div>
 
@@ -298,53 +298,7 @@
           </span>
           <a class="card-meta card-link" onclick="navigate('orders')">VER TODOS →</a>
         </div>
-        <div class="orders" data-list="historial">
-          <div class="order">
-            <span class="order-num">#GB-<br>8472</span>
-            <div class="order-info">
-              <div class="order-head">
-                <span class="order-id">3 productos</span>
-                <span class="pill shipped">EN CAMINO</span>
-              </div>
-              <div class="order-products">Foam Beast · Cleaner Strong · Espátula Wrap</div>
-              <div class="order-meta">07 MAY 2026 · 14:32</div>
-            </div>
-            <div class="order-right">
-              <div class="order-total"><span class="currency">$</span>34.900</div>
-              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
-            </div>
-          </div>
-          <div class="order">
-            <span class="order-num">#GB-<br>8201</span>
-            <div class="order-info">
-              <div class="order-head">
-                <span class="order-id">5 productos</span>
-                <span class="pill ok">ENTREGADO</span>
-              </div>
-              <div class="order-products">PPF Premium · Microfibras · Pad pulido</div>
-              <div class="order-meta">22 ABR 2026 · 11:08</div>
-            </div>
-            <div class="order-right">
-              <div class="order-total"><span class="currency">$</span>92.300</div>
-              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
-            </div>
-          </div>
-          <div class="order">
-            <span class="order-num">#GB-<br>7843</span>
-            <div class="order-info">
-              <div class="order-head">
-                <span class="order-id">2 productos</span>
-                <span class="pill ok">ENTREGADO</span>
-              </div>
-              <div class="order-products">Cera Carnauba · Aplicador foam</div>
-              <div class="order-meta">04 ABR 2026 · 16:45</div>
-            </div>
-            <div class="order-right">
-              <div class="order-total"><span class="currency">$</span>37.600</div>
-              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
-            </div>
-          </div>
-        </div>
+        <div class="orders" data-list="historial"></div>
       </div>
     </div>
 
@@ -362,58 +316,9 @@
       <div class="card">
         <div class="card-head">
           <span class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/></svg> Todos los pedidos</span>
-          <span class="card-meta">// 4 PEDIDOS</span>
+          <span class="card-meta" data-kpi="count-foot">// CARGANDO...</span>
         </div>
-        <div class="orders" data-list="all-pedidos">
-          <div class="order">
-            <span class="order-num">#GB-<br>8472</span>
-            <div class="order-info">
-              <div class="order-head"><span class="order-id">3 productos</span><span class="pill shipped">EN CAMINO</span></div>
-              <div class="order-products">Foam Beast Banana 500ml + 2 más</div>
-              <div class="order-meta">07 MAY 2026</div>
-            </div>
-            <div class="order-right">
-              <div class="order-total"><span class="currency">$</span>34.900</div>
-              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
-            </div>
-          </div>
-          <div class="order">
-            <span class="order-num">#GB-<br>8201</span>
-            <div class="order-info">
-              <div class="order-head"><span class="order-id">5 productos</span><span class="pill ok">ENTREGADO</span></div>
-              <div class="order-products">PPF Premium 1.52×15m + 4 más</div>
-              <div class="order-meta">22 ABR 2026</div>
-            </div>
-            <div class="order-right">
-              <div class="order-total"><span class="currency">$</span>92.300</div>
-              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
-            </div>
-          </div>
-          <div class="order">
-            <span class="order-num">#GB-<br>7843</span>
-            <div class="order-info">
-              <div class="order-head"><span class="order-id">2 productos</span><span class="pill ok">ENTREGADO</span></div>
-              <div class="order-products">Cera Carnauba + Aplicador foam</div>
-              <div class="order-meta">04 ABR 2026</div>
-            </div>
-            <div class="order-right">
-              <div class="order-total"><span class="currency">$</span>37.600</div>
-              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
-            </div>
-          </div>
-          <div class="order">
-            <span class="order-num">#GB-<br>7102</span>
-            <div class="order-info">
-              <div class="order-head"><span class="order-id">1 producto</span><span class="pill cancel">CANCELADO</span></div>
-              <div class="order-products">Subwoofer 12" 1500W</div>
-              <div class="order-meta">15 MAR 2026</div>
-            </div>
-            <div class="order-right">
-              <div class="order-total"><span class="currency">$</span>289.900</div>
-              <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
-            </div>
-          </div>
-        </div>
+        <div class="orders" data-list="all-pedidos"></div>
       </div>
     </div>
 
@@ -456,7 +361,7 @@
           </div>
 
           <div class="myst-progress-label">
-            <span class="count"><span class="big">3</span> / 5 COMPRAS</span>
+            <span class="count"><span class="big" data-myst="count">—</span> / 5 COMPRAS</span>
             <span>// PRÓXIMA BOX: +$30K EN PRODUCTOS</span>
           </div>
         </div>
@@ -582,68 +487,7 @@
           <span class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg> <span data-fav="count">—</span></span>
         </div>
         <div class="card-body">
-          <div class="fav-grid" data-list="favoritos">
-            <div class="fav">
-              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
-              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg></div>
-              <div class="fav-cat">// DETAILING</div>
-              <div class="fav-name">Cera Carnauba Premium 250ml</div>
-              <div class="fav-price">
-                <span class="val"><span class="currency">$</span>18.500</span>
-                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
-              </div>
-            </div>
-            <div class="fav">
-              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
-              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
-              <div class="fav-cat">// AUDIO CAR</div>
-              <div class="fav-name">Subwoofer 12" 1500W RMS</div>
-              <div class="fav-price">
-                <span class="val"><span class="currency">$</span>289.900</span>
-                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
-              </div>
-            </div>
-            <div class="fav">
-              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
-              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18"/></svg></div>
-              <div class="fav-cat">// WRAP</div>
-              <div class="fav-name">Vinilo Negro Mate 1.52×30m</div>
-              <div class="fav-price">
-                <span class="val"><span class="currency">$</span>320.000</span>
-                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
-              </div>
-            </div>
-            <div class="fav">
-              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
-              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94L7.5 19.5a2.12 2.12 0 1 1-3-3l5.97-5.97a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg></div>
-              <div class="fav-cat">// HERRAMIENTAS</div>
-              <div class="fav-name">Pulidora Rotorbital DA</div>
-              <div class="fav-price">
-                <span class="val"><span class="currency">$</span>148.500</span>
-                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
-              </div>
-            </div>
-            <div class="fav">
-              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
-              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></div>
-              <div class="fav-cat">// PPF</div>
-              <div class="fav-name">PPF Premium 1.52×15m</div>
-              <div class="fav-price">
-                <span class="val"><span class="currency">$</span>184.500</span>
-                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
-              </div>
-            </div>
-            <div class="fav">
-              <button class="fav-heart"><svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/></svg></button>
-              <div class="fav-img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg></div>
-              <div class="fav-cat">// DETAILING</div>
-              <div class="fav-name">Cleaner Strong APC 600ml</div>
-              <div class="fav-price">
-                <span class="val"><span class="currency">$</span>11.999</span>
-                <button class="fav-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14m-7-7h14"/></svg></button>
-              </div>
-            </div>
-          </div>
+          <div class="fav-grid" data-list="favoritos"></div>
         </div>
       </div>
     </div>
@@ -661,33 +505,7 @@
 
       <div class="card">
         <div class="card-body">
-          <div class="addr-grid" data-list="direcciones">
-            <div class="addr-card default">
-              <span class="tag-default">PREDETERMINADA</span>
-              <div class="addr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-              <div class="addr-name">Casa</div>
-              <div class="addr-text">Av. Cabildo 2547, 4° B<br>C1428 · Belgrano, CABA<br>Tocar timbre 4B</div>
-              <div class="addr-actions">
-                <button class="addr-act">Editar</button>
-                <button class="addr-act">Eliminar</button>
-              </div>
-            </div>
-
-            <div class="addr-card">
-              <div class="addr-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 21V9h6v12"/></svg></div>
-              <div class="addr-name">Taller</div>
-              <div class="addr-text">Murguiondo 1234<br>C1407 · Mataderos, CABA<br>Lun-Vie 9 a 18hs</div>
-              <div class="addr-actions">
-                <button class="addr-act">Editar</button>
-                <button class="addr-act">Marcar predeterminada</button>
-              </div>
-            </div>
-
-            <div class="addr-card add">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14m-7-7h14"/></svg>
-              <span>Agregar Dirección</span>
-            </div>
-          </div>
+          <div class="addr-grid" data-list="direcciones"></div>
         </div>
       </div>
     </div>

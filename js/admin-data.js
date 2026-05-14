@@ -9,7 +9,7 @@ let editingCouponId = null
 // ── Init ──────────────────────────────────────────────────
 async function init() {
   await Promise.all([loadCategorias(), loadMarcas()])
-  await Promise.all([loadProducts(), loadCoupons(), loadCats(), loadBrands(), loadOrders()])
+  await Promise.all([loadProducts(), loadCoupons(), loadCats(), loadBrands(), loadOrders(), loadCustomers()])
 }
 
 async function loadCategorias() {
@@ -1013,6 +1013,239 @@ function customConfirm(msg, okLabel = 'Eliminar') {
     cancelBtn.addEventListener('click', onCancel)
     overlay.addEventListener('click', onOverlay)
   })
+}
+
+// ── CUSTOMERS ─────────────────────────────────────────────
+let editingCustomerId = null
+
+async function loadCustomers() {
+  const { data, error } = await supabase
+    .from('perfiles')
+    .select(`
+      id, nombre, apellido, telefono, ciudad, tipo, role,
+      vip, estado_cuenta, notas_admin, created_at,
+      pedidos(id, total, created_at)
+    `)
+    .order('created_at', { ascending: false })
+
+  if (error) { console.error('loadCustomers:', error.message); return }
+  const list = data || []
+  renderCustomers(list)
+  updateCustomerKPIs(list)
+}
+
+function updateCustomerKPIs(list) {
+  set('cust-total', list.length)
+  const vips = list.filter(c => c.vip).length
+  set('cust-vip', vips)
+  const detailers = list.filter(c => c.tipo === 'detailer' || c.tipo === 'taller').length
+  set('cust-pro', detailers)
+}
+
+const TIPO_PILL = {
+  particular:  { cls: 'draft',    label: 'Particular'  },
+  detailer:    { cls: 'violet',   label: 'Detailer'    },
+  taller:      { cls: 'shipped',  label: 'Taller'      },
+  wrapper:     { cls: 'ok',       label: 'Wrapper'     },
+  instalador:  { cls: 'ok',       label: 'Instalador'  },
+  revendedor:  { cls: 'pending',  label: 'Revendedor'  },
+}
+
+const ESTADO_CUENTA_PILL = {
+  activo:     { cls: 'ok',      label: 'Activo'     },
+  inactivo:   { cls: 'draft',   label: 'Inactivo'   },
+  suspendido: { cls: 'cancel',  label: 'Suspendido' },
+}
+
+function renderCustomers(list) {
+  const tbody = document.getElementById('customers-tbody')
+  if (!tbody) return
+
+  set('cust-count', `${list.length} clientes`)
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:12px">// Sin clientes registrados</td></tr>`
+    return
+  }
+
+  tbody.innerHTML = list.map(c => {
+    const nombre    = `${c.nombre || ''} ${c.apellido || ''}`.trim() || 'Sin nombre'
+    const ini       = nombre.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() || '?'
+    const email     = c.id // fallback — email viene de auth.users
+    const pedidos   = c.pedidos || []
+    const totalGast = pedidos.reduce((s, p) => s + Number(p.total || 0), 0)
+    const ultima    = pedidos.length
+      ? new Date(pedidos.sort((a,b) => new Date(b.created_at) - new Date(a.created_at))[0].created_at)
+          .toLocaleDateString('es-AR', { day:'2-digit', month:'short', year:'numeric' }).toUpperCase()
+      : '—'
+    const tipo      = TIPO_PILL[c.tipo] || { cls:'draft', label: c.tipo || 'Particular' }
+    const estado    = ESTADO_CUENTA_PILL[c.estado_cuenta || 'activo']
+    const avatarBg  = c.vip
+      ? 'background:linear-gradient(135deg,#c8ff00,#3aff8b);color:#000'
+      : 'background:linear-gradient(135deg,var(--violet),var(--magenta));color:#fff'
+
+    return `<tr>
+      <td><input type="checkbox"></td>
+      <td>
+        <div class="product-cell">
+          <div class="product-thumb" style="${avatarBg};font-family:'Archivo Black',sans-serif;font-size:12px">${ini}</div>
+          <div class="product-info">
+            <div class="name">${nombre} ${c.vip ? '<span class="pill ok" style="font-size:9px;padding:1px 6px;margin-left:4px">VIP</span>' : ''}</div>
+            <div class="sku">${c.ciudad || '—'}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="pill ${tipo.cls}">${tipo.label}</span></td>
+      <td class="mono" style="font-size:11px;color:var(--ink-dim)">${pedidos.length} pedidos</td>
+      <td class="right"><span class="price"><span class="currency">$</span>${Number(totalGast).toLocaleString('es-AR')}</span></td>
+      <td class="mono" style="font-size:11px;color:var(--ink-dim)">${ultima}</td>
+      <td><span class="pill ${estado.cls}">${estado.label}</span></td>
+      <td class="right">
+        <div class="row-actions">
+          <button class="row-act" onclick="openEditCustomerModal('${c.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`
+  }).join('')
+}
+
+// ── Filtros de clientes ───────────────────────────────────
+window.filterCustomers = function() {
+  const search = document.getElementById('cust-search')?.value.toLowerCase() || ''
+  const tipo   = document.getElementById('cust-filter-tipo')?.value || ''
+  const estado = document.getElementById('cust-filter-estado')?.value || ''
+
+  const rows = document.querySelectorAll('#customers-tbody tr')
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase()
+    const matchSearch = !search || text.includes(search)
+    const matchTipo   = !tipo   || text.includes(tipo.toLowerCase())
+    const matchEstado = !estado || text.includes(estado.toLowerCase())
+    row.style.display = matchSearch && matchTipo && matchEstado ? '' : 'none'
+  })
+}
+
+// ── Modal editar cliente ──────────────────────────────────
+async function openEditCustomerModal(id) {
+  editingCustomerId = id
+
+  const { data: c } = await supabase
+    .from('perfiles')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (!c) return
+
+  const modal = document.getElementById('modal-customer')
+  if (!modal) return
+
+  document.getElementById('cust-nombre').value      = `${c.nombre || ''} ${c.apellido || ''}`.trim()
+  document.getElementById('cust-telefono').value    = c.telefono || ''
+  document.getElementById('cust-ciudad').value      = c.ciudad   || ''
+  document.getElementById('cust-tipo').value        = c.tipo     || 'particular'
+  document.getElementById('cust-estado').value      = c.estado_cuenta || 'activo'
+  document.getElementById('cust-vip').checked       = c.vip || false
+  document.getElementById('cust-notas').value       = c.notas_admin || ''
+
+  modal.classList.add('open')
+}
+
+async function saveCustomer() {
+  const btn = document.getElementById('btn-save-customer')
+  if (btn) { btn.disabled = true; btn.textContent = 'Guardando...' }
+
+  const nombreCompleto = document.getElementById('cust-nombre').value.trim().split(' ')
+  const nombre   = nombreCompleto[0] || ''
+  const apellido = nombreCompleto.slice(1).join(' ') || ''
+
+  const updates = {
+    nombre,
+    apellido,
+    telefono:      document.getElementById('cust-telefono').value.trim() || null,
+    ciudad:        document.getElementById('cust-ciudad').value.trim()   || null,
+    tipo:          document.getElementById('cust-tipo').value,
+    estado_cuenta: document.getElementById('cust-estado').value,
+    vip:           document.getElementById('cust-vip').checked,
+    notas_admin:   document.getElementById('cust-notas').value.trim()   || null,
+  }
+
+  const { error } = await supabase.from('perfiles').update(updates).eq('id', editingCustomerId)
+
+  if (btn) { btn.disabled = false; btn.textContent = error ? '✗ Error' : '✓ Guardado' }
+  if (!error) {
+    setTimeout(() => {
+      closeCustomerModal()
+      loadCustomers()
+    }, 600)
+  }
+}
+
+function closeCustomerModal() {
+  document.getElementById('modal-customer')?.classList.remove('open')
+  editingCustomerId = null
+}
+
+window.openEditCustomerModal = openEditCustomerModal
+window.saveCustomer          = saveCustomer
+window.closeCustomerModal    = closeCustomerModal
+
+// ── Crear nuevo cliente ───────────────────────────────────
+window.openNewCustomerModal = function() {
+  ;['cust-create-nombre','cust-create-email','cust-create-pass'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = ''
+  })
+  const tipoEl = document.getElementById('cust-create-tipo')
+  if (tipoEl) tipoEl.value = 'particular'
+  const btn = document.getElementById('btn-create-customer-submit')
+  if (btn) { btn.disabled = false; btn.textContent = 'Crear Cliente' }
+  document.getElementById('modal-new-customer')?.classList.add('open')
+}
+
+window.closeNewCustomerModal = function() {
+  document.getElementById('modal-new-customer')?.classList.remove('open')
+}
+
+window.createCustomer = async function() {
+  const nombre = document.getElementById('cust-create-nombre')?.value.trim()
+  const email  = document.getElementById('cust-create-email')?.value.trim()
+  const pass   = document.getElementById('cust-create-pass')?.value
+  const tipo   = document.getElementById('cust-create-tipo')?.value || 'particular'
+  const btn    = document.getElementById('btn-create-customer-submit')
+
+  if (!nombre || !email || !pass) return
+  btn.disabled = true; btn.textContent = 'Creando...'
+
+  const { data: { session: adminSess } } = await supabase.auth.getSession()
+
+  const partes = nombre.split(' ')
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password: pass,
+    options: { data: { nombre: partes[0] || '', apellido: partes.slice(1).join(' ') } }
+  })
+
+  if (adminSess?.access_token) {
+    await supabase.auth.setSession({
+      access_token:  adminSess.access_token,
+      refresh_token: adminSess.refresh_token
+    })
+  }
+
+  if (error) {
+    btn.disabled = false
+    btn.textContent = '✗ ' + (error.message.includes('already') ? 'Email ya registrado' : error.message)
+    return
+  }
+
+  if (data?.user?.id) {
+    await supabase.from('perfiles').update({ tipo }).eq('id', data.user.id)
+  }
+
+  btn.textContent = '✓ Cliente creado'
+  setTimeout(() => { window.closeNewCustomerModal(); loadCustomers() }, 800)
 }
 
 // ── Util ──────────────────────────────────────────────────

@@ -41,7 +41,7 @@ create table public.productos (
   descripcion      text,
   sku              text unique,
   precio           numeric(12,2) not null,
-  precio_anterior  numeric(12,2),
+  precio_oferta    numeric(12,2),
   stock            int not null default 0,
   stock_minimo     int default 5,
   categoria_id     uuid references public.categorias(id) on delete set null,
