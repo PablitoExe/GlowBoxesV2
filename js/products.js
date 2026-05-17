@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { itemPayload, trackEvent } from './analytics.js'
 
 let productos = []
 let idx = 0
@@ -108,9 +109,11 @@ function renderProducto(i) {
   if (!productos.length) return
   idx = ((i % productos.length) + productos.length) % productos.length
   const p = productos[idx]
+  const categoryName = p.categorias?.nombre || 'Producto'
+  const brandName = p.marcas?.nombre || undefined
 
   // Breadcrumb y category tag
-  const catNombre = p.categorias?.nombre?.toUpperCase() || 'PRODUCTO'
+  const catNombre = categoryName.toUpperCase()
   if (catBreadEl) catBreadEl.textContent = catNombre
   if (catTagEl) {
     const marcaNombre = p.marcas?.nombre?.toUpperCase()
@@ -170,7 +173,16 @@ function renderProducto(i) {
     btnCart.dataset.nombre = p.nombre
     btnCart.dataset.precio = precioFinal
     btnCart.dataset.imagen = p.imagen_url || ''
+    btnCart.dataset.categoria = categoryName
+    btnCart.dataset.marca = brandName || ''
   }
+
+  trackEvent('view_item', itemPayload({
+    ...p,
+    precio: precioFinal,
+    categoria: categoryName,
+    marca: brandName,
+  }), { onceKey: p.id })
 
   // Paginación
   if (pageNumEl) pageNumEl.textContent = String(idx + 1).padStart(2, '0')

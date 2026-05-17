@@ -1,5 +1,7 @@
 import { supabase } from './supabase.js'
 import { showToast } from './ui-feedback.js'
+import { cartPayload, purchasePayload, trackEvent } from './analytics.js'
+import { sendTransactionalEmail } from './email.js'
 
 const CART_KEY = 'gb_cart'
 const PROOF_BUCKET = 'comprobantes'
@@ -39,6 +41,7 @@ const state = {
   lastTotals: null,
 }
 let proofPreviewUrl = null
+let lastPaymentTrackingKey = ''
 
 const $ = id => document.getElementById(id)
 const money = value => `<span class="currency">$</span>${fmt(value)}`
@@ -637,7 +640,8 @@ function bindPayments() {
       option.classList.add('selected')
       state.pay = option.dataset.pay || 'mp'
       if (state.pay === 'transfer') state.installments = 1
-      renderTotals()
+      const totals = renderTotals()
+      trackPaymentInfo(totals)
     })
   })
 
@@ -647,8 +651,21 @@ function bindPayments() {
       state.pay = 'mp'
       state.installments = Number(row.dataset.installments) || 1
       document.querySelectorAll('.pay').forEach(item => item.classList.toggle('selected', item.dataset.pay === 'mp'))
-      renderTotals()
+      const totals = renderTotals()
+      trackPaymentInfo(totals)
     })
+  })
+}
+
+function trackPaymentInfo(totals = state.lastTotals || calculateTotals()) {
+  if (!totals.cart.length) return
+  const key = `${state.pay}:${state.installments}:${totals.total}`
+  if (key === lastPaymentTrackingKey) return
+  lastPaymentTrackingKey = key
+  trackEvent('add_payment_info', {
+    ...cartPayload(totals.cart),
+    value: totals.total,
+    payment_method: state.pay === 'mp' ? `mercado_pago_${state.installments}_cuota${state.installments > 1 ? 's' : ''}` : 'transferencia',
   })
 }
 
@@ -909,6 +926,35 @@ async function finalizePay() {
     }
 
     console.info('[checkout] create_order RPC succeeded', { pedidoId, status, statusText })
+    trackEvent('purchase', purchasePayload({
+      order_id: pedidoId || number,
+      numero: number,
+      total: totals.total,
+      metodo_pago: state.pay === 'mp' ? 'mercado_pago' : 'transferencia',
+    }, totals.cart), { onceKey: pedidoId || number })
+
+    // Fire order confirmation email — fire-and-forget, never breaks checkout
+    if (buyer.email) {
+      sendTransactionalEmail('order_confirmation', buyer.email, {
+        numero:          number,
+        cliente_nombre:  buyer.fullName || null,
+        cliente_email:   buyer.email,
+        estado:          state.pay === 'transfer' ? 'pendiente' : 'confirmado',
+        metodo_pago:     state.pay === 'mp' ? 'mercado_pago' : 'transferencia',
+        pago_estado:     state.pay === 'transfer' ? 'pendiente' : 'acreditado',
+        metodo_envio:    state.ship,
+        subtotal:        totals.subtotal,
+        descuento:       totals.couponDiscount + totals.transferDiscount,
+        costo_envio:     totals.shippingCost,
+        total:           totals.total,
+        items:           items.map(i => ({
+          nombre_producto: i.nombre_producto,
+          sku:             i.sku,
+          cantidad:        i.cantidad,
+          precio_unitario: i.precio_unitario,
+        })),
+      })
+    }
   } catch (error) {
     console.error('Supabase order save failed', error)
     if (proof?.url) await supabase.storage.from(PROOF_BUCKET).remove([proof.url]).catch(() => {})
@@ -971,7 +1017,12 @@ async function initCheckout() {
   bindPayments()
   bindCoupons()
   bindTransferProof()
-  renderTotals(false)
+  const totals = renderTotals(false)
+  if (totals.cart.length) {
+    trackEvent('begin_checkout', cartPayload(totals.cart), {
+      onceKey: JSON.stringify(totals.cart.map(item => [item.producto_id || item.id, item.cantidad])),
+    })
+  }
 }
 
 initCheckout()

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /cliente.html
+Disallow: /checkout.html
+Disallow: /database/
+Disallow: /.git/
+Disallow: /node_modules/
+
+Sitemap: https://glowboxes.com.ar/sitemap.xml

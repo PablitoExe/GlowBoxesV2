@@ -2,6 +2,8 @@ import { supabase } from './supabase.js'
 import { ensureUserProfile } from './auth-profile.js'
 import { renderStatNumber, startPublicStatsAutoRefresh } from './site-stats.js'
 import { showToast } from './ui-feedback.js'
+import { trackEvent } from './analytics.js'
+import { sendTransactionalEmail } from './email.js'
 
 // ── Tab switching ──────────────────────────────────────────
 const tabs        = document.querySelectorAll('.tab')
@@ -95,6 +97,7 @@ async function handleLogin() {
     if (error) throw error
 
     if (data?.user) await ensureUserProfile(supabase, data.user)
+    trackEvent('login', { method: 'password' }, { onceKey: data?.user?.id || email })
     btnSuccess(btn, 'Listo')
     setTimeout(() => { window.location.href = 'index.html' }, 700)
   } catch (err) {
@@ -128,6 +131,9 @@ async function handleRegister() {
     if (error) throw error
 
     if (data?.user) await ensureUserProfile(supabase, data.user)
+    trackEvent('sign_up', { method: 'password' }, { onceKey: data?.user?.id || email })
+    // Welcome email — fire-and-forget
+    sendTransactionalEmail('welcome', email, { nombre: nombre || null, email })
     btnSuccess(btn, 'Cuenta creada')
     setTimeout(() => { window.location.href = 'index.html' }, 700)
   } catch (err) {
@@ -151,6 +157,7 @@ async function handleGoogleLogin() {
   }
 
   try {
+    sessionStorage.setItem('gb_oauth_provider_pending', 'google')
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -175,6 +182,63 @@ async function handleGoogleLogin() {
   }
 }
 window.handleGoogleLogin = handleGoogleLogin
+
+// ── Forgot Password ────────────────────────────────────────
+window.openForgotPassword = function openForgotPassword() {
+  const overlay = document.getElementById('forgot-overlay')
+  if (!overlay) return
+  overlay.style.display = 'flex'
+  const emailInput = document.getElementById('login-email')
+  const forgotEmail = document.getElementById('forgot-email')
+  if (forgotEmail && emailInput?.value) forgotEmail.value = emailInput.value
+  forgotEmail?.focus()
+}
+
+window.closeForgotPassword = function closeForgotPassword() {
+  const overlay = document.getElementById('forgot-overlay')
+  if (!overlay) return
+  overlay.style.display = 'none'
+  const msg = document.getElementById('forgot-msg')
+  if (msg) { msg.style.display = 'none'; msg.textContent = '' }
+  const btn = document.getElementById('forgot-btn')
+  if (btn) { btn.disabled = false; btn.textContent = 'Enviar enlace' }
+}
+
+window.handleForgotPassword = async function handleForgotPassword() {
+  const emailInput = document.getElementById('forgot-email')
+  const btn = document.getElementById('forgot-btn')
+  const msg = document.getElementById('forgot-msg')
+  const email = emailInput?.value.trim()
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (msg) { msg.textContent = 'Ingresá un email válido.'; msg.style.color = '#f87171'; msg.style.display = 'block' }
+    return
+  }
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Enviando...' }
+  if (msg) { msg.style.display = 'none' }
+
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/login.html`,
+    })
+    if (error) throw error
+    if (msg) {
+      msg.textContent = '✓ Revisá tu email — te enviamos el enlace.'
+      msg.style.color = '#c4b5fd'
+      msg.style.display = 'block'
+    }
+    if (btn) { btn.disabled = false; btn.textContent = 'Reenviar enlace' }
+  } catch (err) {
+    console.error('[FORGOT PASSWORD]', err)
+    if (msg) {
+      msg.textContent = err.message || 'No se pudo enviar el email. Intentá de nuevo.'
+      msg.style.color = '#f87171'
+      msg.style.display = 'block'
+    }
+    if (btn) { btn.disabled = false; btn.textContent = 'Enviar enlace' }
+  }
+}
 
 // ── Dispatcher desde HTML (onsubmit) ──────────────────────
 window.handleSubmit = (type) => type === 'login' ? handleLogin() : handleRegister()

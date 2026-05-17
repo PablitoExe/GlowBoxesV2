@@ -1,3 +1,5 @@
+import { sendTransactionalEmail } from './email.js'
+
 const ARG_TZ = 'America/Argentina/Buenos_Aires'
 const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
 const SCHEDULE = {
@@ -58,3 +60,64 @@ function renderOpenStatus() {
 
 renderOpenStatus()
 window.setInterval(renderOpenStatus, 60000)
+
+// ── Contact form submission ──
+window.handleSubmit = async function handleSubmit(e) {
+  e.preventDefault()
+  const btn = document.getElementById('submitBtn')
+  const originalHTML = btn.innerHTML
+
+  const nombre = document.getElementById('ct-nombre')?.value.trim() || ''
+  const telefono = document.getElementById('ct-telefono')?.value.trim() || ''
+  const email = document.getElementById('ct-email')?.value.trim() || ''
+  const tipo = document.getElementById('ct-tipo')?.value || ''
+  const rubro = document.getElementById('ct-rubro')?.value || ''
+  const asunto = document.getElementById('ct-asunto')?.value.trim() || ''
+  const mensaje = document.getElementById('ct-mensaje')?.value.trim() || ''
+
+  const activeReason = document.querySelector('.reason.active')
+  const motivo = asunto || activeReason?.dataset.reason || 'consulta'
+
+  if (!nombre || !email || !mensaje) {
+    btn.innerHTML = '✗ Completá los campos requeridos'
+    btn.style.background = '#7f1d1d'
+    setTimeout(() => { btn.innerHTML = originalHTML; btn.style.background = '' }, 2500)
+    return
+  }
+
+  btn.disabled = true
+  btn.innerHTML = 'Enviando...'
+
+  const contactData = {
+    nombre,
+    email,
+    ...(telefono && { telefono }),
+    ...(tipo && { tipo }),
+    ...(rubro && { rubro }),
+    ...(asunto && { asunto }),
+    mensaje,
+    motivo,
+    submitted_at: new Date().toISOString(),
+  }
+
+  const result = await sendTransactionalEmail('contact_received', email, contactData)
+
+  if (result.ok) {
+    btn.innerHTML = '✓ Mensaje enviado'
+    btn.style.background = 'var(--acid)'
+    btn.style.color = '#0a0a0f'
+    e.target.reset()
+    document.querySelectorAll('.reason').forEach((r, i) => r.classList.toggle('active', i === 0))
+    setTimeout(() => {
+      btn.disabled = false
+      btn.innerHTML = originalHTML
+      btn.style.background = ''
+      btn.style.color = ''
+    }, 3000)
+  } else {
+    btn.disabled = false
+    btn.innerHTML = '✗ Error al enviar — intentá de nuevo'
+    btn.style.background = '#7f1d1d'
+    setTimeout(() => { btn.innerHTML = originalHTML; btn.style.background = '' }, 3000)
+  }
+}

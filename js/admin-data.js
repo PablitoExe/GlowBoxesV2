@@ -1,5 +1,6 @@
 import { supabase } from './supabase.js'
 import { confirmDialog } from './ui-feedback.js'
+import { sendTransactionalEmail } from './email.js'
 
 const PRODUCT_BUCKET = 'product-images'
 const BRAND_BUCKET   = 'brand-logos'
@@ -1460,9 +1461,55 @@ function closeEditOrderModal() {
 }
 window.closeEditOrderModal = closeEditOrderModal
 
+function buildOrderEmailData(order, overrides = {}) {
+  const items = (order.pedido_items || []).map(item => ({
+    nombre_producto: item.nombre_producto || item.produtos?.nombre || 'Producto',
+    sku: item.sku || null,
+    cantidad: Number(item.cantidad) || 1,
+    precio_unitario: Number(item.precio_unitario) || 0,
+  }))
+  return {
+    numero:           order.numero,
+    cliente_nombre:   order.cliente_nombre || null,
+    cliente_email:    order.cliente_email || null,
+    estado:           overrides.estado           ?? order.estado,
+    metodo_pago:      overrides.metodo_pago      ?? order.metodo_pago,
+    pago_estado:      overrides.pago_estado      ?? order.pago_estado,
+    metodo_envio:     order.metodo_envio,
+    subtotal:         Number(order.subtotal)    || 0,
+    descuento:        Number(order.descuento)   || 0,
+    costo_envio:      Number(order.costo_envio) || 0,
+    total:            Number(order.total)       || 0,
+    items,
+    tracking_code:    overrides.tracking_code    ?? overrides.numero_seguimiento ?? order.tracking_code ?? order.numero_seguimiento ?? null,
+    numero_seguimiento: overrides.numero_seguimiento ?? order.numero_seguimiento ?? null,
+    eta:              order.eta || null,
+    created_at:       order.created_at,
+  }
+}
+
+function maybeSendOrderEmail(order, update) {
+  if (!order) return
+  const client = orderClient(order)
+  if (!client.email) return
+  const emailData = buildOrderEmailData(order, update)
+  const newEstado = update.estado ?? order.estado
+  const newPago   = update.pago_estado ?? order.pago_estado
+  if (update.pago_estado === 'acreditado' && order.pago_estado !== 'acreditado') {
+    sendTransactionalEmail('payment_approved', client.email, emailData)
+  }
+  if (update.estado && ['enviado', 'en_transito'].includes(update.estado) && !['enviado', 'en_transito'].includes(order.estado)) {
+    sendTransactionalEmail('order_shipped', client.email, emailData)
+  }
+  if (update.estado === 'entregado' && order.estado !== 'entregado') {
+    sendTransactionalEmail('order_delivered', client.email, emailData)
+  }
+}
+
 async function saveOrderStatus() {
   const btn = $('btn-save-edit-order')
   if (btn) { btn.disabled = true; btn.textContent = 'Guardando...' }
+  const order = state.pedidos.find(o => o.id === editingOrderId)
   const update = {
     estado: $('edit-ord-estado').value,
     pago_estado: $('edit-ord-pago-estado').value,
@@ -1476,6 +1523,7 @@ async function saveOrderStatus() {
   if (btn) { btn.disabled = false; btn.textContent = 'Guardar' }
   if (error) { toast('Error al guardar pedido: ' + error.message, 'error'); return }
   toast('Pedido actualizado.', 'ok')
+  maybeSendOrderEmail(order, update)
   closeEditOrderModal()
   await loadOrders()
   renderOrders(); renderOverview(); renderReports()
@@ -1520,8 +1568,10 @@ window.showQuickStatus = showQuickStatus
 
 async function applyQuickStatus(orderId, field, value) {
   closeQuickStatus()
+  const order = state.pedidos.find(o => o.id === orderId)
   const { error } = await supabase.from('pedidos').update({ [field]: value }).eq('id', orderId)
   if (error) { toast('Error al actualizar estado: ' + error.message, 'error'); return }
+  maybeSendOrderEmail(order, { [field]: value })
   await loadOrders()
   renderOrders(); renderOverview(); renderReports()
 }
@@ -1725,6 +1775,14 @@ window.adminDownloadBoleta = async function() {
   try {
     const { downloadBoleta } = await loadInvoiceModule()
     await downloadBoleta(order, client)
+    if (client.email) {
+      sendTransactionalEmail('invoice_available', client.email, {
+        numero: order.numero,
+        cliente_nombre: client.nombre || null,
+        total: order.total,
+        created_at: order.created_at,
+      })
+    }
   } catch (e) {
     console.error('[ADMIN PDF ERROR] downloadBoleta failed', e)
     toast(e.message || 'Error al generar boleta.', 'error')

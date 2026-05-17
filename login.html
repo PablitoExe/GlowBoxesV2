@@ -3,9 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Glow Boxes</title>
+<title>Acceso Clientes | Glow Boxes</title>
+<meta name="description" content="Iniciá sesión o creá tu cuenta en Glow Boxes para gestionar pedidos, favoritos, direcciones y beneficios de cliente.">
+<meta name="keywords" content="Glow Boxes login, cuenta Glow Boxes, acceso clientes, ecommerce detailing">
+<meta name="author" content="Glow Boxes">
+<meta name="robots" content="noindex, follow">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="canonical" href="https://glowboxes.com.ar/login.html">
+<meta property="og:title" content="Acceso Clientes | Glow Boxes">
+<meta property="og:description" content="Accedé a tu cuenta Glow Boxes para gestionar pedidos y beneficios.">
+<meta property="og:image" content="https://glowboxes.com.ar/img/logo.png">
+<meta property="og:image:alt" content="Logo de Glow Boxes">
+<meta property="og:url" content="https://glowboxes.com.ar/login.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Glow Boxes">
+<meta property="og:locale" content="es_AR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Acceso Clientes | Glow Boxes">
+<meta name="twitter:description" content="Ingresá a tu cuenta Glow Boxes.">
+<meta name="twitter:image" content="https://glowboxes.com.ar/img/logo.png">
 <link rel="icon" type="image/png" href="/img/logito.png">
 <link rel="shortcut icon" href="/img/logito.png">
+<link rel="apple-touch-icon" href="/img/logito.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://glowboxes.com.ar/#organization",
+      "name": "Glow Boxes",
+      "url": "https://glowboxes.com.ar/",
+      "logo": "https://glowboxes.com.ar/img/logito.png"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://glowboxes.com.ar/login.html#webpage",
+      "name": "Acceso Clientes | Glow Boxes",
+      "url": "https://glowboxes.com.ar/login.html",
+      "isPartOf": { "@id": "https://glowboxes.com.ar/#website" },
+      "about": { "@id": "https://glowboxes.com.ar/#organization" }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://glowboxes.com.ar/#website",
+      "name": "Glow Boxes",
+      "url": "https://glowboxes.com.ar/",
+      "publisher": { "@id": "https://glowboxes.com.ar/#organization" }
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -122,7 +170,7 @@
             <span class="box"></span>
             Mantener sesión
           </label>
-          <a href="#" class="forgot">¿Olvidaste tu clave?</a>
+          <a href="#" class="forgot" onclick="openForgotPassword();return false">¿Olvidaste tu clave?</a>
         </div>
 
         <button type="submit" class="btn-submit">
@@ -227,6 +275,38 @@
 
 </div>
 
+<!-- Forgot Password Overlay -->
+<div id="forgot-overlay" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;">
+  <div style="width:100%;max-width:420px;margin:0 24px;background:#101018;border:1px solid rgba(168,107,255,.4);box-shadow:0 0 60px rgba(139,61,245,.25);padding:0;overflow:hidden;">
+    <div style="padding:20px 24px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;color:#a78bfa;text-transform:uppercase;">// Recuperar acceso</span>
+      <button onclick="closeForgotPassword()" style="width:28px;height:28px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.12);color:#9a9aa6;background:none;cursor:pointer;font-size:16px;" aria-label="Cerrar">&times;</button>
+    </div>
+    <div style="padding:28px 24px 32px;">
+      <p style="font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#9a9aa6;line-height:1.6;margin-bottom:24px;">
+        Ingresá tu email y te enviaremos un enlace para restablecer tu contraseña.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:20px;">
+        <label style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;color:#5a5a66;text-transform:uppercase;">Email *</label>
+        <div style="display:flex;align-items:center;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);">
+          <span style="width:42px;display:grid;place-items:center;color:#5a5a66;border-right:1px solid rgba(255,255,255,.08);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+          </span>
+          <input id="forgot-email" type="email" placeholder="tu@email.com" autocomplete="email"
+            style="flex:1;padding:12px 14px;font-family:'Barlow Condensed',sans-serif;font-size:14px;color:#f4f4f6;background:none;border:none;outline:none;">
+        </div>
+      </div>
+      <button id="forgot-btn" onclick="handleForgotPassword()"
+        style="width:100%;padding:14px;font-family:'Archivo Black',sans-serif;font-size:12px;letter-spacing:.16em;text-transform:uppercase;background:#f4f4f6;color:#0a0a0f;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;transition:background .2s;">
+        Enviar enlace
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+      </button>
+      <p id="forgot-msg" style="margin-top:14px;font-family:'Space Mono',monospace;font-size:11px;text-align:center;line-height:1.5;display:none;"></p>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/analytics.js"></script>
 <script type="module" src="js/login.js"></script>
 </body>
 </html>

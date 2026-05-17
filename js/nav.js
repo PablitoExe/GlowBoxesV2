@@ -1,5 +1,6 @@
 import { supabase } from './supabase.js'
 import { ensureUserProfile } from './auth-profile.js'
+import { trackEvent } from './analytics.js'
 
 // ── Auth state ────────────────────────────────────────────
 async function initAuth() {
@@ -10,6 +11,13 @@ async function initAuth() {
   if (!session) return
 
   await ensureUserProfile(supabase, session.user)
+  try {
+    const pendingOAuth = sessionStorage.getItem('gb_oauth_provider_pending')
+    if (pendingOAuth) {
+      sessionStorage.removeItem('gb_oauth_provider_pending')
+      trackEvent('login', { method: pendingOAuth }, { onceKey: `${session.user.id}:${pendingOAuth}` })
+    }
+  } catch {}
 
   const { data: role } = await supabase.rpc('get_my_role')
   if (role === 'admin') {
@@ -48,9 +56,24 @@ function initSearch() {
     document.body.style.overflow = ''
     if (input) input.value = ''
   }
+  let searchTimer = null
+  let lastSearch = ''
+  function trackSearch(query) {
+    const term = String(query || '').trim()
+    if (term.length < 2 || term === lastSearch) return
+    lastSearch = term
+    trackEvent('search', { search_term: term }, { onceKey: `${window.location.pathname}:${term}` })
+  }
 
   btnOpen.addEventListener('click', openSearch)
   btnClose?.addEventListener('click', closeSearch)
+  input?.addEventListener('input', () => {
+    window.clearTimeout(searchTimer)
+    searchTimer = window.setTimeout(() => trackSearch(input.value), 900)
+  })
+  input?.addEventListener('keydown', event => {
+    if (event.key === 'Enter') trackSearch(input.value)
+  })
   overlay.addEventListener('click', e => { if (e.target === overlay) closeSearch() })
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch() })
 }
@@ -99,6 +122,7 @@ function initSmoothScroll() {
 
       // Activar inmediatamente al hacer clic
       setActive(href)
+      trackEvent('navigation_click', { destination: href, label: a.textContent?.trim() || href })
 
       const target = document.getElementById(id)
       if (!target) return

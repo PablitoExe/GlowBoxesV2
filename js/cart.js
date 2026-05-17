@@ -1,3 +1,5 @@
+import { cartPayload, itemPayload, trackEvent } from './analytics.js'
+
 const CART_KEY = 'gb_cart'
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -70,12 +72,16 @@ function addToCart(product) {
     cart.push({ ...cleanProduct, cantidad: 1 })
   }
   saveCart(cart)
+  trackEvent('add_to_cart', itemPayload(cleanProduct, 1))
   openCart()
   animateBadge()
 }
 
 function removeFromCart(id) {
-  saveCart(getCart().filter(i => i.id !== id))
+  const cart = getCart()
+  const removed = cart.find(i => i.id === id)
+  saveCart(cart.filter(i => i.id !== id))
+  if (removed) trackEvent('remove_from_cart', itemPayload(removed, removed.cantidad))
 }
 
 function setQty(id, qty) {
@@ -162,6 +168,8 @@ function renderCart() {
 function openCart() {
   document.getElementById('cart-drawer')?.classList.add('open')
   document.body.style.overflow = 'hidden'
+  const cart = getCart()
+  if (cart.length) trackEvent('view_cart', cartPayload(cart), { onceKey: JSON.stringify(cart.map(i => [i.producto_id || i.id, i.cantidad])) })
 }
 function closeCart() {
   document.getElementById('cart-drawer')?.classList.remove('open')
@@ -193,6 +201,8 @@ document.getElementById('btn-add-cart')?.addEventListener('click', function () {
     nombre: this.dataset.nombre,
     precio: Number(this.dataset.precio),
     imagen: this.dataset.imagen,
+    categoria: this.dataset.categoria,
+    marca: this.dataset.marca,
   })
 })
 

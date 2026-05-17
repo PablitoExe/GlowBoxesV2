@@ -3,9 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Glow Boxes</title>
+<title>Contacto | Glow Boxes</title>
+<meta name="description" content="Contactá a Glow Boxes para consultas técnicas, presupuestos, compras mayoristas y asesoramiento en detailing, wrap, PPF, audio car y estética vehicular.">
+<meta name="keywords" content="contacto Glow Boxes, asesoramiento detailing, presupuesto estética vehicular, productos detailing Argentina, car care">
+<meta name="author" content="Glow Boxes">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="canonical" href="https://glowboxes.com.ar/contacto.html">
+<meta property="og:title" content="Contacto | Glow Boxes">
+<meta property="og:description" content="Hablá con Glow Boxes para asesoramiento técnico, presupuestos y pedidos especiales de estética vehicular.">
+<meta property="og:image" content="https://glowboxes.com.ar/img/logo.png">
+<meta property="og:image:alt" content="Logo de Glow Boxes">
+<meta property="og:url" content="https://glowboxes.com.ar/contacto.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Glow Boxes">
+<meta property="og:locale" content="es_AR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contacto | Glow Boxes">
+<meta name="twitter:description" content="Asesoramiento, presupuestos y pedidos especiales para detailing y estética vehicular.">
+<meta name="twitter:image" content="https://glowboxes.com.ar/img/logo.png">
 <link rel="icon" type="image/png" href="/img/logito.png">
 <link rel="shortcut icon" href="/img/logito.png">
+<link rel="apple-touch-icon" href="/img/logito.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://glowboxes.com.ar/#organization",
+      "name": "Glow Boxes",
+      "url": "https://glowboxes.com.ar/",
+      "logo": "https://glowboxes.com.ar/img/logito.png",
+      "sameAs": []
+    },
+    {
+      "@type": "ContactPage",
+      "@id": "https://glowboxes.com.ar/contacto.html#webpage",
+      "name": "Contacto | Glow Boxes",
+      "url": "https://glowboxes.com.ar/contacto.html",
+      "description": "Contacto comercial y técnico de Glow Boxes.",
+      "isPartOf": { "@id": "https://glowboxes.com.ar/#website" },
+      "about": { "@id": "https://glowboxes.com.ar/#organization" }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://glowboxes.com.ar/#website",
+      "name": "Glow Boxes",
+      "url": "https://glowboxes.com.ar/",
+      "publisher": { "@id": "https://glowboxes.com.ar/#organization" }
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -1060,7 +1110,7 @@
   </div>
 
   <!-- RIGHT: form -->
-  <form class="card form-card" onsubmit="handleSubmit(event)">
+  <form class="card form-card" id="form-contact" onsubmit="handleSubmit(event)">
     <div class="card-head">
       <span class="card-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
@@ -1085,27 +1135,27 @@
           <label class="field-label">Nombre <span class="req">*</span></label>
           <div class="input-wrap">
             <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-            <input class="input" type="text" placeholder="Tu nombre completo" required>
+            <input class="input" id="ct-nombre" type="text" placeholder="Tu nombre completo" required>
           </div>
         </div>
         <div class="field">
           <label class="field-label">Teléfono <span class="req">*</span></label>
           <div class="input-wrap">
             <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg></span>
-            <input class="input" type="tel" placeholder="+54 9 11..." required>
+            <input class="input" id="ct-telefono" type="tel" placeholder="+54 9 11..." required>
           </div>
         </div>
         <div class="field full">
           <label class="field-label">Email <span class="req">*</span></label>
           <div class="input-wrap">
             <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg></span>
-            <input class="input" type="email" placeholder="tu@email.com" required>
+            <input class="input" id="ct-email" type="email" placeholder="tu@email.com" required>
           </div>
         </div>
         <div class="field">
           <label class="field-label">Soy</label>
           <div class="input-wrap">
-            <select class="input">
+            <select class="input" id="ct-tipo">
               <option value="">Seleccionar...</option>
               <option value="particular">Particular / Entusiasta</option>
               <option value="detailer">Detailer</option>
@@ -1120,7 +1170,7 @@
         <div class="field">
           <label class="field-label">Rubro de interés</label>
           <div class="input-wrap">
-            <select class="input">
+            <select class="input" id="ct-rubro">
               <option value="">Seleccionar...</option>
               <option>Detailing</option>
               <option>Audio Car</option>
@@ -1134,20 +1184,20 @@
         <div class="field full">
           <label class="field-label">Asunto <span class="opt">opcional</span></label>
           <div class="input-wrap">
-            <input class="input" type="text" placeholder="Resumí tu consulta en una línea">
+            <input class="input" id="ct-asunto" type="text" placeholder="Resumí tu consulta en una línea">
           </div>
         </div>
         <div class="field full">
           <label class="field-label">Mensaje <span class="req">*</span></label>
           <div class="input-wrap">
-            <textarea class="input" placeholder="Contanos en detalle qué necesitás. Modelo del vehículo, productos de interés, tipo de proyecto, etc." required></textarea>
+            <textarea class="input" id="ct-mensaje" placeholder="Contanos en detalle qué necesitás. Modelo del vehículo, productos de interés, tipo de proyecto, etc." required></textarea>
           </div>
         </div>
       </div>
 
       <div class="form-foot">
         <label class="check">
-          <input type="checkbox" required>
+          <input type="checkbox" id="ct-privacy" required>
           <span class="box"></span>
           <span>Acepto la <a href="#">política de privacidad</a> y autorizo el tratamiento de mis datos para fines de contacto comercial.</span>
         </label>
@@ -1290,27 +1340,10 @@
     });
   });
 
-  // Form submit
-  function handleSubmit(e){
-    e.preventDefault();
-    const btn = document.getElementById('submitBtn');
-    const original = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = 'Enviando...';
-    setTimeout(()=>{
-      btn.innerHTML = '✓ Mensaje Enviado';
-      btn.style.background = 'var(--acid)';
-      setTimeout(()=>{
-        btn.disabled = false;
-        btn.innerHTML = original;
-        btn.style.background = '';
-        e.target.reset();
-        document.querySelectorAll('.reason').forEach((r,i)=>r.classList.toggle('active', i===0));
-      }, 2200);
-    }, 1200);
-  }
+
 </script>
 
+<script type="module" src="js/analytics.js"></script>
 <script type="module" src="js/nav.js"></script>
 <script type="module" src="js/contacto.js"></script>
 </body>
