@@ -6,6 +6,7 @@ import {
   getJsPDF, C, fmtP, fmtD, fmtDT, safe, loadLogo,
   pageHeader, pageFooter, sectionTitle, infoBox, totalsBlock, tableDefaults,
 } from './pdf.js'
+import { showToast } from './ui-feedback.js'
 
 // ── Label maps ───────────────────────────────────────────────
 const ESTADO  = { pendiente:'Pendiente', confirmado:'Confirmado', en_preparacion:'En preparación', en_transito:'En tránsito', enviado:'Enviado', entregado:'Entregado', completado:'Completado', cancelado:'Cancelado' }
@@ -376,7 +377,10 @@ export function printReceipt(order, client = {}) {
 </body></html>`
 
   const w = window.open('', '_blank', 'width=760,height=960,scrollbars=yes')
-  if (!w) { alert('Permitir popups para imprimir.'); return }
+  if (!w) {
+    showToast('Permití las ventanas emergentes para imprimir la boleta.', 'warn')
+    return
+  }
   w.document.write(html)
   w.document.close()
 }

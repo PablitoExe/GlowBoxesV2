@@ -20,7 +20,7 @@
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{
     background:var(--bg-0);color:var(--ink);
-    font-family:'Barlow Condensed',sans-serif;overflow-x:hidden;
+    font-family:'Barlow Condensed',sans-serif;overflow-x:hidden;width:100%;max-width:100%;
   }
   body{
     background:
@@ -47,6 +47,8 @@
     animation:slide 18s linear infinite;
     border-bottom:1px solid rgba(0,0,0,.4);
     overflow:hidden;
+    contain:paint;
+    max-width:100vw;
   }
   @keyframes slide{0%{background-position:0% 0}100%{background-position:300% 0}}
   .ticker-track{
@@ -112,6 +114,12 @@
   .hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
   .hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
   .hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+  @media(max-width:900px){
+    .hamburger.open{
+      position:fixed;top:18px;right:24px;z-index:30;
+      background:var(--bg-1);box-shadow:0 0 22px rgba(168,107,255,.18);
+    }
+  }
   .search-overlay{
     position:fixed;inset:0;z-index:200;
     background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
@@ -136,18 +144,19 @@
     color:var(--ink-mute);border:1px solid var(--line-strong);transition:.15s;flex-shrink:0;
   }
   .search-close:hover{color:var(--ink);border-color:var(--violet-glow)}
-  .nav-overlay{display:none;position:fixed;inset:0;z-index:15;background:rgba(0,0,0,.6)}
+  .nav-overlay{display:none;position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.6)}
   .nav-overlay.open{display:block}
   @media(max-width:900px){
     .hamburger{display:flex}
     nav{padding:18px 24px}
     .nav-links{
-      position:fixed;top:0;right:-280px;bottom:0;z-index:20;width:280px;
+      display:none;
+      position:fixed;top:0;right:0;bottom:0;z-index:20;width:min(280px,85vw);
       background:var(--bg-1);border-left:1px solid var(--line-strong);
       flex-direction:column;gap:0;padding:80px 0 32px;
-      transition:right .3s ease;overflow-y:auto;
+      transform:translateX(100%);transition:transform .3s ease;overflow-y:auto;overflow-x:hidden;
     }
-    .nav-links.open{right:0}
+    .nav-links.open{display:flex;transform:translateX(0)}
     .nav-links a{font-size:15px;padding:16px 28px;border-bottom:1px solid var(--line);border-left:none;border-right:none;border-top:none}
     .nav-links a:hover,.nav-links a.active{background:rgba(139,61,245,.1);color:var(--ink);border-left:2px solid var(--violet-glow);padding-left:26px}
   }
@@ -157,6 +166,7 @@
     position:relative;z-index:2;
     padding:80px 48px;
     max-width:1400px;margin:0 auto;
+    overflow:hidden;
   }
 
   /* Big background number */
@@ -310,6 +320,8 @@
     background-size:300% 100%;
     animation:slide 18s linear infinite;
     overflow:hidden;
+    contain:paint;
+    max-width:100vw;
     border-top:1px solid rgba(0,0,0,.4);
     border-bottom:1px solid rgba(0,0,0,.4);
   }
@@ -364,6 +376,7 @@
   .story-section{
     position:relative;padding:100px 48px;
     max-width:1400px;margin:0 auto;
+    overflow:hidden;
   }
   .story-section .bg-num{font-size:380px;right:-40px;top:-80px}
 
@@ -519,6 +532,7 @@
   .rubros-section{
     position:relative;padding:100px 48px;
     max-width:1400px;margin:0 auto;
+    overflow:hidden;
   }
   .rubros-section .bg-num{font-size:340px;left:-30px;top:-40px}
 
@@ -744,7 +758,6 @@
   /* ====== Responsive ====== */
   @media (max-width:1024px){
     nav{padding:18px 24px;flex-wrap:wrap;gap:14px}
-    .nav-links{order:3;width:100%;overflow-x:auto;padding-bottom:4px}
     .section{padding:60px 24px}
     .stats-section{padding:48px 24px}
     .story-section,.mission,.rubros-section,.timeline-section,.team-section,.cta-section{padding:60px 24px}
@@ -764,6 +777,9 @@
     .team-grid{grid-template-columns:1fr 1fr}
     .cta-card{grid-template-columns:1fr;padding:40px 24px}
     .cta-actions{flex-direction:row;flex-wrap:wrap}
+  }
+  @media (min-width:901px) and (max-width:1024px){
+    .nav-links{order:3;width:100%;overflow-x:auto;padding-bottom:4px}
   }
   @media (max-width:560px){
     .stats-grid{grid-template-columns:1fr}

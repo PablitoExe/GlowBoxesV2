@@ -2,6 +2,26 @@ const CART_KEY = 'gb_cart'
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 // ── Persistencia ──────────────────────────────────────────
+function html(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
+function jsString(value = '') {
+  return String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/[\r\n]/g, ' ')
+}
+
+function safeUrl(value = '') {
+  const url = String(value || '').trim()
+  if (!url) return ''
+  if (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:')) return url
+  return ''
+}
+
 function isUuid(value) {
   return UUID_RE.test(String(value || ''))
 }
@@ -108,29 +128,34 @@ function renderCart() {
     return
   }
 
-  container.innerHTML = cart.map(item => `
+  container.innerHTML = cart.map(item => {
+    const id = html(jsString(item.id))
+    const image = safeUrl(item.imagen)
+    const name = html(item.nombre)
+    return `
     <div class="cart-item">
       <div class="cart-item-img">
-        ${item.imagen
-          ? `<img src="${item.imagen}" alt="${item.nombre}">`
+        ${image
+          ? `<img src="${html(image)}" alt="${name}" loading="lazy" decoding="async">`
           : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>`}
       </div>
       <div class="cart-item-info">
-        <div class="cart-item-name">${item.nombre}</div>
+        <div class="cart-item-name">${name}</div>
         <div class="cart-item-price">$${(item.precio * item.cantidad).toLocaleString('es-AR')}</div>
         <div class="cart-item-unit">$${Number(item.precio).toLocaleString('es-AR')} c/u</div>
       </div>
       <div class="cart-item-right">
         <div class="qty-control">
-          <button class="qty-btn" onclick="setQty('${item.id}', ${item.cantidad - 1})">−</button>
+          <button class="qty-btn" onclick="setQty('${id}', ${item.cantidad - 1})">−</button>
           <span class="qty-val">${item.cantidad}</span>
-          <button class="qty-btn" onclick="setQty('${item.id}', ${item.cantidad + 1})">+</button>
+          <button class="qty-btn" onclick="setQty('${id}', ${item.cantidad + 1})">+</button>
         </div>
-        <button class="cart-remove" onclick="removeFromCart('${item.id}')" aria-label="Eliminar">
+        <button class="cart-remove" onclick="removeFromCart('${id}')" aria-label="Eliminar">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
         </button>
       </div>
-    </div>`).join('')
+    </div>`
+  }).join('')
 }
 
 // ── Drawer open/close ─────────────────────────────────────

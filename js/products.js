@@ -124,8 +124,8 @@ function renderProducto(i) {
     const w1    = words[0] || ''
     const rest  = words.slice(1).join(' ')
     titleEl.innerHTML = rest
-      ? `<span class="accent">${w1.toUpperCase()}</span><br><span class="outline">${rest.toUpperCase()}</span>`
-      : `<span class="accent">${w1.toUpperCase()}</span>`
+      ? `<span class="accent">${html(w1.toUpperCase())}</span><br><span class="outline">${html(rest.toUpperCase())}</span>`
+      : `<span class="accent">${html(w1.toUpperCase())}</span>`
   }
 
   // Descripción
@@ -137,8 +137,8 @@ function renderProducto(i) {
     const entries = Object.entries(attrs).slice(0, 3)
     specsEl.innerHTML = entries.map(([label, val]) => `
       <div class="spec">
-        <div class="spec-label">${label}</div>
-        <div class="spec-value">${val}</div>
+        <div class="spec-label">${html(label)}</div>
+        <div class="spec-value">${html(val)}</div>
       </div>`).join('')
   }
 

@@ -1,2 +1,5 @@
 .claude/
 client_secret_*.json
+*.apps.googleusercontent.com.json
+node_modules/
+qa-screenshots/

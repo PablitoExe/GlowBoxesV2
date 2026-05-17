@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { showToast } from './ui-feedback.js'
 
 const CART_KEY = 'gb_cart'
 const PROOF_BUCKET = 'comprobantes'
@@ -37,6 +38,7 @@ const state = {
   transferProof: null,
   lastTotals: null,
 }
+let proofPreviewUrl = null
 
 const $ = id => document.getElementById(id)
 const money = value => `<span class="currency">$</span>${fmt(value)}`
@@ -161,6 +163,13 @@ function escapeHtml(value) {
     '"': '&quot;',
     "'": '&#39;',
   }[ch]))
+}
+
+function safeUrl(value = '') {
+  const url = String(value || '').trim()
+  if (!url) return ''
+  if (url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:')) return url
+  return ''
 }
 
 function cartSubtotal(cart = getCart()) {
@@ -326,10 +335,12 @@ function renderProofPreview(file) {
   if (name) name.textContent = file.name
   if (status) status.textContent = '// LISTO PARA ENVIAR'
   if (preview) {
+    if (proofPreviewUrl) URL.revokeObjectURL(proofPreviewUrl)
     const isImage = file.type.startsWith('image/')
     const url = isImage ? URL.createObjectURL(file) : ''
+    proofPreviewUrl = url || null
     preview.classList.add('open')
-    preview.innerHTML = `${isImage ? `<img src="${url}" alt="">` : '<div class="proof-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></div>'}<div class="proof-file"><strong style="color:var(--ink)">${escapeHtml(file.name)}</strong><br>${(file.size / 1024 / 1024).toFixed(2)} MB · ${escapeHtml(file.type)}</div>`
+    preview.innerHTML = `${isImage ? `<img src="${url}" alt="" loading="lazy" decoding="async">` : '<div class="proof-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></div>'}<div class="proof-file"><strong style="color:var(--ink)">${escapeHtml(file.name)}</strong><br>${(file.size / 1024 / 1024).toFixed(2)} MB · ${escapeHtml(file.type)}</div>`
   }
 }
 
@@ -342,6 +353,8 @@ async function setTransferProof(file) {
     setProofMessage('Comprobante cargado correctamente.', 'ok')
   } catch (error) {
     state.transferProof = null
+    if (proofPreviewUrl) URL.revokeObjectURL(proofPreviewUrl)
+    proofPreviewUrl = null
     $('transferProofBox')?.classList.remove('ready')
     $('transferProofPreview')?.classList.remove('open')
     setProofMessage(error.message, 'warn')
@@ -387,10 +400,16 @@ function renderSummaryItems() {
     return
   }
 
-  container.innerHTML = cart.map(item => `
+  container.innerHTML = cart.map(item => {
+    const imageUrl = safeUrl(item.imagen)
+    const cssUrl = imageUrl.replace(/'/g, '%27').replace(/"/g, '%22')
+    const imageStyle = imageUrl
+      ? `background-image:url('${escapeHtml(cssUrl)}');background-size:cover;background-position:center`
+      : ''
+    return `
     <div class="cart-item">
-      <div class="cart-thumb" style="${item.imagen ? `background-image:url(${escapeHtml(item.imagen)});background-size:cover;background-position:center` : ''}">
-        ${item.imagen ? '' : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg>`}
+      <div class="cart-thumb" style="${imageStyle}">
+        ${imageUrl ? '' : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg>`}
         <span class="qty">${item.cantidad}</span>
       </div>
       <div class="cart-info">
@@ -398,7 +417,8 @@ function renderSummaryItems() {
         <div class="cart-meta">$${fmt(item.precio)} c/u</div>
       </div>
       <div class="cart-price">${money(item.precio * item.cantidad)}</div>
-    </div>`).join('')
+    </div>`
+  }).join('')
 }
 
 function renderInstallments(totals) {
@@ -452,6 +472,8 @@ function syncProofVisibility() {
   if (!box) return
   box.style.display = state.pay === 'transfer' ? '' : 'none'
   if (state.pay !== 'transfer') {
+    if (proofPreviewUrl) URL.revokeObjectURL(proofPreviewUrl)
+    proofPreviewUrl = null
     setProofMessage('')
     resetProofProgress()
   }
@@ -732,7 +754,7 @@ function validateStep1() {
     highlightField(buyerCheck.field)
     const wrap = $(buyerCheck.field)?.closest('.card')
     wrap?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    setTimeout(() => alert(buyerCheck.msg), 80)
+    setTimeout(() => showToast(buyerCheck.msg, 'warn'), 80)
     return false
   }
   const shipCheck = validateShipping()
@@ -741,7 +763,7 @@ function validateStep1() {
     highlightField(shipCheck.field)
     const wrap = $(shipCheck.field)?.closest('.card')
     wrap?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    setTimeout(() => alert(shipCheck.msg), 80)
+    setTimeout(() => showToast(shipCheck.msg, 'warn'), 80)
     return false
   }
   goStep(2)
@@ -770,7 +792,7 @@ async function finalizePay() {
 
   const totals = renderTotals(false)
   if (!totals.cart.length) {
-    alert('Tu carrito está vacío.')
+    showToast('Tu carrito está vacío.', 'warn')
     resetFinalizeButton(btn)
     return
   }
@@ -778,7 +800,7 @@ async function finalizePay() {
   const invalidItems = invalidCartItems(totals.cart)
   if (invalidItems.length) {
     console.warn('[checkout] Compra bloqueada: hay productos sin UUID real en el carrito.', invalidItems)
-    alert('Algunos productos del carrito ya no están disponibles. Eliminá esos productos y volvé a agregarlos desde el catálogo.')
+    showToast('Algunos productos del carrito ya no están disponibles. Eliminá esos productos y volvé a agregarlos desde el catálogo.', 'error', { duration: 5200 })
     resetFinalizeButton(btn)
     return
   }
@@ -787,7 +809,7 @@ async function finalizePay() {
   if (!buyerCheck.ok) {
     goStep(1)
     highlightField(buyerCheck.field)
-    alert(buyerCheck.msg)
+    showToast(buyerCheck.msg, 'warn')
     resetFinalizeButton(btn)
     return
   }
@@ -796,7 +818,7 @@ async function finalizePay() {
   if (!shipCheck.ok) {
     goStep(1)
     highlightField(shipCheck.field)
-    alert(shipCheck.msg)
+    showToast(shipCheck.msg, 'warn')
     resetFinalizeButton(btn)
     return
   }

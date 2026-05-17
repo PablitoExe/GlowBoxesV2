@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { confirmDialog } from './ui-feedback.js'
 
 const PRODUCT_BUCKET = 'product-images'
 const BRAND_BUCKET   = 'brand-logos'
@@ -687,7 +688,7 @@ function renderBrands() {
   grid.innerHTML = state.marcas.map(m => {
     const count = state.productos.filter(p => p.marca_id === m.id).length
     const logo = m.logo_url
-      ? `<img src="${html(m.logo_url)}" style="width:32px;height:32px;object-fit:contain;border-radius:2px" alt="">`
+      ? `<img src="${html(m.logo_url)}" loading="lazy" decoding="async" style="width:32px;height:32px;object-fit:contain;border-radius:2px" alt="">`
       : `<div style="width:32px;height:32px;background:rgba(168,107,255,.15);border-radius:2px;display:grid;place-items:center;font-family:'Archivo Black',sans-serif;font-size:14px;color:var(--violet-glow)">${html((m.nombre || '?')[0].toUpperCase())}</div>`
     return `<div class="admin-hover-card brand-card" style="padding:14px;background:var(--bg-2)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">${logo}<div style="font-family:'Archivo Black',sans-serif;font-size:13px;text-transform:uppercase;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${html(m.nombre)}</div></div><div style="display:flex;align-items:center;justify-content:space-between"><div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--violet-glow);letter-spacing:.12em">${count} PROD.</div><div style="display:flex;gap:4px"><button class="row-act" onclick="openBrandModal('${m.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg></button><button class="row-act danger" onclick="deleteBrand('${m.id}','${jsString(m.nombre)}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div></div>`
   }).join('')
@@ -851,7 +852,10 @@ function toast(msg, type = 'ok', duration = 3400) {
   const colors = { ok: '#c8ff00', error: '#ff4757', warn: '#ffa726', info: '#a86bff' }
   const color = colors[type] || colors.info
   el.style.cssText = `background:var(--bg-2,#16161f);border:1px solid ${color};color:var(--ink,#f4f4f6);padding:12px 18px 12px 14px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;max-width:340px;border-left:3px solid ${color};box-shadow:0 4px 24px rgba(0,0,0,.5);pointer-events:auto;transition:opacity .25s;opacity:0`
-  el.innerHTML = `<span style="color:${color};margin-right:8px">${type === 'error' ? '✕' : type === 'warn' ? '⚠' : '✓'}</span>${msg.replace(/</g,'&lt;')}`
+  const icon = document.createElement('span')
+  icon.style.cssText = `color:${color};margin-right:8px`
+  icon.textContent = type === 'error' ? '✕' : type === 'warn' ? '⚠' : '✓'
+  el.append(icon, document.createTextNode(String(msg || '')))
   box.appendChild(el)
   requestAnimationFrame(() => { el.style.opacity = '1' })
   setTimeout(() => {
@@ -1432,7 +1436,7 @@ async function openEditOrderModal(id) {
           const sku    = prod?.sku    || item.sku || null
           const img    = prod?.imagen_url
           const thumb  = img
-            ? `<img src="${html(img)}" alt="${html(nombre)}">`
+            ? `<img src="${html(img)}" alt="${html(nombre)}" loading="lazy" decoding="async">`
             : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px;opacity:.4"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg>`
           return `
             <div class="order-edit-item">
@@ -1626,7 +1630,13 @@ function customConfirm(msg, okLabel = 'Eliminar') {
     const msgEl = $('confirm-msg')
     const okBtn = $('confirm-ok')
     const cancelBtn = $('confirm-cancel')
-    if (!overlay || !okBtn || !cancelBtn) return resolve(confirm(msg))
+    if (!overlay || !okBtn || !cancelBtn) {
+      confirmDialog(msg, {
+        okLabel,
+        danger: okLabel.toLowerCase().includes('eliminar'),
+      }).then(resolve)
+      return
+    }
     msgEl.textContent = msg
     okBtn.textContent = okLabel
     overlay.classList.add('open')

@@ -358,7 +358,7 @@ function orderRowHTML(p) {
   // Thumbnail from first item's product image
   const firstImg = items[0]?.productos?.imagen_url
   const thumb = firstImg
-    ? `<img src="${html(firstImg)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:2px">`
+    ? `<img src="${html(firstImg)}" alt="" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:2px">`
     : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px;opacity:.4"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg>`
 
   return `
@@ -513,7 +513,7 @@ async function loadFavoritos() {
           <svg viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z" fill="currentColor"/></svg>
         </button>
         <div class="fav-img">
-          ${p.imagen_url ? `<img src="${html(p.imagen_url)}" alt="${html(p.nombre)}" style="width:100%;height:100%;object-fit:cover">` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg>`}
+          ${p.imagen_url ? `<img src="${html(p.imagen_url)}" alt="${html(p.nombre)}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover">` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg>`}
         </div>
         <div class="fav-cat">// ${html(p.categorias?.nombre || 'PRODUCTO')}</div>
         <div class="fav-name">${html(p.nombre)}</div>

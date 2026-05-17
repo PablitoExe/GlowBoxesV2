@@ -1,6 +1,7 @@
 import { supabase } from './supabase.js'
 import { ensureUserProfile } from './auth-profile.js'
 import { renderStatNumber, startPublicStatsAutoRefresh } from './site-stats.js'
+import { showToast } from './ui-feedback.js'
 
 // ── Tab switching ──────────────────────────────────────────
 const tabs        = document.querySelectorAll('.tab')
@@ -28,7 +29,10 @@ document.querySelectorAll('[data-switch]').forEach(a => {
 
 // ── Error display ──────────────────────────────────────────
 function showError(msg, formEl) {
-  if (!formEl) return window.alert(msg)
+  if (!formEl) {
+    showToast(msg, 'error')
+    return
+  }
   let el = formEl.querySelector('.form-error')
   if (!el) {
     el = document.createElement('div')
@@ -162,7 +166,7 @@ async function handleGoogleLogin() {
   } catch (err) {
     console.error('[GOOGLE AUTH ERROR]', err)
     showError('No se pudo conectar con Google. Intentá de nuevo.', formLogin)
-    window.alert('No se pudo conectar con Google. Intentá de nuevo.')
+    showToast('No se pudo conectar con Google. Intentá de nuevo.', 'error')
     if (btn) {
       btn.disabled = false
       btn.removeAttribute('aria-busy')
