@@ -383,7 +383,7 @@ function renderSummaryItems() {
 
   if (!cart.length) {
     container.innerHTML = `<div style="padding:24px;text-align:center;font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-mute);letter-spacing:.1em">
-      // Carrito vacío — <a href="index.html" style="color:var(--violet-glow);text-decoration:underline">Volver</a></div>`
+      // Carrito vacío — <a href="/" style="color:var(--violet-glow);text-decoration:underline">Volver</a></div>`
     return
   }
 

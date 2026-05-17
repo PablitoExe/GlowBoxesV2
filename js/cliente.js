@@ -207,7 +207,7 @@ function renderAllPedidos(pedidos) {
 }
 
 function renderEmptyPedidos() {
-  const msg = `<div style="padding:40px;text-align:center;font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-mute);letter-spacing:.1em">// Sin pedidos todavía — <a href="index.html" style="color:var(--violet-glow)">Ir a la tienda →</a></div>`
+  const msg = `<div style="padding:40px;text-align:center;font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-mute);letter-spacing:.1em">// Sin pedidos todavía — <a href="/" style="color:var(--violet-glow)">Ir a la tienda →</a></div>`
   document.querySelector('[data-list="historial"]') && (document.querySelector('[data-list="historial"]').innerHTML = msg)
   document.querySelector('[data-list="all-pedidos"]') && (document.querySelector('[data-list="all-pedidos"]').innerHTML = msg)
 }
@@ -307,7 +307,7 @@ async function loadFavoritos() {
   if (!container) return
 
   if (!data || !data.length) {
-    container.innerHTML = `<div style="padding:40px;text-align:center;font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-mute);letter-spacing:.1em">// Sin favoritos — <a href="index.html" style="color:var(--violet-glow)">Ir a la tienda →</a></div>`
+    container.innerHTML = `<div style="padding:40px;text-align:center;font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-mute);letter-spacing:.1em">// Sin favoritos — <a href="/" style="color:var(--violet-glow)">Ir a la tienda →</a></div>`
     return
   }
 
