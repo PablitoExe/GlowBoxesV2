@@ -170,7 +170,7 @@ async function loadCatalog() {
 async function loadOrders() {
   const { data, error } = await supabase
     .from('pedidos')
-    .select('*, pedido_items(id, producto_id, nombre_producto, sku, cantidad, precio_unitario, subtotal, productos(nombre, sku, categorias(nombre)))')
+    .select('*, pedido_items(id, producto_id, nombre_producto, sku, cantidad, precio_unitario, subtotal, productos(nombre, sku, imagen_url, precio, categorias(nombre)))')
     .order('created_at', { ascending: false })
   if (error) return reportError('pedidos', error)
   state.pedidos = data || []
@@ -1324,17 +1324,25 @@ async function openEditOrderModal(id) {
     const address = typeof order.direccion_envio === 'object' && order.direccion_envio
       ? (order.direccion_envio.texto || order.direccion_envio.direccion || order.direccion_envio.calle || JSON.stringify(order.direccion_envio))
       : order.direccion_envio
+    const METODO_LABELS = { transferencia: 'Transferencia bancaria', mercado_pago: 'Mercado Pago', efectivo: 'Efectivo', tarjeta: 'Tarjeta', otro: 'Otro' }
+    const ENVIO_LABELS  = { pickup: 'Retiro en local', own: 'Envío a domicilio', correo: 'Correo argentino', moto: 'Moto mensajería' }
+    const metodo = METODO_LABELS[order.pago_metodo || order.metodo_pago] || html(order.pago_metodo || order.metodo_pago || '—')
+    const envio  = ENVIO_LABELS[order.metodo_envio] || html(order.metodo_envio || '—')
     summary.innerHTML = `
       <div style="display:flex;justify-content:space-between;gap:12px"><span>Cliente</span><strong style="color:var(--ink);text-align:right">${html(client.name)}</strong></div>
       <div style="display:flex;justify-content:space-between;gap:12px"><span>Email</span><strong style="color:var(--ink);text-align:right">${html(client.email || '—')}</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px"><span>Dirección</span><strong style="color:var(--ink);text-align:right">${html(address || '—')}</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px"><span>Subtotal</span><strong style="color:var(--ink);text-align:right">${fmtMoney(order.subtotal)}</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px"><span>Descuento</span><strong style="color:var(--ink);text-align:right">${fmtMoney(order.descuento)}</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px"><span>Envío</span><strong style="color:var(--ink);text-align:right">${fmtMoney(order.costo_envio)}</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px"><span>Total</span><strong style="color:var(--acid);font-family:'Bebas Neue',sans-serif;font-size:20px;text-align:right">${fmtMoney(order.total)}</strong></div>
-      <div style="border-top:1px solid var(--line);padding-top:10px;margin-top:2px;display:grid;gap:8px">
+      <div style="display:flex;justify-content:space-between;gap:12px"><span>Dirección</span><strong style="color:var(--ink);text-align:right">${html(address || 'Sin dirección')}</strong></div>
+      <div style="display:flex;justify-content:space-between;gap:12px"><span>Método de pago</span><strong style="color:var(--violet-glow);text-align:right">${html(metodo)}</strong></div>
+      <div style="display:flex;justify-content:space-between;gap:12px"><span>Envío</span><strong style="color:var(--ink);text-align:right">${html(envio)}</strong></div>
+      <div style="border-top:1px solid var(--line);padding-top:8px;margin-top:4px;display:grid;gap:6px">
+        <div style="display:flex;justify-content:space-between;gap:12px"><span>Subtotal</span><strong style="color:var(--ink);text-align:right">${fmtMoney(order.subtotal)}</strong></div>
+        <div style="display:flex;justify-content:space-between;gap:12px"><span>Descuento</span><strong style="color:${Number(order.descuento) > 0 ? 'var(--acid)' : 'var(--ink)'};text-align:right">−${fmtMoney(order.descuento)}</strong></div>
+        <div style="display:flex;justify-content:space-between;gap:12px"><span>Costo envío</span><strong style="color:var(--ink);text-align:right">${fmtMoney(order.costo_envio)}</strong></div>
+        <div style="display:flex;justify-content:space-between;gap:12px"><span>TOTAL</span><strong style="color:var(--acid);font-family:'Bebas Neue',sans-serif;font-size:20px;text-align:right">${fmtMoney(order.total)}</strong></div>
+      </div>
+      <div style="border-top:1px solid var(--line);padding-top:8px;margin-top:4px;display:grid;gap:8px">
         <div style="display:flex;justify-content:space-between;gap:12px"><span>Comprobante</span><strong style="color:${order.comprobante_url ? 'var(--acid)' : 'var(--ink-mute)'};text-align:right">${html(order.comprobante_filename || 'Sin comprobante')}</strong></div>
-        ${order.comprobante_url ? `<div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button type="button" class="btn btn-ghost" style="padding:8px 10px;font-size:10px" onclick="openOrderProof('${jsString(order.comprobante_url)}')">Abrir</button><button type="button" class="btn btn-ghost" style="padding:8px 10px;font-size:10px" onclick="openOrderProof('${jsString(order.comprobante_url)}',true)">Descargar</button></div>` : ''}
+        ${order.comprobante_url ? `<div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button type="button" class="btn btn-ghost" style="padding:8px 10px;font-size:10px" onclick="openOrderProof('${jsString(order.comprobante_url)}')">Ver comprobante</button><button type="button" class="btn btn-ghost" style="padding:8px 10px;font-size:10px" onclick="openOrderProof('${jsString(order.comprobante_url)}',true)">Descargar</button></div>` : ''}
       </div>`
   }
   $('edit-ord-estado').value = order.estado || 'pendiente'
@@ -1345,8 +1353,29 @@ async function openEditOrderModal(id) {
   const itemsEl = $('edit-order-items')
   if (itemsEl) {
     itemsEl.innerHTML = order.pedido_items?.length
-      ? order.pedido_items.map(item => `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg-2);border:1px solid var(--line);border-radius:3px"><div><div style="font-size:13px;font-weight:600">${html(item.productos?.nombre || item.nombre_producto || 'Producto')}</div><div style="font-size:11px;color:var(--ink-mute);font-family:'Space Mono',monospace">${item.cantidad} × ${fmtMoney(item.precio_unitario)}</div></div><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--acid)">${fmtMoney(item.subtotal)}</div></div>`).join('')
-      : `<div style="color:var(--ink-mute);font-family:'Space Mono',monospace;font-size:11px;padding:8px 0">// Sin items registrados</div>`
+      ? order.pedido_items.map(item => {
+          const prod   = item.productos
+          const nombre = prod?.nombre || item.nombre_producto || 'Producto'
+          const sku    = prod?.sku    || item.sku || null
+          const img    = prod?.imagen_url
+          const thumb  = img
+            ? `<img src="${html(img)}" alt="${html(nombre)}" style="width:100%;height:100%;object-fit:cover;border-radius:2px">`
+            : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px;opacity:.4"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg>`
+          return `
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-2);border:1px solid var(--line);border-radius:3px">
+              <div style="width:44px;height:44px;flex-shrink:0;background:var(--bg-3);border:1px solid var(--line);border-radius:3px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+                ${thumb}
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:13px;font-weight:600;color:var(--ink)">${html(nombre)}</div>
+                <div style="font-size:11px;color:var(--ink-mute);font-family:'Space Mono',monospace;margin-top:2px">${sku ? html(sku) + ' · ' : ''}${item.cantidad} unid × ${fmtMoney(item.precio_unitario)}</div>
+              </div>
+              <div style="text-align:right;flex-shrink:0">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--acid)">${fmtMoney(item.subtotal || item.cantidad * item.precio_unitario)}</div>
+              </div>
+            </div>`
+        }).join('')
+      : `<div style="color:var(--ink-mute);font-family:'Space Mono',monospace;font-size:11px;padding:12px 0;text-align:center">// Sin items registrados</div>`
   }
   $('modal-edit-order')?.classList.add('open')
 }

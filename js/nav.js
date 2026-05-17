@@ -14,7 +14,7 @@ async function initAuth() {
     btn.href = 'admin.html'
   } else {
     btn.textContent = 'Mi cuenta'
-    btn.href = '#'
+    btn.href = 'cliente.html'
   }
 }
 

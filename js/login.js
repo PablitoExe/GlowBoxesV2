@@ -86,12 +86,8 @@ async function handleLogin() {
     return
   }
 
-  const { data: role } = await supabase.rpc('get_my_role')
-
   btnSuccess(btn, 'Listo')
-  setTimeout(() => {
-    window.location.href = role === 'admin' ? 'admin.html' : 'cliente.html'
-  }, 700)
+  setTimeout(() => { window.location.href = 'index.html' }, 700)
 }
 
 // ── REGISTER ───────────────────────────────────────────────
@@ -121,8 +117,18 @@ async function handleRegister() {
   }
 
   btnSuccess(btn, 'Cuenta creada')
-  setTimeout(() => { window.location.href = 'cliente.html' }, 700)
+  setTimeout(() => { window.location.href = 'index.html' }, 700)
 }
+
+// ── Google OAuth ───────────────────────────────────────────
+async function handleGoogleLogin() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin + '/index.html' },
+  })
+  if (error) showError('No se pudo conectar con Google. Intentá de nuevo.', formLogin)
+}
+window.handleGoogleLogin = handleGoogleLogin
 
 // ── Dispatcher desde HTML (onsubmit) ──────────────────────
 window.handleSubmit = (type) => type === 'login' ? handleLogin() : handleRegister()

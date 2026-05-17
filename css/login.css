@@ -378,7 +378,7 @@
   }
 
   /* Social buttons */
-  .social-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .social-row{display:grid;grid-template-columns:1fr;gap:12px}
   .btn-social{
     padding:10px;border:1px solid var(--line-strong);
     font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;
@@ -421,7 +421,6 @@
   }
   @media (max-width:560px){
     .field-row{grid-template-columns:1fr}
-    .social-row{grid-template-columns:1fr}
     .form-top{flex-direction:column;gap:14px;align-items:flex-start}
     .auth-tabs{margin-top:32px;width:100%}
     .tab{flex:1;text-align:center;padding:14px 8px;font-size:12px}
