@@ -842,7 +842,9 @@ async function finalizePay() {
     }))
 
     // Atomic RPC: pedido + items in one DB transaction — no orphan possible on items failure.
+    console.log('[checkout] finalizePay — session.user.id:', session.user.id)
     const { error: rpcErr } = await supabase.rpc('create_order', {
+        p_user_id:                  session.user.id,
         p_numero:                   number,
         p_cliente_nombre:           buyer.fullName || null,
         p_cliente_email:            buyer.email || null,

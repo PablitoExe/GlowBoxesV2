@@ -1,4 +1,6 @@
 import { supabase } from './supabase.js'
+import { downloadOrderPDF, downloadBoleta, printReceipt } from './invoice.js'
+import { downloadReportePDF } from './reportes.js'
 
 const PRODUCT_BUCKET = 'product-images'
 const BRAND_BUCKET   = 'brand-logos'
@@ -1328,22 +1330,55 @@ async function openEditOrderModal(id) {
     const ENVIO_LABELS  = { pickup: 'Retiro en local', own: 'Envío a domicilio', correo: 'Correo argentino', moto: 'Moto mensajería' }
     const metodo = METODO_LABELS[order.pago_metodo || order.metodo_pago] || html(order.pago_metodo || order.metodo_pago || '—')
     const envio  = ENVIO_LABELS[order.metodo_envio] || html(order.metodo_envio || '—')
+    const hasProof = !!order.comprobante_url
+    summary.className = 'order-summary-grid'
     summary.innerHTML = `
-      <div style="display:flex;justify-content:space-between;gap:12px"><span>Cliente</span><strong style="color:var(--ink);text-align:right">${html(client.name)}</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px"><span>Email</span><strong style="color:var(--ink);text-align:right">${html(client.email || '—')}</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px"><span>Dirección</span><strong style="color:var(--ink);text-align:right">${html(address || 'Sin dirección')}</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px"><span>Método de pago</span><strong style="color:var(--violet-glow);text-align:right">${html(metodo)}</strong></div>
-      <div style="display:flex;justify-content:space-between;gap:12px"><span>Envío</span><strong style="color:var(--ink);text-align:right">${html(envio)}</strong></div>
-      <div style="border-top:1px solid var(--line);padding-top:8px;margin-top:4px;display:grid;gap:6px">
-        <div style="display:flex;justify-content:space-between;gap:12px"><span>Subtotal</span><strong style="color:var(--ink);text-align:right">${fmtMoney(order.subtotal)}</strong></div>
-        <div style="display:flex;justify-content:space-between;gap:12px"><span>Descuento</span><strong style="color:${Number(order.descuento) > 0 ? 'var(--acid)' : 'var(--ink)'};text-align:right">−${fmtMoney(order.descuento)}</strong></div>
-        <div style="display:flex;justify-content:space-between;gap:12px"><span>Costo envío</span><strong style="color:var(--ink);text-align:right">${fmtMoney(order.costo_envio)}</strong></div>
-        <div style="display:flex;justify-content:space-between;gap:12px"><span>TOTAL</span><strong style="color:var(--acid);font-family:'Bebas Neue',sans-serif;font-size:20px;text-align:right">${fmtMoney(order.total)}</strong></div>
+      <div class="order-summary-row">
+        <span class="order-summary-label">Cliente</span>
+        <span class="order-summary-val">${html(client.name)}</span>
       </div>
-      <div style="border-top:1px solid var(--line);padding-top:8px;margin-top:4px;display:grid;gap:8px">
-        <div style="display:flex;justify-content:space-between;gap:12px"><span>Comprobante</span><strong style="color:${order.comprobante_url ? 'var(--acid)' : 'var(--ink-mute)'};text-align:right">${html(order.comprobante_filename || 'Sin comprobante')}</strong></div>
-        ${order.comprobante_url ? `<div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button type="button" class="btn btn-ghost" style="padding:8px 10px;font-size:10px" onclick="openOrderProof('${jsString(order.comprobante_url)}')">Ver comprobante</button><button type="button" class="btn btn-ghost" style="padding:8px 10px;font-size:10px" onclick="openOrderProof('${jsString(order.comprobante_url)}',true)">Descargar</button></div>` : ''}
-      </div>`
+      <div class="order-summary-row">
+        <span class="order-summary-label">Email</span>
+        <span class="order-summary-val">${html(client.email || '—')}</span>
+      </div>
+      <div class="order-summary-row">
+        <span class="order-summary-label">Método de pago</span>
+        <span class="order-summary-val violet">${html(metodo)}</span>
+      </div>
+      <div class="order-summary-row">
+        <span class="order-summary-label">Envío</span>
+        <span class="order-summary-val">${html(envio)}</span>
+      </div>
+      <div class="order-summary-row full">
+        <span class="order-summary-label">Dirección</span>
+        <span class="order-summary-val" title="${html(address || '')}">${html(address || 'Sin dirección')}</span>
+      </div>
+      <div class="order-summary-divider"></div>
+      <div class="order-summary-row">
+        <span class="order-summary-label">Subtotal</span>
+        <span class="order-summary-val">${fmtMoney(order.subtotal)}</span>
+      </div>
+      <div class="order-summary-row">
+        <span class="order-summary-label">Descuento</span>
+        <span class="order-summary-val${Number(order.descuento) > 0 ? ' accent' : ''}">−${fmtMoney(order.descuento)}</span>
+      </div>
+      <div class="order-summary-row">
+        <span class="order-summary-label">Costo envío</span>
+        <span class="order-summary-val">${fmtMoney(order.costo_envio)}</span>
+      </div>
+      <div class="order-summary-row">
+        <span class="order-summary-label">Comprobante</span>
+        <span class="order-summary-val${hasProof ? ' accent' : ''}">${html(order.comprobante_filename || (hasProof ? 'Adjunto' : 'Sin comprobante'))}</span>
+      </div>
+      <div class="order-summary-total">
+        <span class="lbl">TOTAL</span>
+        <span class="val">${fmtMoney(order.total)}</span>
+      </div>
+      ${hasProof ? `
+      <div style="display:flex;gap:6px;flex-wrap:wrap;grid-column:1/-1;margin-top:2px">
+        <button type="button" class="btn btn-ghost" style="padding:6px 10px;font-size:10px" onclick="openOrderProof('${jsString(order.comprobante_url)}')">Ver comprobante</button>
+        <button type="button" class="btn btn-ghost" style="padding:6px 10px;font-size:10px" onclick="openOrderProof('${jsString(order.comprobante_url)}',true)">Descargar</button>
+      </div>` : ''}`
   }
   $('edit-ord-estado').value = order.estado || 'pendiente'
   $('edit-ord-pago-estado').value = order.pago_estado || 'pendiente'
@@ -1359,23 +1394,19 @@ async function openEditOrderModal(id) {
           const sku    = prod?.sku    || item.sku || null
           const img    = prod?.imagen_url
           const thumb  = img
-            ? `<img src="${html(img)}" alt="${html(nombre)}" style="width:100%;height:100%;object-fit:cover;border-radius:2px">`
-            : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px;opacity:.4"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg>`
+            ? `<img src="${html(img)}" alt="${html(nombre)}">`
+            : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px;opacity:.4"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg>`
           return `
-            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-2);border:1px solid var(--line);border-radius:3px">
-              <div style="width:44px;height:44px;flex-shrink:0;background:var(--bg-3);border:1px solid var(--line);border-radius:3px;overflow:hidden;display:flex;align-items:center;justify-content:center">
-                ${thumb}
+            <div class="order-edit-item">
+              <div class="order-edit-item-thumb">${thumb}</div>
+              <div class="order-edit-item-info">
+                <div class="order-edit-item-name" title="${html(nombre)}">${html(nombre)}</div>
+                <div class="order-edit-item-meta">${sku ? html(sku) + ' · ' : ''}${item.cantidad} × ${fmtMoney(item.precio_unitario)}</div>
               </div>
-              <div style="flex:1;min-width:0">
-                <div style="font-size:13px;font-weight:600;color:var(--ink)">${html(nombre)}</div>
-                <div style="font-size:11px;color:var(--ink-mute);font-family:'Space Mono',monospace;margin-top:2px">${sku ? html(sku) + ' · ' : ''}${item.cantidad} unid × ${fmtMoney(item.precio_unitario)}</div>
-              </div>
-              <div style="text-align:right;flex-shrink:0">
-                <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--acid)">${fmtMoney(item.subtotal || item.cantidad * item.precio_unitario)}</div>
-              </div>
+              <div class="order-edit-item-price">${fmtMoney(item.subtotal || item.cantidad * item.precio_unitario)}</div>
             </div>`
         }).join('')
-      : `<div style="color:var(--ink-mute);font-family:'Space Mono',monospace;font-size:11px;padding:12px 0;text-align:center">// Sin items registrados</div>`
+      : `<div style="color:var(--ink-mute);font-family:'Space Mono',monospace;font-size:11px;padding:10px 0;text-align:center">// Sin items registrados</div>`
   }
   $('modal-edit-order')?.classList.add('open')
 }
@@ -1614,3 +1645,35 @@ loadAll()
     console.error('admin init failed', error)
     reportError('admin', error)
   })
+
+// ── PDF window helpers ────────────────────────────────────────
+// Called from onclick attributes on admin.html buttons.
+
+window.adminDownloadOrderPDF = async function() {
+  const order = state.pedidos.find(o => o.id === editingOrderId)
+  if (!order) return
+  const client = orderClient(order)
+  try { await downloadOrderPDF(order, client) }
+  catch (e) { toast(e.message || 'Error al generar PDF.', 'error') }
+}
+
+window.adminDownloadBoleta = async function() {
+  const order = state.pedidos.find(o => o.id === editingOrderId)
+  if (!order) return
+  const client = orderClient(order)
+  try { await downloadBoleta(order, client) }
+  catch (e) { toast(e.message || 'Error al generar boleta.', 'error') }
+}
+
+window.adminPrintReceipt = function() {
+  const order = state.pedidos.find(o => o.id === editingOrderId)
+  if (!order) return
+  const client = orderClient(order)
+  try { printReceipt(order, client) }
+  catch (e) { toast(e.message || 'Error al preparar impresión.', 'error') }
+}
+
+window.adminDownloadReporte = async function() {
+  try { await downloadReportePDF(state) }
+  catch (e) { toast(e.message || 'Error al generar reporte.', 'error') }
+}

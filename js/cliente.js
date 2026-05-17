@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { downloadBoleta, printReceipt } from './invoice.js'
 
 // ── Auth guard ────────────────────────────────────────────
 const { data: { session } } = await supabase.auth.getSession()
@@ -39,6 +40,10 @@ document.querySelector('.danger-link')?.addEventListener('click', async () => {
 const fmt = n => Number(n || 0).toLocaleString('es-AR')
 const fmtMoney = n => `$${fmt(Math.round(Number(n || 0)))}`
 
+// Cache pedidos for PDF window functions
+let _pedidosCache = []
+let _perfilCache  = null
+
 function initials(nombre, apellido) {
   const n = (nombre || '').trim()
   const a = (apellido || '').trim()
@@ -69,6 +74,7 @@ async function loadPerfil() {
   const nombre   = perfil?.nombre   || meta.nombre   || meta.full_name?.split(' ')[0]  || ''
   const apellido = perfil?.apellido || meta.apellido || meta.full_name?.split(' ').slice(1).join(' ') || ''
   const email    = session.user.email
+  _perfilCache   = { nombre, apellido, email }
   const tipo     = (perfil?.tipo || 'particular').toUpperCase()
   const ini      = initials(nombre, apellido)
 
@@ -139,6 +145,7 @@ async function loadPedidos() {
     return
   }
 
+  _pedidosCache = pedidos
   updateKPIs(pedidos)
   renderPedidoActivo(pedidos)
   renderHistorial(pedidos)
@@ -264,6 +271,16 @@ function orderRowHTML(p) {
       </div>
       <div class="order-right">
         <div class="order-total"><span class="currency">$</span>${fmt(p.total)}</div>
+        <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;justify-content:flex-end">
+          <button class="order-pdf-btn" onclick="clienteDownloadBoleta('${p.id}')" title="Descargar boleta PDF">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Boleta
+          </button>
+          <button class="order-pdf-btn" onclick="clientePrintReceipt('${p.id}')" title="Imprimir comprobante">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimir
+          </button>
+        </div>
         <div class="order-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
       </div>
     </div>`
@@ -418,3 +435,25 @@ await Promise.all([loadPerfil(), loadPedidos()])
 loadFavoritos()
 loadDirecciones()
 subscribeRealtime()
+
+// ── PDF window helpers (called from order row onclick) ────
+function _clienteFor(id) {
+  const order = _pedidosCache.find(p => p.id === id)
+  const name  = _perfilCache ? `${_perfilCache.nombre} ${_perfilCache.apellido}`.trim() : session.user.email
+  const email = _perfilCache?.email || session.user.email
+  return { order, client: { name, email } }
+}
+
+window.clienteDownloadBoleta = async (id) => {
+  const { order, client } = _clienteFor(id)
+  if (!order) return
+  try { await downloadBoleta(order, client) }
+  catch (e) { console.error(e); alert('Error al generar la boleta PDF.') }
+}
+
+window.clientePrintReceipt = (id) => {
+  const { order, client } = _clienteFor(id)
+  if (!order) return
+  try { printReceipt(order, client) }
+  catch (e) { console.error(e); alert('Error al preparar impresión.') }
+}

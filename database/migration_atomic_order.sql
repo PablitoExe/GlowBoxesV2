@@ -6,11 +6,16 @@
 -- never leave an orphaned pedido row.
 -- ============================================================
 
--- Drop old version if re-running.
+-- Drop all previously deployed signatures before recreating.
 drop function if exists public.create_order(
   text, text, text, text, text, text, text, text,
   numeric, numeric, numeric, numeric, text, jsonb,
   text, text, timestamptz, text, jsonb
+);
+drop function if exists public.create_order(
+  text, text, text, text, text, text, text, text,
+  numeric, numeric, numeric, numeric, text, jsonb,
+  text, text, timestamptz, text, jsonb, uuid
 );
 
 create or replace function public.create_order(
@@ -32,7 +37,8 @@ create or replace function public.create_order(
   p_comprobante_filename      text,
   p_comprobante_uploaded_at   timestamptz,
   p_notas                     text,
-  p_items                     jsonb   -- [{producto_id,nombre_producto,sku,cantidad,precio_unitario}]
+  p_items                     jsonb,   -- [{producto_id,nombre_producto,sku,cantidad,precio_unitario}]
+  p_user_id                   uuid    DEFAULT NULL  -- explicit caller UUID; falls back to auth.uid()
 )
 returns uuid
 language plpgsql
@@ -41,7 +47,12 @@ set search_path = public
 as $$
 declare
   v_pedido_id uuid;
+  v_user_id   uuid := COALESCE(p_user_id, auth.uid());
 begin
+  if v_user_id is null then
+    raise exception 'create_order: no authenticated user — call with a valid session';
+  end if;
+
   -- INSERT pedido; orders_insert_own RLS enforces user_id = auth.uid() and proof fields.
   insert into public.pedidos (
     numero, user_id, cliente_nombre, cliente_email,
@@ -51,7 +62,7 @@ begin
     comprobante_url, comprobante_filename, comprobante_uploaded_at,
     notas
   ) values (
-    p_numero, auth.uid(), p_cliente_nombre, p_cliente_email,
+    p_numero, v_user_id, p_cliente_nombre, p_cliente_email,
     p_estado, p_metodo_pago, p_pago_metodo, p_pago_estado,
     p_metodo_envio, p_subtotal, p_descuento, p_costo_envio, p_total,
     p_cupon_codigo, p_direccion_envio,
@@ -84,5 +95,5 @@ $$;
 grant execute on function public.create_order(
   text, text, text, text, text, text, text, text,
   numeric, numeric, numeric, numeric, text, jsonb,
-  text, text, timestamptz, text, jsonb
+  text, text, timestamptz, text, jsonb, uuid
 ) to authenticated, service_role;
