@@ -59,6 +59,23 @@ drop policy if exists "favorites_owner_all" on public.favoritos;
 drop policy if exists "favorites_admin_all" on public.favoritos;
 drop policy if exists "cart_owner_all" on public.carrito_items;
 drop policy if exists "cart_admin_all" on public.carrito_items;
+drop policy if exists "glow_media_public_read" on storage.objects;
+drop policy if exists "glow_media_admin_insert" on storage.objects;
+drop policy if exists "glow_media_admin_update" on storage.objects;
+drop policy if exists "glow_media_admin_delete" on storage.objects;
+drop policy if exists "product_images_public_read" on storage.objects;
+drop policy if exists "product_images_admin_insert" on storage.objects;
+drop policy if exists "product_images_admin_update" on storage.objects;
+drop policy if exists "product_images_admin_delete" on storage.objects;
+drop policy if exists "brand_logos_public_read" on storage.objects;
+drop policy if exists "brand_logos_admin_insert" on storage.objects;
+drop policy if exists "brand_logos_admin_update" on storage.objects;
+drop policy if exists "brand_logos_admin_delete" on storage.objects;
+drop policy if exists "payment_proofs_owner_read" on storage.objects;
+drop policy if exists "payment_proofs_owner_insert" on storage.objects;
+drop policy if exists "payment_proofs_owner_update" on storage.objects;
+drop policy if exists "payment_proofs_owner_delete" on storage.objects;
+drop policy if exists "payment_proofs_admin_all" on storage.objects;
 
 -- ============================================================
 -- Public catalog: readable when active, writable by admins only.
@@ -199,6 +216,14 @@ create policy "orders_insert_own"
     and tracking_code is null
     and numero_seguimiento is null
     and eta is null
+    and (
+      metodo_pago not in ('transfer','transferencia')
+      or (
+        comprobante_url is not null
+        and comprobante_filename is not null
+        and comprobante_uploaded_at is not null
+      )
+    )
   );
 
 create policy "orders_admin_all"
@@ -273,3 +298,110 @@ create policy "cart_admin_all"
   to authenticated
   using (public.is_admin())
   with check (public.is_admin());
+
+-- ============================================================
+-- Storage: product-images — public read, admin-only writes.
+-- ============================================================
+create policy "product_images_public_read"
+  on storage.objects
+  for select
+  to anon, authenticated
+  using (bucket_id = 'product-images');
+
+create policy "product_images_admin_insert"
+  on storage.objects
+  for insert
+  to authenticated
+  with check (bucket_id = 'product-images' and public.is_admin());
+
+create policy "product_images_admin_update"
+  on storage.objects
+  for update
+  to authenticated
+  using  (bucket_id = 'product-images' and public.is_admin())
+  with check (bucket_id = 'product-images' and public.is_admin());
+
+create policy "product_images_admin_delete"
+  on storage.objects
+  for delete
+  to authenticated
+  using (bucket_id = 'product-images' and public.is_admin());
+
+-- ============================================================
+-- Storage: brand-logos — public read, admin-only writes.
+-- ============================================================
+create policy "brand_logos_public_read"
+  on storage.objects
+  for select
+  to anon, authenticated
+  using (bucket_id = 'brand-logos');
+
+create policy "brand_logos_admin_insert"
+  on storage.objects
+  for insert
+  to authenticated
+  with check (bucket_id = 'brand-logos' and public.is_admin());
+
+create policy "brand_logos_admin_update"
+  on storage.objects
+  for update
+  to authenticated
+  using  (bucket_id = 'brand-logos' and public.is_admin())
+  with check (bucket_id = 'brand-logos' and public.is_admin());
+
+create policy "brand_logos_admin_delete"
+  on storage.objects
+  for delete
+  to authenticated
+  using (bucket_id = 'brand-logos' and public.is_admin());
+
+-- ============================================================
+-- Storage: private payment proofs.
+-- Files must live under a user-id folder: {auth.uid()}/filename.ext
+-- ============================================================
+create policy "payment_proofs_owner_read"
+  on storage.objects
+  for select
+  to authenticated
+  using (
+    bucket_id = 'comprobantes'
+    and name like auth.uid()::text || '/%'
+  );
+
+create policy "payment_proofs_owner_insert"
+  on storage.objects
+  for insert
+  to authenticated
+  with check (
+    bucket_id = 'comprobantes'
+    and name like auth.uid()::text || '/%'
+  );
+
+create policy "payment_proofs_owner_update"
+  on storage.objects
+  for update
+  to authenticated
+  using (
+    bucket_id = 'comprobantes'
+    and name like auth.uid()::text || '/%'
+  )
+  with check (
+    bucket_id = 'comprobantes'
+    and name like auth.uid()::text || '/%'
+  );
+
+create policy "payment_proofs_owner_delete"
+  on storage.objects
+  for delete
+  to authenticated
+  using (
+    bucket_id = 'comprobantes'
+    and name like auth.uid()::text || '/%'
+  );
+
+create policy "payment_proofs_admin_all"
+  on storage.objects
+  for all
+  to authenticated
+  using (bucket_id = 'comprobantes' and public.is_admin())
+  with check (bucket_id = 'comprobantes' and public.is_admin());

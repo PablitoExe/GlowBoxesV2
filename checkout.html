@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GLOW BOXES — Checkout</title>
+<title>Glow Boxes</title>
+<link rel="icon" type="image/png" href="/img/logito.png">
+<link rel="shortcut icon" href="/img/logito.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -27,7 +29,7 @@
     <span class="dash"></span>
     <span>SSL · 256BIT</span>
     <span class="dash"></span>
-    <span>#GB-CHKT-8473</span>
+    <span>#GB-CHKT</span>
   </div>
 </header>
 
@@ -79,33 +81,33 @@
             <div class="field">
               <label class="field-label">Nombre <span class="required">*</span></label>
               <div class="input-wrap">
-                <input class="input" type="text" placeholder="Juan" value="Lucas">
+                <input class="input" id="buyerNombre" type="text" placeholder="Juan">
               </div>
             </div>
             <div class="field">
               <label class="field-label">Apellido <span class="required">*</span></label>
               <div class="input-wrap">
-                <input class="input" type="text" placeholder="Pérez" value="Romero">
+                <input class="input" id="buyerApellido" type="text" placeholder="Pérez">
               </div>
             </div>
             <div class="field">
               <label class="field-label">Email <span class="required">*</span></label>
               <div class="input-wrap">
                 <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg></span>
-                <input class="input" type="email" placeholder="tu@email.com" value="lucas@detailpro.ar">
+                <input class="input" id="buyerEmail" type="email" placeholder="tu@email.com">
               </div>
             </div>
             <div class="field">
               <label class="field-label">Teléfono <span class="required">*</span></label>
               <div class="input-wrap">
                 <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg></span>
-                <input class="input" type="tel" placeholder="+54 9 11..." value="+54 9 11 5234-1290">
+                <input class="input" id="buyerTelefono" type="tel" placeholder="+54 9 11...">
               </div>
             </div>
             <div class="field">
               <label class="field-label">DNI / CUIT <span class="required">*</span></label>
               <div class="input-wrap">
-                <input class="input" type="text" placeholder="20-12345678-9" value="32.547.890">
+                <input class="input" id="buyerDni" type="text" placeholder="20-12345678-9">
               </div>
             </div>
             <div class="field">
@@ -113,7 +115,7 @@
               <div class="input-wrap">
                 <select class="input">
                   <option>Particular</option>
-                  <option selected>Detailer</option>
+                  <option>Detailer</option>
                   <option>Taller</option>
                   <option>Wrapper</option>
                   <option>Revendedor</option>
@@ -192,25 +194,25 @@
                     <label class="field-label">Dirección de entrega <span class="required">*</span></label>
                     <div class="input-wrap">
                       <span class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
-                      <input class="input" type="text" placeholder="Calle, número, piso, depto" value="Av. Cabildo 2547, 4° B">
+                      <input class="input" id="shipDireccion" type="text" placeholder="Calle, número, piso, depto">
                     </div>
                   </div>
                   <div class="field">
                     <label class="field-label">Localidad</label>
                     <div class="input-wrap">
-                      <input class="input" type="text" placeholder="Belgrano" value="Belgrano">
+                      <input class="input" id="shipLocalidad" type="text" placeholder="Belgrano">
                     </div>
                   </div>
                   <div class="field">
                     <label class="field-label">Código Postal</label>
                     <div class="input-wrap">
-                      <input class="input" type="text" placeholder="C1428" value="C1428">
+                      <input class="input" id="shipCp" type="text" placeholder="C1428">
                     </div>
                   </div>
                   <div class="field full">
                     <label class="field-label">Notas para el repartidor <span class="opt">opcional</span></label>
                     <div class="input-wrap">
-                      <textarea class="input" placeholder="Timbre, referencias, horario preferido...">Tocar timbre 4B. Recibe portero.</textarea>
+                      <textarea class="input" id="shipNotas" placeholder="Timbre, referencias, horario preferido..."></textarea>
                     </div>
                   </div>
                 </div>
@@ -286,7 +288,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
           Volver al carrito
         </a>
-        <button class="btn btn-primary" onclick="goStep(2)">
+        <button class="btn btn-primary" onclick="validateStep1()">
           Continuar al pago
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
         </button>
@@ -316,12 +318,8 @@
             <div class="pay selected" data-pay="mp">
               <div class="pay-header">
                 <div class="pay-radio"></div>
-                <div class="pay-logo">
-                  <svg width="36" height="20" viewBox="0 0 50 28" fill="none">
-                    <ellipse cx="25" cy="14" rx="24" ry="11" fill="#00B1EA"/>
-                    <path d="M14 14c0-3 2.5-5 5-5 1.5 0 3 .5 4 1.5 1-1 2.5-1.5 4-1.5 2.5 0 5 2 5 5 0 1.5-1 3-2 4-1 1-2 1.5-3 2L25 23l-2-3c-1-.5-2-1-3-2-1-1-2-2.5-2-4Z" fill="#fff"/>
-                    <path d="M19 12c1 0 2 .5 2.5 1.5L23 15l1.5-1.5c.5-1 1.5-1.5 2.5-1.5 1.5 0 3 1 3 3 0 1-.5 1.8-1.2 2.5-.7.7-1.5 1.2-2.3 1.7L23 21l-3.5-1.8c-.8-.5-1.6-1-2.3-1.7C16.5 16.8 16 16 16 15c0-2 1.5-3 3-3Z" fill="#FFE600"/>
-                  </svg>
+                <div class="pay-logo pay-logo--mp">
+                  <img src="/img/mercadopago-logo.png" alt="Mercado Pago">
                 </div>
                 <div class="pay-info">
                   <div class="pay-name">Mercado Pago</div>
@@ -333,7 +331,7 @@
                 <div class="mp-info">
                   <div class="mp-text">
                     <h4>Pagá con tu cuenta de Mercado Pago</h4>
-                    <p>Te vamos a redirigir al checkout de Mercado Pago donde podés pagar con tarjeta de crédito, débito, dinero en cuenta o cuotas sin interés con bancos seleccionados.</p>
+                    <p>Te vamos a redirigir al checkout de Mercado Pago donde podés pagar con tarjeta de crédito, débito, dinero en cuenta o hasta 3 cuotas.</p>
                     <ul class="mp-features">
                       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Pagás en cuotas con tu tarjeta</li>
                       <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Acreditación inmediata</li>
@@ -343,25 +341,20 @@
                   </div>
                   <div class="installments">
                     <div class="installments-title">// Planes disponibles</div>
-                    <div class="install-row">
+                    <div class="install-row selected" data-installments="1">
                       <span class="x">1×</span>
                       <span class="name">1 pago<span class="free">SIN INTERÉS</span></span>
-                      <span class="total"><span class="currency">$</span>67.299</span>
+                      <span class="total"><span class="currency">$</span>0</span>
                     </div>
-                    <div class="install-row">
+                    <div class="install-row" data-installments="2">
+                      <span class="x">2×</span>
+                      <span class="name">2 cuotas<span class="free">SIN INTERÉS</span></span>
+                      <span class="total"><span class="currency">$</span>0</span>
+                    </div>
+                    <div class="install-row" data-installments="3">
                       <span class="x">3×</span>
                       <span class="name">3 cuotas<span class="free">SIN INTERÉS</span></span>
-                      <span class="total"><span class="currency">$</span>22.433</span>
-                    </div>
-                    <div class="install-row">
-                      <span class="x">6×</span>
-                      <span class="name">6 cuotas<span class="free">SIN INTERÉS</span></span>
-                      <span class="total"><span class="currency">$</span>11.217</span>
-                    </div>
-                    <div class="install-row">
-                      <span class="x">12×</span>
-                      <span class="name">12 cuotas</span>
-                      <span class="total"><span class="currency">$</span>7.214</span>
+                      <span class="total"><span class="currency">$</span>0</span>
                     </div>
                   </div>
                 </div>
@@ -390,49 +383,62 @@
                   <div class="alert">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
                     <div class="alert-content">
-                      <div class="alert-title">Pagás un 10% menos</div>
-                      <div class="alert-text">Realizá la transferencia y enviános el comprobante. Acreditamos en 24-48hs hábiles.</div>
+                      <div class="transfer-badge">10% OFF pagando por transferencia</div>
+                      <div class="alert-title">Transferencia Bancaria Glow Boxes</div>
+                      <div class="alert-text">Una vez realizada la transferencia, enviaremos confirmación automática.</div>
                     </div>
                   </div>
 
                   <div class="transfer-data">
                     <div class="transfer-row">
-                      <span class="transfer-label">Banco</span>
-                      <span class="transfer-value">Banco Galicia</span>
-                      <span></span>
-                    </div>
-                    <div class="transfer-row">
                       <span class="transfer-label">Titular</span>
-                      <span class="transfer-value">GLOW BOXES SRL</span>
+                      <span class="transfer-value">Pablo Joel Cuenca Jara</span>
                       <span></span>
                     </div>
                     <div class="transfer-row">
                       <span class="transfer-label">CUIT</span>
-                      <span class="transfer-value">30-71823456-9</span>
-                      <button class="transfer-copy" onclick="copyText(this,'30-71823456-9')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                      <span class="transfer-value">20-94262684-4</span>
+                      <button class="transfer-copy" type="button" onclick="copyText(this,'20-94262684-4')"><span>Copiar</span></button>
                     </div>
                     <div class="transfer-row">
-                      <span class="transfer-label">CBU</span>
-                      <span class="transfer-value">0070123420000045678901</span>
-                      <button class="transfer-copy" onclick="copyText(this,'0070123420000045678901')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                      <span class="transfer-label">CVU</span>
+                      <span class="transfer-value">0000003100063942768652</span>
+                      <button class="transfer-copy" type="button" onclick="copyText(this,'0000003100063942768652')"><span>Copiar</span></button>
                     </div>
                     <div class="transfer-row">
                       <span class="transfer-label">Alias</span>
-                      <span class="transfer-value">GLOWBOXES.AR</span>
-                      <button class="transfer-copy" onclick="copyText(this,'GLOWBOXES.AR')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                      <span class="transfer-value">glowboxes.ar</span>
+                      <button class="transfer-copy" type="button" onclick="copyText(this,'glowboxes.ar')"><span>Copiar</span></button>
                     </div>
                     <div class="transfer-row">
                       <span class="transfer-label">Importe</span>
-                      <span class="transfer-value" style="color:var(--acid);font-size:16px">$ 60.569 <span style="color:var(--ink-mute);font-size:11px;text-decoration:line-through;margin-left:6px">$ 67.299</span></span>
+                      <span class="transfer-value" id="transferAmount" style="color:var(--acid);font-size:16px">$ 0</span>
                       <span></span>
                     </div>
+                  </div>
+
+                  <div class="proof-uploader" id="transferProofBox">
+                    <input type="file" id="transferProofInput" accept=".jpg,.jpeg,.png,.webp,.pdf,image/jpeg,image/png,image/webp,application/pdf" hidden>
+                    <div class="proof-drop" id="transferProofDrop">
+                      <div class="proof-icon" id="transferProofIcon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      </div>
+                      <div class="proof-copy">
+                        <div class="proof-title">Subir comprobante de transferencia</div>
+                        <div class="proof-desc" id="transferProofName">Arrastrá el archivo o hacé click para seleccionarlo · JPG, PNG, WEBP o PDF · máx. 10MB</div>
+                      </div>
+                      <div class="proof-status" id="transferProofStatus">// OBLIGATORIO</div>
+                    </div>
+                    <div class="proof-preview" id="transferProofPreview"></div>
+                    <div class="proof-progress" id="transferProofProgress"><span></span></div>
+                    <div class="proof-message" id="transferProofMessage"></div>
                   </div>
 
                   <div class="alert warn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                     <div class="alert-content">
                       <div class="alert-title">Importante</div>
-                      <div class="alert-text">Una vez confirmado el pedido, vas a recibir un email con los datos para transferir y un link para subir el comprobante. Tu pedido se prepara recién al confirmar el pago.</div>
+                      <div class="alert-text">Usá exactamente estos datos bancarios para que podamos asociar el pago al pedido sin demoras.</div>
                     </div>
                   </div>
                 </div>
@@ -463,7 +469,7 @@
         </div>
         <span class="page-tag">PEDIDO CONFIRMADO</span>
         <h1 class="page-title"><span class="accent">¡Listo!</span><br>Tu pedido fue creado</h1>
-        <p class="page-sub" style="max-width:520px">Te enviamos un email a <strong style="color:var(--ink)">lucas@detailpro.ar</strong> con el detalle del pedido y los próximos pasos.</p>
+        <p class="page-sub" style="max-width:520px">Te enviamos un email a <strong style="color:var(--ink)" id="confirmEmail">tu email</strong> con el detalle del pedido y los próximos pasos.</p>
       </div>
 
       <div class="card">
@@ -472,14 +478,14 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             Detalle del Pedido
           </span>
-          <span class="card-meta" id="orderNumber">// #GB-8473</span>
+          <span class="card-meta" id="orderNumber">// #GB-0000</span>
         </div>
         <div class="card-body">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
             <div>
               <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-mute);text-transform:uppercase;margin-bottom:8px">// Número de Orden</div>
-              <div style="font-family:'Archivo Black',sans-serif;font-size:24px;color:var(--ink);letter-spacing:-.01em" id="orderNumberBig">#GB-8473</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--violet-glow);margin-top:4px">CREADO 07 MAY 2026 · 14:32</div>
+              <div style="font-family:'Archivo Black',sans-serif;font-size:24px;color:var(--ink);letter-spacing:-.01em" id="orderNumberBig">#GB-0000</div>
+              <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--violet-glow);margin-top:4px" id="confirmCreatedAt">CREADO</div>
             </div>
             <div>
               <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-mute);text-transform:uppercase;margin-bottom:8px">// Estado del Pago</div>
@@ -489,11 +495,11 @@
             <div>
               <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-mute);text-transform:uppercase;margin-bottom:8px">// Método de Entrega</div>
               <div id="confirmShip" style="font-size:15px;color:var(--ink);font-weight:600">Envío Glow Express</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-dim);margin-top:4px">Av. Cabildo 2547, 4° B · Belgrano</div>
+              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-dim);margin-top:4px" id="confirmShipAddress">—</div>
             </div>
             <div>
               <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.18em;color:var(--ink-mute);text-transform:uppercase;margin-bottom:8px">// Total Pagado</div>
-              <div style="font-family:'Archivo Black',sans-serif;font-size:24px;color:var(--ink)" id="confirmTotal"><span style="color:var(--violet-glow);font-size:14px;vertical-align:top">$</span>70.799</div>
+              <div style="font-family:'Archivo Black',sans-serif;font-size:24px;color:var(--ink)" id="confirmTotal"><span style="color:var(--violet-glow);font-size:14px;vertical-align:top">$</span>0</div>
             </div>
           </div>
         </div>
@@ -513,7 +519,7 @@
               <div style="width:18px;height:18px;border-radius:50%;background:var(--acid);box-shadow:0 0 8px var(--acid);flex-shrink:0;margin-top:2px"></div>
               <div style="position:absolute;left:8px;top:32px;bottom:-14px;width:1px;background:var(--line-strong)"></div>
               <div>
-                <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;color:var(--acid);text-transform:uppercase;margin-bottom:4px">07 MAY · 14:32 — COMPLETADO</div>
+                <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.16em;color:var(--acid);text-transform:uppercase;margin-bottom:4px" id="step-created-at">COMPLETADO</div>
                 <div style="font-size:14px;color:var(--ink);font-weight:600">Pedido recibido y registrado</div>
                 <div style="font-size:13px;color:var(--ink-dim);margin-top:4px">Te enviamos un email con la confirmación.</div>
               </div>
@@ -572,38 +578,47 @@
 
       <div class="cart-items" id="summary-items"></div>
 
-      <div class="coupon-input">
-        <input type="text" placeholder="CÓDIGO DE CUPÓN">
-        <button>Aplicar</button>
+      <div class="coupon-input" id="couponBox">
+        <input type="text" id="couponCode" placeholder="CÓDIGO DE CUPÓN" autocomplete="off">
+        <button id="couponApply" type="button">Aplicar</button>
       </div>
+      <div class="coupon-message" id="couponMessage"></div>
 
       <div class="summary-totals">
         <div class="total-row">
           <span class="label">Subtotal</span>
           <span class="val" id="summary-subtotal"><span class="currency">$</span>0</span>
         </div>
-        <div class="total-row">
-          <span class="label">Descuento DETAILER</span>
-          <span class="val acid">-<span class="currency">$</span>5.316</span>
+        <div class="total-row" id="couponDiscountRow" style="display:none">
+          <span class="label" id="couponDiscountLabel">Cupón</span>
+          <span class="val acid" id="couponDiscountValue">-<span class="currency">$</span>0</span>
         </div>
         <div class="total-row" id="shipRow">
-          <span class="label">Envío</span>
-          <span class="val"><span class="currency">$</span>3.500</span>
+          <span class="label" id="shipLabel">Envío</span>
+          <span class="val" id="shipValue"><span class="currency">$</span>3.500</span>
         </div>
         <div class="total-row" id="payDiscountRow" style="display:none">
           <span class="label">Descuento Transferencia (10%)</span>
-          <span class="val acid">-<span class="currency">$</span>5.116</span>
+          <span class="val acid" id="payDiscountValue">-<span class="currency">$</span>0</span>
         </div>
-        <div class="total-row">
+        <div class="total-row" id="mpFeeRow" style="display:none">
+          <span class="label" id="mpFeeLabel">Comisión Mercado Pago</span>
+          <span class="val" id="mpFeeValue"><span class="currency">$</span>0</span>
+        </div>
+        <div class="total-row" id="installmentSummaryRow">
+          <span class="label">Plan de pago</span>
+          <span class="val" id="installmentSummaryValue">1 pago</span>
+        </div>
+        <div class="total-row" id="taxRow">
           <span class="label">Impuestos (IVA 21%)</span>
-          <span class="val"><span class="currency">$</span>11.158</span>
+          <span class="val" id="taxValue"><span class="currency">$</span>0</span>
         </div>
 
         <div class="total-divider"></div>
 
         <div class="total-grand">
           <span class="label">Total</span>
-          <span class="amount" id="grandTotal"><span class="currency">$</span>67.299</span>
+          <span class="amount" id="grandTotal"><span class="currency">$</span>0</span>
         </div>
       </div>
 

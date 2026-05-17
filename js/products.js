@@ -97,6 +97,9 @@ function renderProducto(i) {
   // Datos en el botón de carrito
   if (btnCart) {
     btnCart.dataset.id     = p.id
+    btnCart.dataset.productoId = p.id
+    btnCart.dataset.slug   = p.slug || ''
+    btnCart.dataset.sku    = p.sku || ''
     btnCart.dataset.nombre = p.nombre
     btnCart.dataset.precio = precioFinal
     btnCart.dataset.imagen = p.imagen_url || ''

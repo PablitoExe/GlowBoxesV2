@@ -1,23 +1,53 @@
 const CART_KEY = 'gb_cart'
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 // ── Persistencia ──────────────────────────────────────────
+function isUuid(value) {
+  return UUID_RE.test(String(value || ''))
+}
+
+function normalizeCartItem(item) {
+  const productId = isUuid(item?.producto_id) ? item.producto_id : isUuid(item?.id) ? item.id : null
+  if (!productId && (item?.id || item?.producto_id)) {
+    console.warn('[cart] Item legacy sin UUID válido. Checkout intentará migrarlo:', item)
+  }
+  return {
+    ...item,
+    id: productId || item?.id || item?.slug || item?.sku || item?.nombre || '',
+    producto_id: productId,
+    slug: item?.slug || (!productId ? item?.id : item?.slug) || '',
+    nombre: String(item?.nombre || item?.name || 'Producto'),
+    precio: Math.max(0, Number(item?.precio) || 0),
+    cantidad: Math.max(1, Number(item?.cantidad) || 1),
+  }
+}
+
 function getCart() {
-  try { return JSON.parse(localStorage.getItem(CART_KEY)) || [] }
+  try {
+    const raw = JSON.parse(localStorage.getItem(CART_KEY)) || []
+    return Array.isArray(raw) ? raw.map(normalizeCartItem) : []
+  }
   catch { return [] }
 }
 function saveCart(cart) {
-  localStorage.setItem(CART_KEY, JSON.stringify(cart))
+  localStorage.setItem(CART_KEY, JSON.stringify(cart.map(normalizeCartItem)))
   renderCart()
 }
 
 // ── Operaciones ───────────────────────────────────────────
 function addToCart(product) {
   const cart = getCart()
-  const existing = cart.find(i => i.id === product.id)
+  const cleanProduct = normalizeCartItem(product)
+  if (!cleanProduct.producto_id) {
+    console.warn('[cart] Producto agregado sin UUID real. Revisar data-id del botón:', product)
+  }
+  const existing = cart.find(i => i.producto_id
+    ? i.producto_id === cleanProduct.producto_id
+    : i.id === cleanProduct.id)
   if (existing) {
     existing.cantidad++
   } else {
-    cart.push({ ...product, cantidad: 1 })
+    cart.push({ ...cleanProduct, cantidad: 1 })
   }
   saveCart(cart)
   openCart()
@@ -132,6 +162,9 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart() 
 document.getElementById('btn-add-cart')?.addEventListener('click', function () {
   addToCart({
     id:     this.dataset.id,
+    producto_id: this.dataset.productoId || this.dataset.id,
+    slug:   this.dataset.slug,
+    sku:    this.dataset.sku,
     nombre: this.dataset.nombre,
     precio: Number(this.dataset.precio),
     imagen: this.dataset.imagen,

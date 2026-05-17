@@ -6,6 +6,38 @@
 create extension if not exists "pgcrypto";
 create extension if not exists "unaccent";
 
+-- Public media bucket for product, banner and brand assets.
+-- Writes are restricted by storage RLS policies in policies.sql.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'glow-media',
+  'glow-media',
+  true,
+  5242880,
+  array['image/png', 'image/jpeg', 'image/webp', 'image/gif']::text[]
+)
+on conflict (id) do update
+set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+-- Private payment proof bucket. Files are readable only by their owner
+-- and by admins through Storage RLS policies.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'comprobantes',
+  'comprobantes',
+  false,
+  10485760,
+  array['image/jpeg', 'image/png', 'image/webp', 'application/pdf']::text[]
+)
+on conflict (id) do update
+set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
 -- ============================================================
 -- Shared helpers
 -- ============================================================
@@ -283,10 +315,18 @@ create table if not exists public.pedidos (
   notas              text,
   tracking_code      text,
   numero_seguimiento text,
+  comprobante_url    text,
+  comprobante_filename text,
+  comprobante_uploaded_at timestamptz,
   eta                date,
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now()
 );
+
+alter table public.pedidos
+  add column if not exists comprobante_url text,
+  add column if not exists comprobante_filename text,
+  add column if not exists comprobante_uploaded_at timestamptz;
 
 drop trigger if exists trg_pedidos_updated_at on public.pedidos;
 create trigger trg_pedidos_updated_at
