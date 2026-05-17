@@ -1,267 +1,372 @@
 -- ============================================================
--- GLOW BOXES — Schema Supabase
--- Ejecutar en: Supabase → SQL Editor → New query
+-- GLOW BOXES - Supabase schema
+-- Apply first, then run grants.sql and policies.sql.
 -- ============================================================
 
-create extension if not exists "uuid-ossp";
+create extension if not exists "pgcrypto";
+create extension if not exists "unaccent";
 
 -- ============================================================
--- CATEGORIAS
+-- Shared helpers
 -- ============================================================
-create table public.categorias (
-  id          uuid primary key default uuid_generate_v4(),
+create or replace function public.update_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+create or replace function public.slugify(value text)
+returns text
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select trim(both '-' from regexp_replace(
+    lower(unaccent(coalesce(value, ''))),
+    '[^a-z0-9]+',
+    '-',
+    'g'
+  ))
+$$;
+
+create or replace function public.set_slug_from_nombre()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.slug is null or btrim(new.slug) = '' then
+    new.slug := public.slugify(new.nombre);
+  end if;
+  return new;
+end;
+$$;
+
+-- ============================================================
+-- Categories
+-- ============================================================
+create table if not exists public.categorias (
+  id          uuid primary key default gen_random_uuid(),
   nombre      text not null,
   slug        text not null unique,
   descripcion text,
   imagen_url  text,
   orden       int default 0,
-  activo      boolean default true,
-  created_at  timestamptz default now()
+  activo      boolean not null default true,
+  created_at  timestamptz not null default now()
 );
 
+drop trigger if exists trg_categorias_slug on public.categorias;
+create trigger trg_categorias_slug
+  before insert or update of nombre, slug on public.categorias
+  for each row execute function public.set_slug_from_nombre();
+
 -- ============================================================
--- MARCAS
+-- Brands
 -- ============================================================
-create table public.marcas (
-  id         uuid primary key default uuid_generate_v4(),
+create table if not exists public.marcas (
+  id         uuid primary key default gen_random_uuid(),
   nombre     text not null,
-  slug       text not null unique,
+  slug       text unique,
   logo_url   text,
-  activo     boolean default true,
-  created_at timestamptz default now()
+  activo     boolean not null default true,
+  created_at timestamptz not null default now()
 );
 
+drop trigger if exists trg_marcas_slug on public.marcas;
+create trigger trg_marcas_slug
+  before insert or update of nombre, slug on public.marcas
+  for each row execute function public.set_slug_from_nombre();
+
 -- ============================================================
--- PRODUCTOS
+-- Products
 -- ============================================================
-create table public.productos (
-  id               uuid primary key default uuid_generate_v4(),
+create table if not exists public.productos (
+  id               uuid primary key default gen_random_uuid(),
   nombre           text not null,
   slug             text not null unique,
   descripcion      text,
   sku              text unique,
-  precio           numeric(12,2) not null,
-  precio_oferta    numeric(12,2),
-  stock            int not null default 0,
-  stock_minimo     int default 5,
+  precio           numeric(12,2) not null check (precio >= 0),
+  precio_oferta    numeric(12,2) check (precio_oferta is null or precio_oferta >= 0),
+  stock            int not null default 0 check (stock >= 0),
+  stock_minimo     int not null default 5 check (stock_minimo >= 0),
   categoria_id     uuid references public.categorias(id) on delete set null,
   marca_id         uuid references public.marcas(id) on delete set null,
   imagen_url       text,
-  imagenes         jsonb default '[]',
-  atributos        jsonb default '{}',
-  destacado        boolean default false,
-  activo           boolean default true,
-  created_at       timestamptz default now(),
-  updated_at       timestamptz default now()
+  imagenes         jsonb not null default '[]'::jsonb,
+  atributos        jsonb not null default '{}'::jsonb,
+  destacado        boolean not null default false,
+  activo           boolean not null default true,
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
 );
 
-create or replace function update_updated_at()
-returns trigger as $$
-begin
-  new.updated_at = now();
-  return new;
-end;
-$$ language plpgsql;
+drop trigger if exists trg_productos_slug on public.productos;
+create trigger trg_productos_slug
+  before insert or update of nombre, slug on public.productos
+  for each row execute function public.set_slug_from_nombre();
 
+drop trigger if exists trg_productos_updated_at on public.productos;
 create trigger trg_productos_updated_at
   before update on public.productos
-  for each row execute function update_updated_at();
+  for each row execute function public.update_updated_at();
 
 -- ============================================================
--- PERFILES (extiende auth.users)
+-- Profiles (extends auth.users)
 -- ============================================================
-create table public.perfiles (
-  id          uuid primary key references auth.users(id) on delete cascade,
-  nombre      text,
-  apellido    text,
-  telefono    text,
-  dni         text,
-  fecha_nac   date,
-  tipo        text check (tipo in ('particular','detailer','taller','wrapper','instalador','revendedor')) default 'particular',
-  role        text check (role in ('user','admin')) default 'user',
-  avatar_url  text,
-  created_at  timestamptz default now(),
-  updated_at  timestamptz default now()
+create table if not exists public.perfiles (
+  id            uuid primary key references auth.users(id) on delete cascade,
+  nombre        text,
+  apellido      text,
+  telefono      text,
+  dni           text,
+  fecha_nac     date,
+  tipo          text not null check (tipo in ('particular','detailer','taller','wrapper','instalador','revendedor')) default 'particular',
+  role          text not null check (role in ('user','admin')) default 'user',
+  avatar_url    text,
+  vip           boolean not null default false,
+  estado_cuenta text not null check (estado_cuenta in ('activo','inactivo','suspendido')) default 'activo',
+  ciudad        text,
+  notas_admin   text,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
 );
 
+drop trigger if exists trg_perfiles_updated_at on public.perfiles;
 create trigger trg_perfiles_updated_at
   before update on public.perfiles
-  for each row execute function update_updated_at();
+  for each row execute function public.update_updated_at();
 
--- Crear perfil automáticamente al registrarse
-create or replace function handle_new_user()
-returns trigger as $$
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
 begin
   insert into public.perfiles (id, nombre, apellido)
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'nombre', ''),
     coalesce(new.raw_user_meta_data->>'apellido', '')
-  );
+  )
+  on conflict (id) do nothing;
   return new;
 end;
-$$ language plpgsql security definer;
+$$;
 
+drop trigger if exists trg_on_auth_user_created on auth.users;
 create trigger trg_on_auth_user_created
   after insert on auth.users
-  for each row execute function handle_new_user();
+  for each row execute function public.handle_new_user();
 
--- ============================================================
--- RPC: get_my_role  (usada en nav.js, login.js, admin-guard.js)
--- ============================================================
-create or replace function get_my_role()
+create or replace function public.get_my_role()
 returns text
 language sql
 security definer
 stable
+set search_path = public
 as $$
-  select role from public.perfiles where id = auth.uid()
+  select coalesce(
+    (select p.role from public.perfiles p where p.id = auth.uid()),
+    'anon'
+  )
 $$;
 
+create or replace function public.is_admin()
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select public.get_my_role() = 'admin'
+$$;
+
+create or replace function public.protect_profile_admin_fields()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if auth.uid() = new.id
+     and not public.is_admin()
+     and (
+       new.role is distinct from old.role
+       or new.vip is distinct from old.vip
+       or new.estado_cuenta is distinct from old.estado_cuenta
+       or new.notas_admin is distinct from old.notas_admin
+     ) then
+    raise exception 'Only admins can update protected profile fields';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_perfiles_protect_admin_fields on public.perfiles;
+create trigger trg_perfiles_protect_admin_fields
+  before update on public.perfiles
+  for each row execute function public.protect_profile_admin_fields();
+
 -- ============================================================
--- DIRECCIONES
+-- Addresses
 -- ============================================================
-create table public.direcciones (
-  id           uuid primary key default uuid_generate_v4(),
-  user_id      uuid references auth.users(id) on delete cascade,
-  nombre       text not null,
-  calle        text not null,
-  ciudad       text not null,
-  provincia    text,
-  cp           text,
-  notas        text,
-  predeterminada boolean default false,
-  created_at   timestamptz default now()
+create table if not exists public.direcciones (
+  id              uuid primary key default gen_random_uuid(),
+  user_id         uuid not null references auth.users(id) on delete cascade,
+  nombre          text not null,
+  calle           text not null,
+  ciudad          text not null,
+  provincia       text,
+  cp              text,
+  notas           text,
+  predeterminada  boolean not null default false,
+  created_at      timestamptz not null default now()
 );
 
 -- ============================================================
--- CUPONES
+-- Coupons
 -- ============================================================
-create table public.cupones (
-  id               uuid primary key default uuid_generate_v4(),
-  codigo           text not null unique,
-  descripcion      text,
-  tipo             text check (tipo in ('porcentaje','monto_fijo')) default 'porcentaje',
-  valor            numeric(10,2) not null,
-  minimo_compra    numeric(12,2) default 0,
-  usos_maximos     int,
-  usos_actuales    int default 0,
-  categoria_id     uuid references public.categorias(id) on delete set null,
-  activo           boolean default true,
-  fecha_vencimiento date,
-  created_at       timestamptz default now()
+create table if not exists public.cupones (
+  id                uuid primary key default gen_random_uuid(),
+  codigo            text not null unique,
+  descripcion       text,
+  tipo              text not null check (tipo in ('porcentaje','monto','monto_fijo')) default 'porcentaje',
+  descuento         numeric(10,2) not null default 0 check (descuento >= 0),
+  min_compra        numeric(12,2) default 0 check (min_compra is null or min_compra >= 0),
+  max_usos          int check (max_usos is null or max_usos > 0),
+  usos_actuales     int not null default 0 check (usos_actuales >= 0),
+  categoria_id      uuid references public.categorias(id) on delete set null,
+  activo            boolean not null default true,
+  fecha_fin         date,
+  created_at        timestamptz not null default now(),
+  -- Legacy-compatible aliases kept for older SQL/scripts.
+  valor             numeric(10,2) generated always as (descuento) stored,
+  minimo_compra     numeric(12,2) generated always as (min_compra) stored,
+  usos_maximos      int generated always as (max_usos) stored,
+  fecha_vencimiento date generated always as (fecha_fin) stored
 );
 
 -- ============================================================
--- PEDIDOS
+-- Orders
 -- ============================================================
-create table public.pedidos (
-  id               uuid primary key default uuid_generate_v4(),
-  numero           text unique,
-  user_id          uuid references auth.users(id) on delete set null,
-  estado           text check (estado in ('pendiente','confirmado','en_preparacion','en_transito','entregado','cancelado')) default 'pendiente',
-  metodo_pago      text check (metodo_pago in ('mp','transfer','efectivo')) default 'mp',
-  metodo_envio     text check (metodo_envio in ('pickup','own','correo')) default 'own',
-  subtotal         numeric(12,2) not null default 0,
-  descuento        numeric(12,2) default 0,
-  costo_envio      numeric(12,2) default 0,
-  total            numeric(12,2) not null default 0,
-  cupon_codigo     text,
-  direccion_envio  jsonb,
-  notas            text,
-  tracking_code    text,
-  eta              date,
-  created_at       timestamptz default now(),
-  updated_at       timestamptz default now()
+create table if not exists public.pedidos (
+  id                 uuid primary key default gen_random_uuid(),
+  numero             text unique,
+  user_id            uuid references auth.users(id) on delete set null,
+  cliente_nombre     text,
+  cliente_email      text,
+  estado             text not null check (
+    estado in (
+      'pendiente','confirmado','en_preparacion','en_transito','entregado',
+      'pagado','enviado','completado','cancelado'
+    )
+  ) default 'pendiente',
+  metodo_pago        text check (metodo_pago in ('mp','transfer','efectivo','transferencia','mercado_pago','tarjeta','otro')) default 'mp',
+  pago_metodo        text check (pago_metodo in ('mp','transfer','efectivo','transferencia','mercado_pago','tarjeta','otro')),
+  pago_estado        text not null check (pago_estado in ('pendiente','acreditado','pagado','rechazado','reembolsado')) default 'pendiente',
+  metodo_envio       text check (metodo_envio in ('pickup','own','correo')) default 'own',
+  subtotal           numeric(12,2) not null default 0 check (subtotal >= 0),
+  descuento          numeric(12,2) not null default 0 check (descuento >= 0),
+  costo_envio        numeric(12,2) not null default 0 check (costo_envio >= 0),
+  total              numeric(12,2) not null default 0 check (total >= 0),
+  cupon_codigo       text,
+  direccion_envio    jsonb,
+  notas              text,
+  tracking_code      text,
+  numero_seguimiento text,
+  eta                date,
+  created_at         timestamptz not null default now(),
+  updated_at         timestamptz not null default now()
 );
 
+drop trigger if exists trg_pedidos_updated_at on public.pedidos;
 create trigger trg_pedidos_updated_at
   before update on public.pedidos
-  for each row execute function update_updated_at();
+  for each row execute function public.update_updated_at();
 
 -- ============================================================
--- ITEMS DE PEDIDO
+-- Order items
 -- ============================================================
-create table public.pedido_items (
-  id              uuid primary key default uuid_generate_v4(),
-  pedido_id       uuid references public.pedidos(id) on delete cascade,
+create table if not exists public.pedido_items (
+  id              uuid primary key default gen_random_uuid(),
+  pedido_id       uuid not null references public.pedidos(id) on delete cascade,
   producto_id     uuid references public.productos(id) on delete set null,
-  nombre_producto text not null,
+  nombre_producto text,
   sku             text,
-  cantidad        int not null default 1,
-  precio_unitario numeric(12,2) not null,
-  subtotal        numeric(12,2) generated always as (cantidad * precio_unitario) stored
+  cantidad        int not null default 1 check (cantidad > 0),
+  precio_unitario numeric(12,2) not null check (precio_unitario >= 0),
+  subtotal        numeric(12,2) not null default 0 check (subtotal >= 0)
 );
 
+create or replace function public.set_pedido_item_subtotal()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  new.subtotal := new.cantidad * new.precio_unitario;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_pedido_items_subtotal on public.pedido_items;
+create trigger trg_pedido_items_subtotal
+  before insert or update of cantidad, precio_unitario on public.pedido_items
+  for each row execute function public.set_pedido_item_subtotal();
+
 -- ============================================================
--- FAVORITOS
+-- Favorites
 -- ============================================================
-create table public.favoritos (
-  id          uuid primary key default uuid_generate_v4(),
-  user_id     uuid references auth.users(id) on delete cascade,
-  producto_id uuid references public.productos(id) on delete cascade,
-  created_at  timestamptz default now(),
+create table if not exists public.favoritos (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  producto_id uuid not null references public.productos(id) on delete cascade,
+  created_at  timestamptz not null default now(),
   unique(user_id, producto_id)
 );
 
 -- ============================================================
--- CARRITO
+-- Cart
 -- ============================================================
-create table public.carrito_items (
-  id          uuid primary key default uuid_generate_v4(),
-  user_id     uuid references auth.users(id) on delete cascade,
-  producto_id uuid references public.productos(id) on delete cascade,
-  cantidad    int not null default 1,
-  created_at  timestamptz default now(),
+create table if not exists public.carrito_items (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  producto_id uuid not null references public.productos(id) on delete cascade,
+  cantidad    int not null default 1 check (cantidad > 0),
+  created_at  timestamptz not null default now(),
   unique(user_id, producto_id)
 );
 
 -- ============================================================
--- RLS
+-- Indexes for API/RLS performance
 -- ============================================================
-alter table public.categorias      enable row level security;
-alter table public.marcas          enable row level security;
-alter table public.productos       enable row level security;
-alter table public.perfiles        enable row level security;
-alter table public.direcciones     enable row level security;
-alter table public.pedidos         enable row level security;
-alter table public.pedido_items    enable row level security;
-alter table public.cupones         enable row level security;
-alter table public.favoritos       enable row level security;
-alter table public.carrito_items   enable row level security;
-
--- Catálogo público
-create policy "Categorias visibles"  on public.categorias  for select using (activo = true);
-create policy "Marcas visibles"      on public.marcas      for select using (activo = true);
-create policy "Productos visibles"   on public.productos   for select using (activo = true);
-
--- Perfiles
-create policy "Perfil propio lectura"   on public.perfiles for select using (auth.uid() = id);
-create policy "Perfil propio update"    on public.perfiles for update using (auth.uid() = id);
-
--- Direcciones
-create policy "Direcciones propias"  on public.direcciones for all using (auth.uid() = user_id);
-
--- Pedidos
-create policy "Pedidos propios"      on public.pedidos      for select using (auth.uid() = user_id);
-create policy "Crear pedido"         on public.pedidos      for insert with check (auth.uid() = user_id);
-create policy "Items pedido propios" on public.pedido_items for select using (
-  exists (select 1 from public.pedidos p where p.id = pedido_id and p.user_id = auth.uid())
-);
-
--- Favoritos y carrito
-create policy "Favoritos propios"     on public.favoritos     for all using (auth.uid() = user_id);
-create policy "Carrito propio"        on public.carrito_items for all using (auth.uid() = user_id);
-
--- Cupones
-create policy "Cupones activos"       on public.cupones for select using (activo = true);
+create index if not exists idx_productos_activo_created on public.productos (activo, created_at desc);
+create index if not exists idx_productos_categoria on public.productos (categoria_id);
+create index if not exists idx_productos_marca on public.productos (marca_id);
+create index if not exists idx_pedidos_user_created on public.pedidos (user_id, created_at desc);
+create index if not exists idx_pedido_items_pedido on public.pedido_items (pedido_id);
+create index if not exists idx_direcciones_user on public.direcciones (user_id);
+create index if not exists idx_favoritos_user on public.favoritos (user_id);
+create index if not exists idx_carrito_items_user on public.carrito_items (user_id);
 
 -- ============================================================
--- DATOS INICIALES
+-- Initial data
 -- ============================================================
-insert into public.categorias (nombre, slug, orden) values
+insert into public.categorias (nombre, slug, orden)
+values
   ('Detailing',    'detailing',    1),
   ('Audio Car',    'audio-car',    2),
   ('Wrap',         'wrap',         3),
   ('PPF',          'ppf',          4),
-  ('Herramientas', 'herramientas', 5);
+  ('Herramientas', 'herramientas', 5)
+on conflict (slug) do nothing;

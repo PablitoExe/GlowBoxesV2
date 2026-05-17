@@ -2,6 +2,8 @@
 -- GLOW BOXES — Migración: Campos extra clientes + pago_estado
 -- Ejecutar en Supabase → SQL Editor
 -- ============================================================
+-- Nota: estos campos ya estan incluidos en database/schema.sql.
+-- Conservamos esta migracion para bases existentes creadas con el schema viejo.
 
 -- Columnas extra en perfiles
 ALTER TABLE public.perfiles
