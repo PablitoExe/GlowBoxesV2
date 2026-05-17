@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { ensureUserProfile } from './auth-profile.js'
 
 const logoutButton = document.getElementById('logoutButton')
 
@@ -24,6 +25,8 @@ async function checkAdmin() {
     window.location.href = 'login.html'
     return
   }
+
+  await ensureUserProfile(supabase, session.user)
 
   // Usa función security definer — no depende de políticas RLS
   const { data: role, error } = await supabase.rpc('get_my_role')

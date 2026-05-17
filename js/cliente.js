@@ -1,9 +1,27 @@
 import { supabase } from './supabase.js'
-import { downloadBoleta, printReceipt } from './invoice.js'
+import { ensureUserProfile } from './auth-profile.js'
+
+let invoiceModulePromise = null
+
+async function loadInvoiceModule() {
+  if (!invoiceModulePromise) {
+    invoiceModulePromise = import('./invoice.js').catch(error => {
+      invoiceModulePromise = null
+      console.error('[CLIENTE PDF ERROR] No se pudo cargar invoice.js', error)
+      throw error
+    })
+  }
+  return invoiceModulePromise
+}
 
 // ── Auth guard ────────────────────────────────────────────
 const { data: { session } } = await supabase.auth.getSession()
 if (!session) { window.location.replace('login.html'); throw '' }
+try {
+  await ensureUserProfile(supabase, session.user)
+} catch (err) {
+  console.error('[GOOGLE CLIENT DASHBOARD]', err)
+}
 
 // Redirect to login on sign-out or session expiry
 supabase.auth.onAuthStateChange((event, currentSession) => {
@@ -15,6 +33,9 @@ supabase.auth.onAuthStateChange((event, currentSession) => {
 // ── Dashboard navigation ──────────────────────────────────
 const navLinks = document.querySelectorAll('.side-nav a[data-page]')
 const pages    = document.querySelectorAll('.page')
+const addressModal = document.getElementById('address-modal')
+const addressForm = document.getElementById('address-form')
+let addressModalPreviousFocus = null
 
 function navigate(pageId) {
   navLinks.forEach(n => n.classList.toggle('active', n.dataset.page === pageId))
@@ -38,7 +59,8 @@ document.querySelector('.danger-link')?.addEventListener('click', async () => {
 
 // ── Helpers ───────────────────────────────────────────────
 const fmt = n => Number(n || 0).toLocaleString('es-AR')
-const fmtMoney = n => `$${fmt(Math.round(Number(n || 0)))}`
+const PAID_PAYMENT_STATES = new Set(['acreditado', 'pagado'])
+const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>'
 
 // Cache pedidos for PDF window functions
 let _pedidosCache = []
@@ -50,24 +72,62 @@ function initials(nombre, apellido) {
   return ((n[0] || '') + (a[0] || '')).toUpperCase() || '?'
 }
 
+function isCancelledOrder(order) {
+  return order?.estado === 'cancelado'
+}
+
+function isPaidOrder(order) {
+  return !isCancelledOrder(order) && PAID_PAYMENT_STATES.has(order?.pago_estado)
+}
+
+function realOrders(pedidos = []) {
+  return pedidos.filter(p => !isCancelledOrder(p))
+}
+
+function paidOrders(pedidos = []) {
+  return pedidos.filter(isPaidOrder)
+}
+
+function setOrdersBadge(count) {
+  const badge = document.querySelector('.side-nav a[data-page="orders"] .badge')
+  if (badge) badge.textContent = count
+}
+
+function showClientToast(message, type = 'ok') {
+  const toast = document.createElement('div')
+  toast.className = `client-toast ${type}`
+  toast.textContent = message
+  document.body.appendChild(toast)
+  requestAnimationFrame(() => toast.classList.add('show'))
+  window.setTimeout(() => {
+    toast.classList.remove('show')
+    window.setTimeout(() => toast.remove(), 220)
+  }, 2800)
+}
+
 // ── Load profile ──────────────────────────────────────────
 async function loadPerfil() {
-  let { data: perfil, error } = await supabase
-    .from('perfiles')
-    .select('*')
-    .eq('id', session.user.id)
-    .single()
+  let perfil = null
+  try {
+    const result = await supabase
+      .from('perfiles')
+      .select('*')
+      .eq('id', session.user.id)
+      .single()
 
-  // Auto-create profile row if trigger didn't fire (edge case: Google OAuth signup)
-  if (error && error.code === 'PGRST116') {
-    const meta = session.user.user_metadata || {}
-    await supabase.from('perfiles').upsert({
-      id:       session.user.id,
-      nombre:   meta.nombre || meta.full_name?.split(' ')[0] || '',
-      apellido: meta.apellido || meta.full_name?.split(' ').slice(1).join(' ') || '',
-    }, { onConflict: 'id' })
-    const retry = await supabase.from('perfiles').select('*').eq('id', session.user.id).single()
-    perfil = retry.data
+    perfil = result.data
+
+    // Auto-create profile row if trigger didn't fire (edge case: Google OAuth signup)
+    if (result.error && result.error.code === 'PGRST116') {
+      await ensureUserProfile(supabase, session.user)
+      const retry = await supabase.from('perfiles').select('*').eq('id', session.user.id).single()
+      perfil = retry.data
+      if (retry.error) throw retry.error
+    } else if (result.error) {
+      throw result.error
+    }
+  } catch (err) {
+    console.error('[GOOGLE CLIENT DASHBOARD]', err)
   }
 
   const meta     = session.user.user_metadata || {}
@@ -133,40 +193,56 @@ window.savePerfil = async function () {
 
 // ── Load orders ───────────────────────────────────────────
 async function loadPedidos() {
-  const { data: pedidos } = await supabase
-    .from('pedidos')
-    .select('*, pedido_items(id, producto_id, nombre_producto, sku, cantidad, precio_unitario, subtotal, productos(nombre, precio, imagen_url, sku))')
-    .eq('user_id', session.user.id)
-    .order('created_at', { ascending: false })
+  try {
+    const { data, error } = await supabase
+      .from('pedidos')
+      .select('*, pedido_items(id, producto_id, nombre_producto, sku, cantidad, precio_unitario, subtotal, productos(nombre, precio, imagen_url, sku))')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false })
 
-  if (!pedidos || !pedidos.length) {
-    renderEmptyPedidos()
+    if (error) throw error
+
+    const pedidos = data || []
+    const pedidosReales = realOrders(pedidos)
+
+    _pedidosCache = pedidosReales
+    updateKPIs(pedidosReales)
+    renderPedidoActivo(pedidosReales)
+    updateMysteryProgress(pedidosReales)
+    renderRewardsHistory(pedidosReales)
+    setOrdersBadge(pedidosReales.length)
+
+    if (!pedidosReales.length) {
+      renderEmptyPedidos()
+      return
+    }
+
+    renderHistorial(pedidosReales)
+    renderAllPedidos(pedidosReales)
+  } catch (err) {
+    console.error('[GOOGLE CLIENT DASHBOARD]', err)
+    _pedidosCache = []
     updateKPIs([])
-    return
+    renderPedidoActivo([])
+    renderEmptyPedidos()
+    updateMysteryProgress([])
+    renderRewardsHistory([])
+    setOrdersBadge(0)
   }
-
-  _pedidosCache = pedidos
-  updateKPIs(pedidos)
-  renderPedidoActivo(pedidos)
-  renderHistorial(pedidos)
-  renderAllPedidos(pedidos)
-  updateMysteryProgress(pedidos)
-
-  const badge = document.querySelector('.side-nav a[data-page="orders"] .badge')
-  if (badge) badge.textContent = pedidos.length
 }
 
 // ── KPIs ──────────────────────────────────────────────────
 function updateKPIs(pedidos) {
-  const totalGastado  = pedidos.reduce((s, p) => s + Number(p.total || 0), 0)
-  const totalAhorrado = pedidos.reduce((s, p) => s + Number(p.descuento || 0), 0)
+  const compras       = paidOrders(pedidos)
+  const totalGastado  = compras.reduce((s, p) => s + Number(p.total || 0), 0)
+  const totalAhorrado = compras.reduce((s, p) => s + Number(p.descuento || 0), 0)
   const enCamino      = pedidos.filter(p => p.estado === 'en_transito').length
   const entregados    = pedidos.filter(p => p.estado === 'entregado').length
 
   document.querySelectorAll('[data-kpi="count"]').forEach(el => el.textContent = pedidos.length)
   document.querySelectorAll('[data-kpi="gastado"]').forEach(el => el.innerHTML = `<span class="currency">$</span>${fmt(totalGastado)}`)
   document.querySelectorAll('[data-kpi="ahorrado"]').forEach(el => el.innerHTML = `<span class="kpi-currency-alt">$</span>${fmt(totalAhorrado)}`)
-  document.querySelectorAll('[data-kpi="count-foot"]').forEach(el => el.textContent = `// ${enCamino} EN CAMINO · ${entregados} ENTREGADOS`)
+  document.querySelectorAll('[data-kpi="count-foot"]').forEach(el => el.textContent = `// ${compras.length} PAGADOS · ${enCamino} EN CAMINO · ${entregados} ENTREGADOS`)
 }
 
 // ── Active order tracker ──────────────────────────────────
@@ -184,21 +260,52 @@ function renderPedidoActivo(pedidos) {
   const etaEl = card.querySelector('[data-field="eta"]')
   if (etaEl && activo.eta) {
     etaEl.textContent = new Date(activo.eta).toLocaleDateString('es-AR', { weekday: 'long', day: '2-digit', month: 'short' }).toUpperCase()
+  } else if (etaEl) {
+    etaEl.textContent = '—'
   }
 
   const codeEl = card.querySelector('[data-field="tracking"]')
   if (codeEl) codeEl.textContent = activo.tracking_code || activo.numero_seguimiento || `GLW-${activo.numero || activo.id.slice(0, 8).toUpperCase()}`
 
-  updateTimeline(card, activo.estado)
+  updateTimeline(card, activo)
 }
 
-function updateTimeline(card, estado) {
+function fmtTimelineDate(date) {
+  if (!date) return 'PENDIENTE'
+  return new Date(date).toLocaleString('es-AR', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).toUpperCase()
+}
+
+function updateTimeline(card, pedido) {
   const order = ['pendiente','confirmado','en_preparacion','en_transito','entregado']
-  const idx   = order.indexOf(estado)
+  const idx   = Math.max(order.indexOf(pedido?.estado), 0)
+  const paid  = isPaidOrder(pedido)
+  const steps = [
+    ['Pedido recibido', 'Confirmamos tu compra y registramos el detalle del pedido.'],
+    [paid ? 'Pago acreditado' : 'Pago pendiente', paid ? 'El pago figura acreditado en el sistema.' : 'Estamos esperando la acreditación del pago.'],
+    ['Pedido en preparación', 'El equipo prepara tus productos para entrega o retiro.'],
+    ['En camino', 'El pedido ya salió o está listo para coordinar la entrega.'],
+    ['Entregado', 'El pedido se marcará como entregado cuando finalice la operación.'],
+  ]
+
   card.querySelectorAll('.tl-step').forEach((step, i) => {
     step.classList.remove('done','current')
     if (i < idx)       step.classList.add('done')
     else if (i === idx) step.classList.add('current')
+
+    const when = step.querySelector('.when')
+    const title = step.querySelector('.title')
+    const desc = step.querySelector('.desc')
+    if (when) {
+      const state = i < idx ? 'COMPLETADO' : i === idx ? 'ACTUAL' : 'PENDIENTE'
+      when.textContent = `${i <= idx ? fmtTimelineDate(pedido.created_at) : '—'} — ${state}`
+    }
+    if (title) title.textContent = steps[i]?.[0] || 'Estado del pedido'
+    if (desc) desc.textContent = steps[i]?.[1] || ''
   })
 }
 
@@ -288,29 +395,96 @@ function orderRowHTML(p) {
 
 // ── Mystery Box progress ──────────────────────────────────
 function updateMysteryProgress(pedidos) {
-  const pagados = pedidos.filter(p => p.estado !== 'cancelado').length
-  const ciclo   = pagados % 5
+  const compras = paidOrders(pedidos).length
+  const ciclo   = compras % 5
   const pct     = Math.round((ciclo / 5) * 100)
+  const faltan  = ciclo === 0 ? 5 : 5 - ciclo
 
   document.querySelectorAll('[data-myst="count"]').forEach(el => el.textContent = ciclo)
-  document.querySelectorAll('[data-myst="faltan"]').forEach(el => el.textContent = 5 - ciclo)
+  document.querySelectorAll('[data-myst="faltan"]').forEach(el => el.textContent = faltan)
   document.querySelectorAll('.progress-30').forEach(el => el.style.setProperty('--prog', pct + '%'))
 
   const badge = document.querySelector('.side-nav a[data-page="rewards"] .badge')
   if (badge) badge.textContent = `${ciclo}/5`
 
+  const rewardsTitle = document.querySelector('[data-myst-title="rewards"]')
+  if (rewardsTitle) {
+    rewardsTitle.innerHTML = ciclo === 0
+      ? '<span class="accent">0 COMPRAS</span><br>PROGRESO REAL'
+      : `<span class="accent">${faltan} COMPRA${faltan !== 1 ? 'S' : ''}</span> MÁS<br>Y TU BOX ES TUYA`
+  }
+
+  const rewardsDesc = document.querySelector('[data-myst-desc="rewards"]')
+  if (rewardsDesc) {
+    rewardsDesc.innerHTML = compras === 0
+      ? 'Todavía no tenés compras acreditadas para Mystery Box. Tu progreso se actualiza automáticamente con pedidos reales.'
+      : `Tenés <strong>${ciclo}/5 compras acreditadas</strong> en el ciclo actual. La Mystery Box se desbloquea con pedidos reales pagados.`
+  }
+
   document.querySelectorAll('.mystery').forEach(myst => {
     myst.querySelectorAll('.myst-dot').forEach((dot, i) => {
       dot.classList.remove('done','current')
-      if (i < ciclo)              dot.classList.add('done')
-      else if (i === ciclo && ciclo < 5) dot.classList.add('current')
+      dot.innerHTML = i < ciclo ? CHECK_SVG : String(i + 1).padStart(2, '0')
+      if (i < ciclo) dot.classList.add('done')
+      else if (i === Math.min(ciclo, 4)) dot.classList.add('current')
     })
     myst.querySelectorAll('.myst-line').forEach((line, i) => {
       line.classList.remove('done','current')
       if (i < ciclo - 1)         line.classList.add('done')
-      else if (i === ciclo - 1)  line.classList.add('current')
+      else if (ciclo > 0 && i === ciclo - 1)  line.classList.add('current')
     })
   })
+}
+
+function renderRewardsHistory(pedidos = []) {
+  const container = document.querySelector('[data-list="reward-history"]')
+  if (!container) return
+
+  const compras = paidOrders(pedidos)
+  const ciclo = compras.length % 5
+  const faltan = ciclo === 0 ? 5 : 5 - ciclo
+  const discountRows = compras.filter(p => Number(p.descuento || 0) > 0)
+
+  const rows = [`
+    <div class="reward-row is-muted">
+      <div class="reward-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/></svg></div>
+      <div class="reward-info">
+        <div class="ttl">Mystery Box · Nivel 1</div>
+        <div class="meta">${ciclo}/5 COMPRAS ACREDITADAS · FALTAN ${faltan}</div>
+      </div>
+      <div class="reward-value text-muted">${ciclo}/5</div>
+    </div>
+  `]
+
+  if (discountRows.length) {
+    rows.push(...discountRows.slice(0, 5).map(p => {
+      const num = p.numero || p.id.slice(0, 8).toUpperCase()
+      const fecha = new Date(p.created_at).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
+      return `
+        <div class="reward-row">
+          <div class="reward-icon acid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="reward-info">
+            <div class="ttl">Descuento aplicado</div>
+            <div class="meta">PEDIDO #${html(num)} · ${fecha}</div>
+          </div>
+          <div class="reward-value">-<span class="currency">$</span>${fmt(p.descuento)}</div>
+        </div>
+      `
+    }))
+  } else {
+    rows.push(`
+      <div class="reward-row is-muted">
+        <div class="reward-icon magenta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/></svg></div>
+        <div class="reward-info">
+          <div class="ttl">Sin descuentos reales todavía</div>
+          <div class="meta">Los descuentos aparecerán acá cuando existan pedidos acreditados.</div>
+        </div>
+        <div class="reward-value text-muted">$0</div>
+      </div>
+    `)
+  }
+
+  container.innerHTML = rows.join('')
 }
 
 // ── Favorites ─────────────────────────────────────────────
@@ -325,6 +499,8 @@ async function loadFavoritos() {
 
   if (!data || !data.length) {
     container.innerHTML = `<div style="padding:40px;text-align:center;font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-mute);letter-spacing:.1em">// Sin favoritos — <a href="/" style="color:var(--violet-glow)">Ir a la tienda →</a></div>`
+    const favCountEl = document.querySelector('[data-fav="count"]')
+    if (favCountEl) favCountEl.textContent = '0 productos'
     return
   }
 
@@ -400,21 +576,108 @@ window.setDefaultDireccion = async function (id) {
   loadDirecciones()
 }
 
-window.showAddDireccion = function () {
-  const nombre = prompt('Nombre (Ej: Casa, Taller):')
-  if (!nombre) return
-  const calle = prompt('Calle y número:')
-  if (!calle) return
-  const ciudad = prompt('Ciudad:')
-  if (!ciudad) return
-  const cp    = prompt('Código postal (opcional):') || ''
-  const notas = prompt('Notas (timbre, horario, etc. — opcional):') || ''
-  supabase.from('direcciones').insert({
-    user_id: session.user.id,
-    nombre, calle, ciudad, cp, notas,
-    predeterminada: false,
-  }).then(() => loadDirecciones())
+function addressValue(id) {
+  return document.getElementById(id)?.value.trim() || ''
 }
+
+function setFieldError(id, message = '') {
+  const input = document.getElementById(id)
+  const field = input?.closest('.modal-field')
+  const error = document.querySelector(`[data-error-for="${id}"]`)
+  field?.classList.toggle('has-error', Boolean(message))
+  if (error) error.textContent = message
+}
+
+function clearAddressErrors() {
+  ;['addr-nombre', 'addr-calle', 'addr-ciudad'].forEach(id => setFieldError(id, ''))
+}
+
+function validateAddressForm() {
+  clearAddressErrors()
+  const required = [
+    ['addr-nombre', 'Ingresá un nombre para identificar la dirección.'],
+    ['addr-calle', 'Ingresá calle y número.'],
+    ['addr-ciudad', 'Ingresá la ciudad.'],
+  ]
+
+  const invalid = required.find(([id, message]) => {
+    const empty = !addressValue(id)
+    if (empty) setFieldError(id, message)
+    return empty
+  })
+
+  if (invalid) {
+    document.getElementById(invalid[0])?.focus()
+    return false
+  }
+  return true
+}
+
+window.showAddDireccion = function () {
+  if (!addressModal || !addressForm) return
+  addressModalPreviousFocus = document.activeElement
+  addressForm.reset()
+  clearAddressErrors()
+  addressModal.classList.add('open')
+  addressModal.setAttribute('aria-hidden', 'false')
+  document.body.style.overflow = 'hidden'
+  window.setTimeout(() => document.getElementById('addr-nombre')?.focus(), 80)
+}
+
+window.closeAddressModal = function () {
+  if (!addressModal || !addressForm) return
+  addressModal.classList.remove('open')
+  addressModal.setAttribute('aria-hidden', 'true')
+  document.body.style.overflow = ''
+  clearAddressErrors()
+  window.setTimeout(() => addressForm.reset(), 160)
+  addressModalPreviousFocus?.focus?.()
+}
+
+addressForm?.addEventListener('submit', async event => {
+  event.preventDefault()
+  if (!validateAddressForm()) return
+
+  const btn = document.getElementById('btn-save-address')
+  if (btn) {
+    btn.disabled = true
+    btn.setAttribute('aria-busy', 'true')
+  }
+
+  try {
+    const payload = {
+      user_id: session.user.id,
+      nombre: addressValue('addr-nombre'),
+      calle: addressValue('addr-calle'),
+      ciudad: addressValue('addr-ciudad'),
+      provincia: addressValue('addr-provincia') || null,
+      cp: addressValue('addr-cp') || null,
+      notas: addressValue('addr-notas') || null,
+      predeterminada: false,
+    }
+
+    const { error } = await supabase.from('direcciones').insert(payload)
+    if (error) throw error
+
+    window.closeAddressModal()
+    showClientToast('Dirección guardada correctamente.', 'ok')
+    await loadDirecciones()
+  } catch (err) {
+    console.error('[CLIENTE ADDRESS MODAL]', err)
+    showClientToast('No se pudo guardar la dirección.', 'error')
+  } finally {
+    if (btn) {
+      btn.disabled = false
+      btn.removeAttribute('aria-busy')
+    }
+  }
+})
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && addressModal?.classList.contains('open')) {
+    window.closeAddressModal()
+  }
+})
 
 // ── Realtime: own orders and profile ─────────────────────
 function subscribeRealtime() {
@@ -447,13 +710,23 @@ function _clienteFor(id) {
 window.clienteDownloadBoleta = async (id) => {
   const { order, client } = _clienteFor(id)
   if (!order) return
-  try { await downloadBoleta(order, client) }
-  catch (e) { console.error(e); alert('Error al generar la boleta PDF.') }
+  try {
+    const { downloadBoleta } = await loadInvoiceModule()
+    await downloadBoleta(order, client)
+  } catch (e) {
+    console.error('[CLIENTE PDF ERROR] downloadBoleta failed', e)
+    showClientToast(e.message || 'Error al generar la boleta PDF.', 'error')
+  }
 }
 
-window.clientePrintReceipt = (id) => {
+window.clientePrintReceipt = async (id) => {
   const { order, client } = _clienteFor(id)
   if (!order) return
-  try { printReceipt(order, client) }
-  catch (e) { console.error(e); alert('Error al preparar impresión.') }
+  try {
+    const { printReceipt } = await loadInvoiceModule()
+    printReceipt(order, client)
+  } catch (e) {
+    console.error('[CLIENTE PDF ERROR] printReceipt failed', e)
+    showClientToast(e.message || 'Error al preparar impresión.', 'error')
+  }
 }

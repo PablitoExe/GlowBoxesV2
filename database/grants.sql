@@ -58,6 +58,7 @@ grant all on public.carrito_items to service_role;
 -- Function permissions: RPC is intentionally not open to anon.
 grant execute on function public.get_my_role() to authenticated, service_role;
 grant execute on function public.is_admin() to authenticated, service_role;
+grant execute on function public.get_public_site_stats() to anon, authenticated, service_role;
 grant execute on function public.slugify(text) to authenticated, service_role;
 grant execute on function gen_random_uuid() to authenticated, service_role;
 grant execute on function public.unaccent(text) to authenticated, service_role;
@@ -67,6 +68,24 @@ grant execute on function public.handle_new_user() to service_role;
 grant execute on function public.protect_profile_admin_fields() to authenticated, service_role;
 grant execute on function public.set_slug_from_nombre() to authenticated, service_role;
 grant execute on function public.set_pedido_item_subtotal() to authenticated, service_role;
+
+do $$
+begin
+  if to_regprocedure('public.create_order(text,text,text,text,text,text,text,text,numeric,numeric,numeric,numeric,text,jsonb,text,text,timestamp with time zone,text,jsonb,uuid)') is not null then
+    revoke all on function public.create_order(
+      text, text, text, text, text, text, text, text,
+      numeric, numeric, numeric, numeric, text, jsonb,
+      text, text, timestamptz, text, jsonb, uuid
+    ) from public, anon, authenticated;
+
+    grant execute on function public.create_order(
+      text, text, text, text, text, text, text, text,
+      numeric, numeric, numeric, numeric, text, jsonb,
+      text, text, timestamptz, text, jsonb, uuid
+    ) to authenticated, service_role;
+  end if;
+end;
+$$;
 
 -- Keep future objects explicit too, without granting broad anon write access.
 alter default privileges in schema public

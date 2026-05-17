@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js'
+import { ensureUserProfile } from './auth-profile.js'
 
 // ── Auth state ────────────────────────────────────────────
 async function initAuth() {
@@ -7,6 +8,8 @@ async function initAuth() {
   if (!btn) return
 
   if (!session) return
+
+  await ensureUserProfile(supabase, session.user)
 
   const { data: role } = await supabase.rpc('get_my_role')
   if (role === 'admin') {

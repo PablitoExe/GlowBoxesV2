@@ -333,6 +333,11 @@
     content:"";width:6px;height:6px;background:var(--acid);border-radius:50%;
     box-shadow:0 0 6px var(--acid);animation:pulse 1.6s infinite;
   }
+  .card-meta.closed{color:var(--magenta);display:inline-flex;align-items:center;gap:8px}
+  .card-meta.closed::before{
+    content:"";width:6px;height:6px;background:var(--magenta);border-radius:50%;
+    box-shadow:0 0 6px var(--magenta);
+  }
   .card-body{padding:24px}
 
   /* ====== LEFT COLUMN ====== */
@@ -542,6 +547,17 @@
     cursor:pointer;appearance:none;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239a9aa6' stroke-width='2'><path d='m6 9 6 6 6-6'/></svg>");
     background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;
+    background-color:transparent;color:var(--ink);
+  }
+  select.input:focus{color:var(--ink)}
+  select.input option,
+  select.input optgroup{
+    background:var(--bg-1);color:var(--ink);
+    font-family:'Barlow Condensed',sans-serif;font-size:16px;
+  }
+  select.input option:checked{
+    background:linear-gradient(90deg,var(--violet-deep),var(--violet));
+    color:#fff;
   }
   textarea.input{
     min-height:120px;resize:vertical;padding:14px;width:100%;
@@ -937,13 +953,13 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Horario de Atención
         </span>
-        <span class="card-meta live">ABIERTO AHORA</span>
+        <span class="card-meta live" id="open-status">CALCULANDO</span>
       </div>
       <div class="card-body" style="padding:8px 24px 16px">
         <div class="hours">
-          <div class="hour-row today">
-            <span class="day">Hoy · Jueves</span>
-            <span class="time">9:00 — 19:00</span>
+          <div class="hour-row today" id="today-hours-row">
+            <span class="day" id="today-day-label">Hoy</span>
+            <span class="time" id="today-hours-label">--</span>
           </div>
           <div class="hour-row">
             <span class="day">Lunes a Viernes</span>
@@ -1287,5 +1303,6 @@
 </script>
 
 <script type="module" src="js/nav.js"></script>
+<script type="module" src="js/contacto.js"></script>
 </body>
 </html>

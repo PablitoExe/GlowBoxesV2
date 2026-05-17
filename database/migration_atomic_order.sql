@@ -50,7 +50,15 @@ declare
   v_user_id   uuid := COALESCE(p_user_id, auth.uid());
 begin
   if v_user_id is null then
-    raise exception 'create_order: no authenticated user — call with a valid session';
+    raise exception 'create_order: no authenticated user - call with a valid session';
+  end if;
+
+  if auth.uid() is not null and v_user_id <> auth.uid() then
+    raise exception 'create_order: p_user_id does not match authenticated user';
+  end if;
+
+  if p_items is null or jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) = 0 then
+    raise exception 'create_order: p_items must be a non-empty JSON array';
   end if;
 
   -- INSERT pedido; orders_insert_own RLS enforces user_id = auth.uid() and proof fields.
@@ -87,13 +95,23 @@ begin
   where (item->>'cantidad')::int > 0;
 
   return v_pedido_id;
-  -- Any exception automatically rolls back both INSERTs — no orphan possible.
+  -- Any exception automatically rolls back both INSERTs - no orphan possible.
 end;
 $$;
 
 -- Grant execute to authenticated users so RPC calls work via Supabase client.
+-- Keep anon out: checkout must run with a valid authenticated session.
+revoke all on function public.create_order(
+  text, text, text, text, text, text, text, text,
+  numeric, numeric, numeric, numeric, text, jsonb,
+  text, text, timestamptz, text, jsonb, uuid
+) from public, anon, authenticated;
+
 grant execute on function public.create_order(
   text, text, text, text, text, text, text, text,
   numeric, numeric, numeric, numeric, text, jsonb,
   text, text, timestamptz, text, jsonb, uuid
 ) to authenticated, service_role;
+
+-- Force PostgREST to reload the function signature immediately.
+notify pgrst, 'reload schema';

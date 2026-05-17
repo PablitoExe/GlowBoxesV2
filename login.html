@@ -49,11 +49,11 @@
 
     <div class="brand-stats">
       <div class="stat">
-        <div class="stat-num">10K<span class="plus">+</span></div>
+        <div class="stat-num" data-stat="clientes">0</div>
         <div class="stat-label">Clientes</div>
       </div>
       <div class="stat">
-        <div class="stat-num">200<span class="plus">+</span></div>
+        <div class="stat-num" data-stat="productos">0</div>
         <div class="stat-label">Productos</div>
       </div>
       <div class="stat">
@@ -133,7 +133,7 @@
         <div class="divider"><span>o continuá con</span></div>
 
         <div class="social-row">
-          <button type="button" class="btn-social" onclick="handleGoogleLogin()">
+          <button type="button" class="btn-social" id="google-login-btn" onclick="handleGoogleLogin()">
             <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.5 12.3c0-.8-.1-1.5-.2-2.2H12v4.2h5.9c-.3 1.4-1 2.5-2.2 3.3v2.7h3.6c2.1-1.9 3.2-4.7 3.2-8z"/><path fill="#34A853" d="M12 23c2.9 0 5.4-1 7.2-2.6l-3.6-2.7c-1 .7-2.3 1.1-3.6 1.1-2.8 0-5.1-1.9-6-4.4H2.3v2.8C4.1 20.7 7.8 23 12 23z"/><path fill="#FBBC05" d="M6 14.4c-.2-.7-.4-1.4-.4-2.1s.1-1.5.4-2.1V7.4H2.3c-.8 1.5-1.2 3.1-1.2 4.9s.5 3.4 1.2 4.9L6 14.4z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3 .5 4.1 1.6l3.1-3.1C17.4 2.2 14.9 1 12 1 7.8 1 4.1 3.3 2.3 6.7L6 9.5C6.9 7.1 9.2 5.4 12 5.4z"/></svg>
             Google
           </button>

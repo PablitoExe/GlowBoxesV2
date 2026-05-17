@@ -1,10 +1,55 @@
 // ── Glow Boxes PDF Core ────────────────────────────────────
 // Shared branding, helpers, and page builders for all PDF exports.
-// Requires jsPDF + jsPDF-AutoTable loaded via CDN <script> tags.
+// PDF libraries are loaded lazily by user-triggered export actions.
 
-export function getJsPDF() {
+const JSPDF_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
+const AUTOTABLE_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'
+let pdfLibrariesPromise = null
+
+function loadScriptOnce(src, isReady, label) {
+  if (isReady()) return Promise.resolve()
+
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[data-gb-pdf-src="${src}"]`)
+    if (existing) {
+      existing.addEventListener('load', () => resolve(), { once: true })
+      existing.addEventListener('error', () => reject(new Error(`No se pudo cargar ${label}.`)), { once: true })
+      return
+    }
+
+    const script = document.createElement('script')
+    script.src = src
+    script.async = true
+    script.crossOrigin = 'anonymous'
+    script.dataset.gbPdfSrc = src
+    script.onload = () => resolve()
+    script.onerror = () => reject(new Error(`No se pudo cargar ${label}.`))
+    document.head.appendChild(script)
+  })
+}
+
+export async function ensurePdfLibraries() {
+  if (!pdfLibrariesPromise) {
+    pdfLibrariesPromise = (async () => {
+      await loadScriptOnce(JSPDF_URL, () => Boolean(window.jspdf?.jsPDF), 'jsPDF')
+      await loadScriptOnce(AUTOTABLE_URL, () => Boolean(window.jspdf?.jsPDF?.API?.autoTable), 'jsPDF AutoTable')
+      const ctor = window.jspdf?.jsPDF
+      if (!ctor) throw new Error('jsPDF no cargado. Recargá la página e intentá de nuevo.')
+      if (!ctor.API?.autoTable) throw new Error('jsPDF AutoTable no cargado. Recargá la página e intentá de nuevo.')
+    })().catch(error => {
+      pdfLibrariesPromise = null
+      console.error('[PDF LOAD ERROR]', error)
+      throw error
+    })
+  }
+  return pdfLibrariesPromise
+}
+
+export async function getJsPDF() {
+  await ensurePdfLibraries()
   const ctor = window.jspdf?.jsPDF
   if (!ctor) throw new Error('jsPDF no cargado. Recargá la página e intentá de nuevo.')
+  if (!ctor.API?.autoTable) throw new Error('jsPDF AutoTable no cargado. Recargá la página e intentá de nuevo.')
   return ctor
 }
 

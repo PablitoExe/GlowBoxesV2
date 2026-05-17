@@ -882,9 +882,9 @@
       <div class="core-glow"></div>
 
       <span class="data d1"><span class="line"></span>FUNDADO <span class="val">2018</span></span>
-      <span class="data d2">CLIENTES <span class="val">+10K</span><span class="line"></span></span>
-      <span class="data d3"><span class="line"></span>RUBROS <span class="val">5</span></span>
-      <span class="data d4">MARCAS <span class="val">12+</span><span class="line"></span></span>
+      <span class="data d2">CLIENTES <span class="val" data-stat="clientes">0</span><span class="line"></span></span>
+      <span class="data d3"><span class="line"></span>RUBROS <span class="val" data-stat="rubros">0</span></span>
+      <span class="data d4">MARCAS <span class="val" data-stat="marcas">0</span><span class="line"></span></span>
 
       <img src="img/logo.png" alt="Glow Boxes" class="visual-logo">
     </div>
@@ -898,13 +898,13 @@
     <span>● DETAILING PROFESIONAL</span>
     <span><span class="star">★</span> AUDIO CAR / WRAP / PPF</span>
     <span>● HERRAMIENTAS PRO</span>
-    <span><span class="star">★</span> +10K CLIENTES FELICES</span>
+    <span><span class="star">★</span> <span data-stat="clientes">0</span> CLIENTES REGISTRADOS</span>
     <span>● ENVÍOS A TODO EL PAÍS</span>
     <span><span class="star">★</span> ESTÉTICA VEHICULAR</span>
     <span>● DETAILING PROFESIONAL</span>
     <span><span class="star">★</span> AUDIO CAR / WRAP / PPF</span>
     <span>● HERRAMIENTAS PRO</span>
-    <span><span class="star">★</span> +10K CLIENTES FELICES</span>
+    <span><span class="star">★</span> <span data-stat="clientes">0</span> CLIENTES REGISTRADOS</span>
     <span>● ENVÍOS A TODO EL PAÍS</span>
   </div>
 </div>
@@ -913,24 +913,24 @@
 <section class="stats-section">
   <div class="stats-grid">
     <div class="stat">
-      <div class="stat-num">7<span class="plus">+</span></div>
-      <div class="stat-label">// Años en el rubro</div>
-      <div class="stat-desc">Desde 2018 perfeccionando la estética vehicular en Argentina.</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">10K<span class="plus">+</span></div>
+      <div class="stat-num" data-stat="clientes">0</div>
       <div class="stat-label">// Clientes activos</div>
-      <div class="stat-desc">Detailers, talleres, wrappers y particulares que confían en nosotros.</div>
+      <div class="stat-desc">Cuentas reales registradas en Glow Boxes.</div>
     </div>
     <div class="stat">
-      <div class="stat-num">247</div>
+      <div class="stat-num" data-stat="rubros">0</div>
+      <div class="stat-label">// Rubros activos</div>
+      <div class="stat-desc">Categorías reales disponibles en el catálogo.</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-stat="productos">0</div>
       <div class="stat-label">// Productos en catálogo</div>
-      <div class="stat-desc">Curados uno por uno. Solo lo que realmente funciona.</div>
+      <div class="stat-desc">Productos activos cargados en Supabase.</div>
     </div>
     <div class="stat">
-      <div class="stat-num">98<span class="pct">%</span></div>
-      <div class="stat-label">// Recompra</div>
-      <div class="stat-desc">9 de cada 10 clientes vuelven. Esa es nuestra mejor métrica.</div>
+      <div class="stat-num" data-stat="marcas">0</div>
+      <div class="stat-label">// Marcas</div>
+      <div class="stat-desc">Marcas activas disponibles para el ecommerce.</div>
     </div>
   </div>
 </section>
@@ -1045,35 +1045,35 @@
       <div class="rubro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 2 12 6 8 2"/><path d="M5 8h14l-1 14H6Z"/></svg></div>
       <div class="rubro-name">Detailing</div>
       <div class="rubro-desc">// Shampoos · ceras · selladores · APCs · descontaminantes</div>
-      <div class="rubro-count">112<span class="unit">PRODUCTOS</span></div>
+      <div class="rubro-count"><span data-rubro-count="detailing">0</span><span class="unit">PRODUCTOS</span></div>
     </div>
     <div class="rubro">
       <div class="rubro-num">[02]<span class="arrow">→</span></div>
       <div class="rubro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
       <div class="rubro-name">Audio Car</div>
       <div class="rubro-desc">// Subwoofers · parlantes · amplificadores · cableado pro</div>
-      <div class="rubro-count">58<span class="unit">PRODUCTOS</span></div>
+      <div class="rubro-count"><span data-rubro-count="audio-car">0</span><span class="unit">PRODUCTOS</span></div>
     </div>
     <div class="rubro">
       <div class="rubro-num">[03]<span class="arrow">→</span></div>
       <div class="rubro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></div>
       <div class="rubro-name">Wrap</div>
       <div class="rubro-desc">// Vinilos premium · color change · texturas · accesorios</div>
-      <div class="rubro-count">34<span class="unit">PRODUCTOS</span></div>
+      <div class="rubro-count"><span data-rubro-count="wrap">0</span><span class="unit">PRODUCTOS</span></div>
     </div>
     <div class="rubro">
       <div class="rubro-num">[04]<span class="arrow">→</span></div>
       <div class="rubro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg></div>
       <div class="rubro-name">PPF</div>
       <div class="rubro-desc">// Películas de protección · self-healing · mate · cerámico</div>
-      <div class="rubro-count">22<span class="unit">PRODUCTOS</span></div>
+      <div class="rubro-count"><span data-rubro-count="ppf">0</span><span class="unit">PRODUCTOS</span></div>
     </div>
     <div class="rubro">
       <div class="rubro-num">[05]<span class="arrow">→</span></div>
       <div class="rubro-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94L7.5 19.5a2.12 2.12 0 1 1-3-3l5.97-5.97a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg></div>
       <div class="rubro-name">Herramientas</div>
       <div class="rubro-desc">// Espátulas · pulidoras · pads · microfibras · accesorios</div>
-      <div class="rubro-count">21<span class="unit">PRODUCTOS</span></div>
+      <div class="rubro-count"><span data-rubro-count="herramientas">0</span><span class="unit">PRODUCTOS</span></div>
     </div>
   </div>
 </section>
@@ -1105,7 +1105,7 @@
       <div class="tl-dot"></div>
       <div class="tl-year">2023</div>
       <div class="tl-title">El Ecommerce</div>
-      <div class="tl-text">Lanzamos la tienda online y la red de distribuidores. Sumamos wrap y PPF al catálogo. +5K clientes activos.</div>
+      <div class="tl-text">Lanzamos la tienda online y la red de distribuidores. Sumamos wrap y PPF al catálogo con clientes reales registrados.</div>
     </div>
     <div class="tl-item">
       <div class="tl-dot"></div>
@@ -1200,5 +1200,6 @@
 </section>
 
 <script type="module" src="js/nav.js"></script>
+<script type="module" src="js/quienes-somos.js"></script>
 </body>
 </html>

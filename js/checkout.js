@@ -842,35 +842,53 @@ async function finalizePay() {
     }))
 
     // Atomic RPC: pedido + items in one DB transaction — no orphan possible on items failure.
-    console.log('[checkout] finalizePay — session.user.id:', session.user.id)
-    const { error: rpcErr } = await supabase.rpc('create_order', {
-        p_user_id:                  session.user.id,
-        p_numero:                   number,
-        p_cliente_nombre:           buyer.fullName || null,
-        p_cliente_email:            buyer.email || null,
-        p_estado:                   state.pay === 'transfer' ? 'pendiente' : 'confirmado',
-        p_metodo_pago:              state.pay === 'mp' ? 'mercado_pago' : 'transferencia',
-        p_pago_metodo:              state.pay === 'mp' ? 'mercado_pago' : 'transferencia',
-        p_pago_estado:              state.pay === 'transfer' ? 'pendiente' : 'acreditado',
-        p_metodo_envio:             state.ship,
-        p_subtotal:                 totals.subtotal,
-        p_descuento:                totals.couponDiscount + totals.transferDiscount,
-        p_costo_envio:              totals.shippingCost,
-        p_total:                    totals.total,
-        p_cupon_codigo:             state.activeCoupon?.codigo || null,
-        p_direccion_envio:          shippingData,
-        p_comprobante_url:          proof?.url || null,
-        p_comprobante_filename:     proof?.filename || null,
-        p_comprobante_uploaded_at:  proof?.uploadedAt || null,
-        p_notas:                    state.pay === 'mp'
-          ? `Mercado Pago: ${state.installments} cuota(s). Comisión ${fmt(totals.mpFee)}. IVA incluido ${fmt(totals.iva)}.`
-          : `Transferencia bancaria. IVA incluido ${fmt(totals.iva)}.`,
-        p_items: items,
-      })
+    const rpcPayload = {
+      p_numero: number,
+      p_cliente_nombre: buyer.fullName || null,
+      p_cliente_email: buyer.email || null,
+      p_estado: state.pay === 'transfer' ? 'pendiente' : 'confirmado',
+      p_metodo_pago: state.pay === 'mp' ? 'mercado_pago' : 'transferencia',
+      p_pago_metodo: state.pay === 'mp' ? 'mercado_pago' : 'transferencia',
+      p_pago_estado: state.pay === 'transfer' ? 'pendiente' : 'acreditado',
+      p_metodo_envio: state.ship,
+      p_subtotal: totals.subtotal,
+      p_descuento: totals.couponDiscount + totals.transferDiscount,
+      p_costo_envio: totals.shippingCost,
+      p_total: totals.total,
+      p_cupon_codigo: state.activeCoupon?.codigo || null,
+      p_direccion_envio: shippingData,
+      p_comprobante_url: proof?.url || null,
+      p_comprobante_filename: proof?.filename || null,
+      p_comprobante_uploaded_at: proof?.uploadedAt || null,
+      p_notas: state.pay === 'mp'
+        ? `Mercado Pago: ${state.installments} cuota(s). Comisión ${fmt(totals.mpFee)}. IVA incluido ${fmt(totals.iva)}.`
+        : `Transferencia bancaria. IVA incluido ${fmt(totals.iva)}.`,
+      p_items: items,
+      p_user_id: session.user.id,
+    }
 
-    if (rpcErr) throw rpcErr
+    console.info('[checkout] create_order RPC payload', rpcPayload)
+    const rpcResult = await supabase.rpc('create_order', rpcPayload)
+    const { data: pedidoId, error: rpcErr, status, statusText } = rpcResult
+
+    if (rpcErr) {
+      console.error('create_order RPC failed', rpcErr)
+      console.error('create_order RPC payload', rpcPayload)
+      console.error('create_order RPC response meta', {
+        status,
+        statusText,
+        data: pedidoId,
+        code: rpcErr.code,
+        message: rpcErr.message,
+        details: rpcErr.details,
+        hint: rpcErr.hint,
+      })
+      throw rpcErr
+    }
+
+    console.info('[checkout] create_order RPC succeeded', { pedidoId, status, statusText })
   } catch (error) {
-    console.warn('Supabase order save failed', error)
+    console.error('Supabase order save failed', error)
     if (proof?.url) await supabase.storage.from(PROOF_BUCKET).remove([proof.url]).catch(() => {})
     setProofMessage(friendlyOrderError(error), 'warn')
     resetFinalizeButton(btn)

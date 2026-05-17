@@ -13,7 +13,7 @@ const METODO  = { transferencia:'Transferencia', mercado_pago:'Mercado Pago', ef
 // Main export
 // ─────────────────────────────────────────────────────────────
 export async function downloadReportePDF(state) {
-  const jsPDF  = getJsPDF()
+  const jsPDF  = await getJsPDF()
   const logo   = await loadLogo()
   const doc    = new jsPDF({ unit: 'mm', format: 'a4' })
   const W      = doc.internal.pageSize.getWidth()

@@ -39,10 +39,6 @@ function itemsTable(order) {
   })
 }
 
-function esc(s) {
-  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-}
-
 // ── Status chip row ───────────────────────────────────────────
 function statusChips(doc, order, y) {
   const W = doc.internal.pageSize.getWidth()
@@ -73,7 +69,7 @@ function statusChips(doc, order, y) {
 // 1. FULL ORDER PDF (admin view)
 // ─────────────────────────────────────────────────────────────
 export async function downloadOrderPDF(order, client = {}) {
-  const jsPDF  = getJsPDF()
+  const jsPDF  = await getJsPDF()
   const logo   = await loadLogo()
   const doc    = new jsPDF({ unit: 'mm', format: 'a4' })
   const W      = doc.internal.pageSize.getWidth()
@@ -149,7 +145,7 @@ export async function downloadOrderPDF(order, client = {}) {
 // 2. BOLETA / CUSTOMER RECEIPT PDF
 // ─────────────────────────────────────────────────────────────
 export async function downloadBoleta(order, client = {}) {
-  const jsPDF  = getJsPDF()
+  const jsPDF  = await getJsPDF()
   const logo   = await loadLogo()
   const doc    = new jsPDF({ unit: 'mm', format: 'a4' })
   const W      = doc.internal.pageSize.getWidth()

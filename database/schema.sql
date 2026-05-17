@@ -155,6 +155,7 @@ create trigger trg_productos_updated_at
 -- ============================================================
 create table if not exists public.perfiles (
   id            uuid primary key references auth.users(id) on delete cascade,
+  email         text,
   nombre        text,
   apellido      text,
   telefono      text,
@@ -182,14 +183,39 @@ language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  v_full_name text := coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', '');
+  v_nombre text := coalesce(
+    nullif(new.raw_user_meta_data->>'nombre', ''),
+    nullif(new.raw_user_meta_data->>'given_name', ''),
+    nullif(split_part(v_full_name, ' ', 1), ''),
+    ''
+  );
+  v_apellido text := coalesce(
+    nullif(new.raw_user_meta_data->>'apellido', ''),
+    nullif(new.raw_user_meta_data->>'family_name', ''),
+    nullif(btrim(regexp_replace(v_full_name, '^\S+\s*', '')), ''),
+    ''
+  );
+  v_avatar text := coalesce(
+    nullif(new.raw_user_meta_data->>'avatar_url', ''),
+    nullif(new.raw_user_meta_data->>'picture', '')
+  );
 begin
-  insert into public.perfiles (id, nombre, apellido)
+  insert into public.perfiles (id, email, nombre, apellido, avatar_url)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'nombre', ''),
-    coalesce(new.raw_user_meta_data->>'apellido', '')
+    new.email,
+    v_nombre,
+    v_apellido,
+    v_avatar
   )
-  on conflict (id) do nothing;
+  on conflict (id) do update set
+    email = coalesce(excluded.email, public.perfiles.email),
+    nombre = coalesce(nullif(public.perfiles.nombre, ''), excluded.nombre),
+    apellido = coalesce(nullif(public.perfiles.apellido, ''), excluded.apellido),
+    avatar_url = coalesce(excluded.avatar_url, public.perfiles.avatar_url),
+    updated_at = now();
   return new;
 end;
 $$;
@@ -220,6 +246,33 @@ stable
 set search_path = public
 as $$
   select public.get_my_role() = 'admin'
+$$;
+
+create or replace function public.get_public_site_stats()
+returns jsonb
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select jsonb_build_object(
+    'clientes',  (select count(*) from public.perfiles),
+    'productos', (select count(*) from public.productos where activo = true),
+    'marcas',    (select count(*) from public.marcas where activo = true),
+    'rubros',    (select count(*) from public.categorias where activo = true),
+    'rubros_detalle',
+      (
+        select coalesce(jsonb_object_agg(c.slug, coalesce(pc.total, 0)), '{}'::jsonb)
+        from public.categorias c
+        left join (
+          select categoria_id, count(*) as total
+          from public.productos
+          where activo = true
+          group by categoria_id
+        ) pc on pc.categoria_id = c.id
+        where c.activo = true
+      )
+  )
 $$;
 
 create or replace function public.protect_profile_admin_fields()

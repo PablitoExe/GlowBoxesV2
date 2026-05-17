@@ -1,9 +1,18 @@
 import { supabase } from './supabase.js'
+import { ensureUserProfile } from './auth-profile.js'
+import { renderStatNumber, startPublicStatsAutoRefresh } from './site-stats.js'
 
 // ── Tab switching ──────────────────────────────────────────
 const tabs        = document.querySelectorAll('.tab')
 const formLogin   = document.getElementById('form-login')
 const formRegister = document.getElementById('form-register')
+
+function renderLoginStats(stats) {
+  renderStatNumber(document.querySelector('[data-stat="clientes"]'), stats.clientes)
+  renderStatNumber(document.querySelector('[data-stat="productos"]'), stats.productos)
+}
+
+startPublicStatsAutoRefresh(renderLoginStats)
 
 function switchTab(target) {
   tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === target))
@@ -19,6 +28,7 @@ document.querySelectorAll('[data-switch]').forEach(a => {
 
 // ── Error display ──────────────────────────────────────────
 function showError(msg, formEl) {
+  if (!formEl) return window.alert(msg)
   let el = formEl.querySelector('.form-error')
   if (!el) {
     el = document.createElement('div')
@@ -75,19 +85,22 @@ async function handleLogin() {
   clearError()
   btnLoading(btn)
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
-  if (error) {
+    if (error) throw error
+
+    if (data?.user) await ensureUserProfile(supabase, data.user)
+    btnSuccess(btn, 'Listo')
+    setTimeout(() => { window.location.href = 'index.html' }, 700)
+  } catch (err) {
+    console.error('[LOGIN AUTH ERROR]', err)
     btnReset(btn, 'Acceder')
     showError(
-      error.message.includes('Invalid') ? 'Email o contraseña incorrectos.' : error.message,
+      err.message?.includes('Invalid') ? 'Email o contraseña incorrectos.' : (err.message || 'No se pudo iniciar sesión.'),
       formLogin
     )
-    return
   }
-
-  btnSuccess(btn, 'Listo')
-  setTimeout(() => { window.location.href = 'index.html' }, 700)
 }
 
 // ── REGISTER ───────────────────────────────────────────────
@@ -101,32 +114,61 @@ async function handleRegister() {
   clearError()
   btnLoading(btn)
 
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { nombre, apellido } }
-  })
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { nombre, apellido } }
+    })
 
-  if (error) {
+    if (error) throw error
+
+    if (data?.user) await ensureUserProfile(supabase, data.user)
+    btnSuccess(btn, 'Cuenta creada')
+    setTimeout(() => { window.location.href = 'index.html' }, 700)
+  } catch (err) {
+    console.error('[REGISTER AUTH ERROR]', err)
     btnReset(btn, 'Crear Cuenta')
     showError(
-      error.message.includes('already') ? 'Ya existe una cuenta con ese email.' : error.message,
+      err.message?.includes('already') ? 'Ya existe una cuenta con ese email.' : (err.message || 'No se pudo crear la cuenta.'),
       formRegister
     )
-    return
   }
-
-  btnSuccess(btn, 'Cuenta creada')
-  setTimeout(() => { window.location.href = 'index.html' }, 700)
 }
 
 // ── Google OAuth ───────────────────────────────────────────
 async function handleGoogleLogin() {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin + '/' },
-  })
-  if (error) showError('No se pudo conectar con Google. Intentá de nuevo.', formLogin)
+  const btn = document.getElementById('google-login-btn')
+  const original = btn?.innerHTML
+  clearError()
+  if (btn) {
+    btn.disabled = true
+    btn.setAttribute('aria-busy', 'true')
+  }
+
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/index.html`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'select_account',
+        },
+      },
+    })
+
+    if (error) throw error
+  } catch (err) {
+    console.error('[GOOGLE AUTH ERROR]', err)
+    showError('No se pudo conectar con Google. Intentá de nuevo.', formLogin)
+    window.alert('No se pudo conectar con Google. Intentá de nuevo.')
+    if (btn) {
+      btn.disabled = false
+      btn.removeAttribute('aria-busy')
+      btn.innerHTML = original
+    }
+  }
 }
 window.handleGoogleLogin = handleGoogleLogin
 
@@ -134,6 +176,9 @@ window.handleGoogleLogin = handleGoogleLogin
 window.handleSubmit = (type) => type === 'login' ? handleLogin() : handleRegister()
 
 // ── Si ya hay sesión activa, saltar login ─────────────────
-supabase.auth.getSession().then(({ data: { session } }) => {
-  if (session) window.location.href = 'index.html'
+supabase.auth.getSession().then(async ({ data: { session } }) => {
+  if (session) {
+    await ensureUserProfile(supabase, session.user)
+    window.location.href = 'index.html'
+  }
 })

@@ -1,6 +1,4 @@
 import { supabase } from './supabase.js'
-import { downloadOrderPDF, downloadBoleta, printReceipt } from './invoice.js'
-import { downloadReportePDF } from './reportes.js'
 
 const PRODUCT_BUCKET = 'product-images'
 const BRAND_BUCKET   = 'brand-logos'
@@ -30,6 +28,8 @@ let editingBrandId = null
 let editingOrderId = null
 let editingCustomerId = null
 let orderItemCount = 0
+let invoiceModulePromise = null
+let reportesModulePromise = null
 
 const fmtNumber = n => Number(n || 0).toLocaleString('es-AR')
 const fmtMoney = n => `$${fmtNumber(Math.round(Number(n || 0)))}`
@@ -138,20 +138,58 @@ function reportError(context, error) {
   if (context.includes('cupones')) tableEmpty('coupons-tbody', 8, msg)
 }
 
+function safeAdminStep(label, fn) {
+  try {
+    return fn()
+  } catch (error) {
+    console.error(`[ADMIN INIT ERROR] ${label}`, error)
+    return null
+  }
+}
+
 function jsString(value) {
   return String(value ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, ' ')
 }
 
 async function loadAll() {
   initLoading()
-  await Promise.all([
+  const results = await Promise.allSettled([
     loadCatalog(),
     loadOrders(),
     loadCustomers(),
     loadCoupons(),
   ])
+  results.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      const labels = ['productos', 'pedidos', 'clientes', 'cupones']
+      console.error(`[ADMIN INIT ERROR] No se pudo cargar ${labels[index]}`, result.reason)
+      reportError(labels[index], result.reason)
+    }
+  })
   renderEverything()
-  bindFilters()
+  safeAdminStep('bindFilters', bindFilters)
+}
+
+async function loadInvoiceModule() {
+  if (!invoiceModulePromise) {
+    invoiceModulePromise = import('./invoice.js').catch(error => {
+      invoiceModulePromise = null
+      console.error('[ADMIN PDF ERROR] No se pudo cargar invoice.js', error)
+      throw error
+    })
+  }
+  return invoiceModulePromise
+}
+
+async function loadReportesModule() {
+  if (!reportesModulePromise) {
+    reportesModulePromise = import('./reportes.js').catch(error => {
+      reportesModulePromise = null
+      console.error('[ADMIN PDF ERROR] No se pudo cargar reportes.js', error)
+      throw error
+    })
+  }
+  return reportesModulePromise
 }
 
 async function loadCatalog() {
@@ -198,15 +236,15 @@ async function loadCoupons() {
 }
 
 function renderEverything() {
-  renderOverview()
-  renderOrders()
-  renderProducts()
-  renderCustomers()
-  renderCats()
-  renderBrands()
-  renderCoupons()
-  renderReports()
-  renderSidebarBadges()
+  safeAdminStep('renderOverview', renderOverview)
+  safeAdminStep('renderOrders', renderOrders)
+  safeAdminStep('renderProducts', renderProducts)
+  safeAdminStep('renderCustomers', renderCustomers)
+  safeAdminStep('renderCats', renderCats)
+  safeAdminStep('renderBrands', renderBrands)
+  safeAdminStep('renderCoupons', renderCoupons)
+  safeAdminStep('renderReports', renderReports)
+  safeAdminStep('renderSidebarBadges', renderSidebarBadges)
 }
 
 function completedRevenueOrders() {
@@ -1619,19 +1657,27 @@ function subscribeRealtime() {
     .channel('admin-realtime')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, async () => {
       await loadOrders()
-      renderOrders(); renderOverview(); renderReports(); renderSidebarBadges()
+      safeAdminStep('realtime pedidos', () => {
+        renderOrders(); renderOverview(); renderReports(); renderSidebarBadges()
+      })
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'productos' }, async () => {
       await loadCatalog()
-      renderProducts(); renderSidebarBadges()
+      safeAdminStep('realtime productos', () => {
+        renderProducts(); renderSidebarBadges()
+      })
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'perfiles' }, async () => {
       await loadCustomers()
-      renderCustomers(); renderOverview()
+      safeAdminStep('realtime perfiles', () => {
+        renderCustomers(); renderOverview()
+      })
     })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'cupones' }, async () => {
       await loadCoupons()
-      renderCoupons(); renderSidebarBadges()
+      safeAdminStep('realtime cupones', () => {
+        renderCoupons(); renderSidebarBadges()
+      })
     })
     .subscribe(status => {
       if (status === 'SUBSCRIBED') console.info('[admin] Realtime conectado.')
@@ -1642,7 +1688,7 @@ function subscribeRealtime() {
 loadAll()
   .then(() => subscribeRealtime())
   .catch(error => {
-    console.error('admin init failed', error)
+    console.error('[ADMIN INIT ERROR]', error)
     reportError('admin', error)
   })
 
@@ -1653,27 +1699,47 @@ window.adminDownloadOrderPDF = async function() {
   const order = state.pedidos.find(o => o.id === editingOrderId)
   if (!order) return
   const client = orderClient(order)
-  try { await downloadOrderPDF(order, client) }
-  catch (e) { toast(e.message || 'Error al generar PDF.', 'error') }
+  try {
+    const { downloadOrderPDF } = await loadInvoiceModule()
+    await downloadOrderPDF(order, client)
+  } catch (e) {
+    console.error('[ADMIN PDF ERROR] downloadOrderPDF failed', e)
+    toast(e.message || 'Error al generar PDF.', 'error')
+  }
 }
 
 window.adminDownloadBoleta = async function() {
   const order = state.pedidos.find(o => o.id === editingOrderId)
   if (!order) return
   const client = orderClient(order)
-  try { await downloadBoleta(order, client) }
-  catch (e) { toast(e.message || 'Error al generar boleta.', 'error') }
+  try {
+    const { downloadBoleta } = await loadInvoiceModule()
+    await downloadBoleta(order, client)
+  } catch (e) {
+    console.error('[ADMIN PDF ERROR] downloadBoleta failed', e)
+    toast(e.message || 'Error al generar boleta.', 'error')
+  }
 }
 
-window.adminPrintReceipt = function() {
+window.adminPrintReceipt = async function() {
   const order = state.pedidos.find(o => o.id === editingOrderId)
   if (!order) return
   const client = orderClient(order)
-  try { printReceipt(order, client) }
-  catch (e) { toast(e.message || 'Error al preparar impresión.', 'error') }
+  try {
+    const { printReceipt } = await loadInvoiceModule()
+    printReceipt(order, client)
+  } catch (e) {
+    console.error('[ADMIN PDF ERROR] printReceipt failed', e)
+    toast(e.message || 'Error al preparar impresión.', 'error')
+  }
 }
 
 window.adminDownloadReporte = async function() {
-  try { await downloadReportePDF(state) }
-  catch (e) { toast(e.message || 'Error al generar reporte.', 'error') }
+  try {
+    const { downloadReportePDF } = await loadReportesModule()
+    await downloadReportePDF(state)
+  } catch (e) {
+    console.error('[ADMIN PDF ERROR] downloadReportePDF failed', e)
+    toast(e.message || 'Error al generar reporte.', 'error')
+  }
 }
