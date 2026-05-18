@@ -41,3 +41,9 @@ enable_confirmations = false
 
 [functions.send-email]
 verify_jwt = false
+
+[functions.mp-create-preference]
+verify_jwt = false   # function handles JWT verification internally
+
+[functions.mp-webhook]
+verify_jwt = false   # public webhook — validated via HMAC-SHA256 signature

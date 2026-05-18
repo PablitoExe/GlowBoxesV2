@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Cookies | Glow Boxes</title>
+<meta name="description" content="Política de cookies de Glow Boxes. Qué cookies utilizamos y cómo deshabilitarlas.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://glowboxes.com.ar/cookies.html">
+<link rel="icon" type="image/png" href="/img/logito.png">
+<link rel="shortcut icon" href="/img/logito.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-0:#0a0a0f;--bg-1:#101018;--bg-2:#16161f;--bg-3:#1c1c26;
+  --ink:#f4f4f6;--ink-dim:#9a9aa6;--ink-mute:#5a5a66;
+  --violet:#8b3df5;--violet-deep:#5b1fb8;--violet-glow:#a86bff;
+  --magenta:#ff2bd6;--acid:#c8ff00;--warn:#f59e0b;
+  --line:rgba(255,255,255,.08);--line-strong:rgba(255,255,255,.16);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg-0);color:var(--ink);font-family:'Barlow Condensed',sans-serif;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{display:block;max-width:100%}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.04;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");mix-blend-mode:overlay}
+nav{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:18px 48px;background:rgba(10,10,15,.85);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.logo-wrap img{height:38px}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-links a{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border:1px solid transparent;border-radius:6px;color:var(--ink-dim);transition:all .2s}
+.nav-links a:hover{color:var(--ink);border-color:var(--line-strong)}
+.hero{padding:80px 48px 48px;position:relative;border-bottom:1px solid var(--line)}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(800px 400px at 70% 0%,rgba(255,43,214,.08),transparent 60%);pointer-events:none}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--ink-mute);text-transform:uppercase;margin-bottom:24px}
+.breadcrumb a:hover{color:var(--violet-glow)}
+.breadcrumb .dash{width:16px;height:1px;background:var(--line-strong)}
+.page-tag{display:inline-block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--violet-glow);text-transform:uppercase;border:1px solid rgba(139,61,245,.3);background:rgba(139,61,245,.08);padding:5px 12px;border-radius:4px;margin-bottom:16px}
+.hero h1{font-family:'Space Mono',monospace;font-size:clamp(24px,4vw,42px);font-weight:700;letter-spacing:-.02em;line-height:1.1;margin-bottom:16px}
+.hero h1 span{color:var(--violet-glow)}
+.hero .meta{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-mute);letter-spacing:.1em}
+.content{max-width:860px;margin:0 auto;padding:60px 48px 100px}
+.section{margin-bottom:48px;padding-bottom:48px;border-bottom:1px solid var(--line)}
+.section:last-child{border-bottom:none}
+.section-num{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--violet-glow);text-transform:uppercase;margin-bottom:8px}
+.section h2{font-size:22px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:16px}
+.section p{font-size:16px;line-height:1.7;color:var(--ink-dim);margin-bottom:12px}
+.section ul{margin:12px 0 12px 20px;display:flex;flex-direction:column;gap:8px}
+.section li{font-size:15px;line-height:1.6;color:var(--ink-dim)}
+.section li::marker{color:var(--violet-glow)}
+.cookie-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+.cookie-table th{text-align:left;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-mute);padding:10px 12px;border-bottom:1px solid var(--line-strong)}
+.cookie-table td{padding:12px 12px;border-bottom:1px solid var(--line);color:var(--ink-dim);line-height:1.5;vertical-align:top}
+.cookie-table tr:last-child td{border-bottom:none}
+.badge{display:inline-block;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
+.badge-necessary{color:#34d399;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2)}
+.badge-analytics{color:var(--violet-glow);background:rgba(139,61,245,.1);border:1px solid rgba(139,61,245,.2)}
+.badge-functional{color:var(--warn);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2)}
+.highlight{background:rgba(139,61,245,.06);border-left:3px solid var(--violet-glow);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:var(--ink)}
+.browser-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0}
+.browser-card{background:var(--bg-2);border:1px solid var(--line);border-radius:8px;padding:14px}
+.browser-card .browser-name{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.browser-card a{font-size:12px;color:var(--violet-glow)}
+footer{border-top:1px solid var(--line);padding:40px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap}
+.footer-links a{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute);transition:color .2s}
+.footer-links a:hover{color:var(--violet-glow)}
+.footer-copy{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-mute);letter-spacing:.1em}
+@media(max-width:768px){
+  nav{padding:14px 20px}
+  .nav-links{display:none}
+  .hero{padding:60px 20px 36px}
+  .content{padding:40px 20px 60px}
+  .cookie-table{font-size:13px}
+  footer{padding:32px 20px;flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<nav id="main-nav">
+  <a href="index.html" class="logo-wrap"><img src="img/logo.png" alt="Glow Boxes"></a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Productos</a>
+    <a href="quienes-somos.html" class="nav-link">Nosotros</a>
+    <a href="contacto.html" class="nav-link">Contacto</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="breadcrumb">
+    <a href="index.html">Home</a>
+    <span class="dash"></span>
+    <span>Legal</span>
+    <span class="dash"></span>
+    <span>Cookies</span>
+  </div>
+  <div class="page-tag">Legal · Versión 1.0</div>
+  <h1>Política de <span>Cookies</span></h1>
+  <p class="meta">// Última actualización: Mayo 2025</p>
+</section>
+
+<main class="content">
+
+  <div class="section">
+    <div class="section-num">// 01</div>
+    <h2>¿Qué son las Cookies?</h2>
+    <p>Las cookies son pequeños archivos de texto que los sitios web almacenan en tu navegador. Sirven para recordar tus preferencias, mantener tu sesión activa y analizar el comportamiento de los usuarios con el fin de mejorar la experiencia.</p>
+    <div class="highlight">
+      <p>Glow Boxes utiliza cookies funcionales y analíticas. No utilizamos cookies de publicidad comportamental ni las vendemos a terceros.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-num">// 02</div>
+    <h2>Cookies que Usamos</h2>
+    <table class="cookie-table">
+      <thead>
+        <tr>
+          <th>Cookie / Clave</th>
+          <th>Tipo</th>
+          <th>Propósito</th>
+          <th>Duración</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>sb-*</code> (Supabase)</td>
+          <td><span class="badge badge-necessary">Necesaria</span></td>
+          <td>Mantener la sesión de usuario autenticada</td>
+          <td>Sesión / 7 días</td>
+        </tr>
+        <tr>
+          <td><code>gb_cart</code> (localStorage)</td>
+          <td><span class="badge badge-functional">Funcional</span></td>
+          <td>Guardar el carrito de compras entre visitas</td>
+          <td>Permanente (hasta vaciarlo)</td>
+        </tr>
+        <tr>
+          <td><code>gb_seen_events</code> (localStorage)</td>
+          <td><span class="badge badge-functional">Funcional</span></td>
+          <td>Evitar duplicar eventos de analytics</td>
+          <td>Permanente</td>
+        </tr>
+        <tr>
+          <td><code>gb_mp_pedido</code> (sessionStorage)</td>
+          <td><span class="badge badge-functional">Funcional</span></td>
+          <td>Mantener datos del pedido durante el flujo de Mercado Pago</td>
+          <td>Sesión de navegador</td>
+        </tr>
+        <tr>
+          <td>Google Analytics</td>
+          <td><span class="badge badge-analytics">Analítica</span></td>
+          <td>Análisis de tráfico y comportamiento anónimo</td>
+          <td>2 años</td>
+        </tr>
+        <tr>
+          <td>Mercado Pago</td>
+          <td><span class="badge badge-functional">Funcional</span></td>
+          <td>Procesar pagos de forma segura en la plataforma de MP</td>
+          <td>Sesión</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-num">// 03</div>
+    <h2>Cookies de Terceros</h2>
+    <p>Algunos servicios externos que integramos pueden establecer sus propias cookies:</p>
+    <ul>
+      <li><strong>Google:</strong> autenticación OAuth y analytics. <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener" style="color:var(--violet-glow)">Política de cookies de Google</a>.</li>
+      <li><strong>Mercado Pago:</strong> procesamiento de pagos. <a href="https://www.mercadopago.com.ar/privacidad" target="_blank" rel="noopener" style="color:var(--violet-glow)">Política de MP</a>.</li>
+    </ul>
+    <p>No tenemos control sobre las cookies de estos terceros. Consultá sus políticas respectivas.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-num">// 04</div>
+    <h2>Cómo Deshabilitar las Cookies</h2>
+    <p>Podés configurar tu navegador para rechazar o eliminar cookies. Tené en cuenta que deshabilitar cookies necesarias puede afectar el funcionamiento del sitio (ej. no podrás iniciar sesión).</p>
+    <div class="browser-grid">
+      <div class="browser-card">
+        <div class="browser-name">Chrome</div>
+        <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener">Ver instrucciones</a>
+      </div>
+      <div class="browser-card">
+        <div class="browser-name">Firefox</div>
+        <a href="https://support.mozilla.org/es/kb/cookies-informacion-que-los-sitios-web-guardan-en-" target="_blank" rel="noopener">Ver instrucciones</a>
+      </div>
+      <div class="browser-card">
+        <div class="browser-name">Safari</div>
+        <a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener">Ver instrucciones</a>
+      </div>
+      <div class="browser-card">
+        <div class="browser-name">Edge</div>
+        <a href="https://support.microsoft.com/es-es/topic/eliminar-y-administrar-cookies-168dab11-0753-043d-7c16-ede5947fc64d" target="_blank" rel="noopener">Ver instrucciones</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-num">// 05</div>
+    <h2>Consentimiento</h2>
+    <p>Al continuar usando el sitio de Glow Boxes, aceptás el uso de cookies según esta política. Para revocar tu consentimiento, podés borrar las cookies de tu navegador en cualquier momento.</p>
+    <p>Para consultas, escribinos a <strong>hola@glowboxes.com.ar</strong>.</p>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-links">
+    <a href="terminos.html">Términos</a>
+    <a href="privacidad.html">Privacidad</a>
+    <a href="cambios-devoluciones.html">Cambios y Devoluciones</a>
+    <a href="cookies.html">Cookies</a>
+    <a href="contacto.html">Contacto</a>
+  </div>
+  <div class="footer-copy">© 2025 GLOW BOXES · ARGENTINA</div>
+</footer>
+
+<script type="module" src="js/nav.js"></script>
+</body>
+</html>

@@ -2,6 +2,7 @@ import { supabase } from './supabase.js'
 import { showToast } from './ui-feedback.js'
 import { cartPayload, purchasePayload, trackEvent } from './analytics.js'
 import { sendTransactionalEmail } from './email.js'
+import { redirectToMpCheckout } from './mp.js'
 
 const CART_KEY = 'gb_cart'
 const PROOF_BUCKET = 'comprobantes'
@@ -728,6 +729,10 @@ function friendlyOrderError(error) {
   if (msg.includes('Only admins can update protected profile fields')) {
     return 'No podés modificar esos campos de perfil.'
   }
+  if (msg.includes('STOCK_INSUFICIENTE:')) {
+    const nombre = msg.split('STOCK_INSUFICIENTE:')[1]?.trim() || 'uno de los productos'
+    return `Sin stock suficiente para: ${nombre}. Actualizá el carrito.`
+  }
   if (msg.toLowerCase().includes('network') || msg.toLowerCase().includes('fetch')) {
     return 'Sin conexión. Verificá tu internet y volvé a intentarlo.'
   }
@@ -885,10 +890,10 @@ async function finalizePay() {
       p_numero: number,
       p_cliente_nombre: buyer.fullName || null,
       p_cliente_email: buyer.email || null,
-      p_estado: state.pay === 'transfer' ? 'pendiente' : 'confirmado',
+      p_estado: 'pendiente',
       p_metodo_pago: state.pay === 'mp' ? 'mercado_pago' : 'transferencia',
       p_pago_metodo: state.pay === 'mp' ? 'mercado_pago' : 'transferencia',
-      p_pago_estado: state.pay === 'transfer' ? 'pendiente' : 'acreditado',
+      p_pago_estado: 'pendiente',
       p_metodo_envio: state.ship,
       p_subtotal: totals.subtotal,
       p_descuento: totals.couponDiscount + totals.transferDiscount,
@@ -939,9 +944,9 @@ async function finalizePay() {
         numero:          number,
         cliente_nombre:  buyer.fullName || null,
         cliente_email:   buyer.email,
-        estado:          state.pay === 'transfer' ? 'pendiente' : 'confirmado',
+        estado:          'pendiente',
         metodo_pago:     state.pay === 'mp' ? 'mercado_pago' : 'transferencia',
-        pago_estado:     state.pay === 'transfer' ? 'pendiente' : 'acreditado',
+        pago_estado:     'pendiente',
         metodo_envio:    state.ship,
         subtotal:        totals.subtotal,
         descuento:       totals.couponDiscount + totals.transferDiscount,
@@ -954,6 +959,33 @@ async function finalizePay() {
           precio_unitario: i.precio_unitario,
         })),
       })
+    }
+
+    // For MP: redirect to MercadoPago — cart stays until pago=ok return
+    if (state.pay === 'mp') {
+      const mpItems = items.map(i => ({
+        nombre:          i.nombre_producto,
+        cantidad:        i.cantidad,
+        precio_unitario: i.precio_unitario,
+      }))
+      try {
+        await redirectToMpCheckout({
+          pedido_id:    pedidoId,
+          numero:       number,
+          items:        mpItems,
+          total:        totals.total,
+          cliente_email: buyer.email || undefined,
+        })
+      } catch (mpErr) {
+        console.error('[checkout] MP preference creation failed', mpErr)
+        showToast(
+          `Pedido ${number} creado — no se pudo abrir Mercado Pago. Intentá de nuevo o contactanos.`,
+          'warn',
+          { duration: 8000 }
+        )
+        resetFinalizeButton(btn)
+      }
+      return
     }
   } catch (error) {
     console.error('Supabase order save failed', error)
@@ -1008,11 +1040,59 @@ async function getMercadoPagoRatesFromProvider() {
   return CHECKOUT_CONFIG.mercadoPago.rates
 }
 
+function handleMpReturn() {
+  const params = new URLSearchParams(window.location.search)
+  const pago   = params.get('pago')
+  const numero = params.get('numero')
+  if (!pago || !numero) return false
+
+  history.replaceState({}, '', window.location.pathname)
+
+  if (pago === 'fail') {
+    showToast(`El pago fue rechazado para el pedido ${numero}. Podés intentar de nuevo.`, 'error', { duration: 6000 })
+    return false
+  }
+
+  localStorage.removeItem(CART_KEY)
+  const stored = JSON.parse(sessionStorage.getItem('gb_mp_pedido') || '{}')
+  sessionStorage.removeItem('gb_mp_pedido')
+
+  if ($('orderNumber'))    $('orderNumber').textContent = `// #${numero}`
+  if ($('orderNumberBig')) $('orderNumberBig').textContent = `#${numero}`
+  if ($('confirmEmail'))   $('confirmEmail').textContent = 'tu email registrado'
+
+  const paymentStatus     = $('paymentStatus')
+  const paymentStatusDesc = $('paymentStatusDesc')
+  const stepWhen          = $('step-payment-when')
+  const stepTitle         = $('step-payment-title')
+  const stepDesc          = $('step-payment-desc')
+
+  if (pago === 'ok') {
+    if (paymentStatus) { paymentStatus.textContent = 'Acreditado'; paymentStatus.style.color = 'var(--acid)' }
+    if (paymentStatusDesc) paymentStatusDesc.textContent = 'Pago recibido por Mercado Pago. Te llegará la confirmación al email.'
+    if (stepWhen)  stepWhen.textContent  = 'COMPLETADO'
+    if (stepTitle) stepTitle.textContent = 'Pago recibido'
+    if (stepDesc)  stepDesc.textContent  = 'Tu pago fue procesado correctamente. Te avisaremos cuando se confirme.'
+  } else {
+    if (paymentStatus) { paymentStatus.textContent = 'Pendiente'; paymentStatus.style.color = 'var(--warn)' }
+    if (paymentStatusDesc) paymentStatusDesc.textContent = 'Tu pago está siendo procesado por Mercado Pago.'
+    if (stepWhen)  stepWhen.textContent  = 'PRÓXIMO PASO'
+    if (stepTitle) stepTitle.textContent = 'Pago en proceso'
+    if (stepDesc)  stepDesc.textContent  = 'Mercado Pago está verificando el pago. Recibirás un email cuando se confirme.'
+  }
+
+  if (stored.total && $('confirmTotal')) $('confirmTotal').innerHTML = money(stored.total)
+
+  window.goStep?.(3)
+  return true
+}
+
 async function initCheckout() {
+  bindStepper()
+  if (handleMpReturn()) return
   await getMercadoPagoRatesFromProvider()
   await migrateLegacyCart()
   renderSummaryItems()
-  bindStepper()
   bindShipping()
   bindPayments()
   bindCoupons()
