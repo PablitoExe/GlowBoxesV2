@@ -733,6 +733,9 @@ function friendlyOrderError(error) {
     const nombre = msg.split('STOCK_INSUFICIENTE:')[1]?.trim() || 'uno de los productos'
     return `Sin stock suficiente para: ${nombre}. Actualizá el carrito.`
   }
+  if (msg.includes('STOCK_ALREADY_DECREMENTED')) {
+    return 'Este pedido ya fue procesado. Actualizá la página y verificá tus pedidos.'
+  }
   if (msg.toLowerCase().includes('network') || msg.toLowerCase().includes('fetch')) {
     return 'Sin conexión. Verificá tu internet y volvé a intentarlo.'
   }
@@ -855,7 +858,33 @@ async function finalizePay() {
   const number = `GB-${Date.now().toString().slice(-6)}`
   const buyer = getBuyerData()
   const shippingData = getShippingData()
-  const { data: { session } } = await supabase.auth.getSession()
+
+  // getSession returns the cached session; for Google OAuth the access token
+  // can expire mid-session — force a refresh if less than 60 s remain.
+  let session
+  {
+    const { data, error: sessionErr } = await supabase.auth.getSession()
+    if (sessionErr || !data.session) {
+      setProofMessage('Sesión no encontrada. Por favor, iniciá sesión nuevamente.', 'warn')
+      resetFinalizeButton(btn)
+      return
+    }
+    const secondsLeft = (data.session.expires_at || 0) - Math.floor(Date.now() / 1000)
+    if (secondsLeft < 60) {
+      const { data: refreshed, error: refreshErr } = await supabase.auth.refreshSession()
+      if (refreshErr || !refreshed.session) {
+        console.warn('[checkout] Session refresh failed:', refreshErr)
+        setProofMessage('Tu sesión expiró. Por favor, iniciá sesión nuevamente.', 'warn')
+        resetFinalizeButton(btn)
+        return
+      }
+      session = refreshed.session
+      console.info('[checkout] Session refreshed (was near expiry).')
+    } else {
+      session = data.session
+    }
+    console.info('[checkout] Auth OK — provider:', session.user?.app_metadata?.provider, 'uid:', session.user?.id?.slice(0, 8) + '…')
+  }
 
   if (!session) {
     setProofMessage('Iniciá sesión para confirmar el pedido de forma segura.', 'warn')
@@ -869,7 +898,14 @@ async function finalizePay() {
     try {
       proof = await uploadTransferProof(session, number)
     } catch (error) {
-      console.warn('Proof upload failed', error)
+      console.error('[checkout] Storage upload failed:', {
+        message: error.message,
+        statusCode: error.statusCode,
+        error: error.error,
+        uid: session?.user?.id,
+        expectedPath: `${session?.user?.id}/…`,
+        provider: session?.user?.app_metadata?.provider,
+      })
       setProofMessage(error.message || 'No pudimos subir el comprobante. Intentá de nuevo.', 'warn')
       resetFinalizeButton(btn)
       return
@@ -988,7 +1024,14 @@ async function finalizePay() {
       return
     }
   } catch (error) {
-    console.error('Supabase order save failed', error)
+    console.error('[checkout] create_order failed:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+      uid: session?.user?.id,
+      provider: session?.user?.app_metadata?.provider,
+    })
     if (proof?.url) await supabase.storage.from(PROOF_BUCKET).remove([proof.url]).catch(() => {})
     setProofMessage(friendlyOrderError(error), 'warn')
     resetFinalizeButton(btn)
